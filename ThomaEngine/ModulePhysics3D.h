@@ -10,65 +10,45 @@
 #define GRAVITY btVector3(0.0f, -10.0f, 0.0f) 
 
 class DebugDrawer;
-struct PhysBody3D;
-struct PhysVehicle3D;
-struct VehicleInfo;
+class  PhysBody3D;
 
 class ModulePhysics3D : public Module
 {
 public:
-	ModulePhysics3D(Application* app, bool start_enabled = true);
+	ModulePhysics3D(bool start_enabled = true);
 	~ModulePhysics3D();
 
 	bool Init();
 	bool Start();
-	update_status PreUpdate(float dt);
-	update_status Update(float dt);
-	update_status PostUpdate(float dt);
+	update_status PreUpdate(float dt) override;
+	update_status Update(float dt) override;
+	update_status PostUpdate(float dt) override;
 	bool CleanUp();
 
-	PhysBody3D* AddBody(const Sphere& sphere, float mass = 1.0f);
-	PhysBody3D* AddBody(const Cube& cube, float mass = 1.0f);
-	PhysBody3D* AddBody(const Cylinder& cylinder, float mass = 1.0f);
-	PhysVehicle3D* AddVehicle(const VehicleInfo& info);
-	
-	void AddConstraintP2P(PhysBody3D& bodyA, PhysBody3D& bodyB, const vec3& anchorA, const vec3& anchorB);
-	void AddConstraintHinge(PhysBody3D& bodyA, PhysBody3D& bodyB, const vec3& anchorA, const vec3& anchorB, const vec3& axisS, const vec3& axisB, bool disable_collision = false);
+	void AddBodyToWorld(btRigidBody* body);
+	void RemoveBodyFromWorld(btRigidBody* body);
 
-	void Drag(const VehicleInfo& info, PhysVehicle3D& vehicle);
-	void Lift(const VehicleInfo& info, PhysVehicle3D& vehicle);
+	PhysBody3D* RayCast(const vec3& Origin, const vec3& Direction, vec3& HitPoint = vec3());
 
-	float Fdx = 0, Fdy = 0, Fdz = 0;
-	float Flx = 0, Fly = 0, Flz = 0;
+	//TODO 1: Implement the code to add a Point to Point constraint ( btPoint2PointConstraint )
+	//void AddConstraintP2P(const Primitive& bodyA, const Primitive& bodyB, ...);
 
-	p2List<PhysBody3D*> bodies;
-	p2List<btCollisionShape*> shapes;
+	//TODO 3: Implement the code to add a Hinge constraint ( btHingeConstraint )
+	//void AddConstraintHinge(const Primitive & bodyA, const Primitive & bodyB, ...);
+
 private:
-
-	bool debug;
-
-	bool DragEnabled = true;
-	bool LiftEnabled = true;
-
 	btDefaultCollisionConfiguration*	collision_conf;
 	btCollisionDispatcher*				dispatcher;
 	btBroadphaseInterface*				broad_phase;
 	btSequentialImpulseConstraintSolver* solver;
 	btDiscreteDynamicsWorld*			world;
-	btDefaultVehicleRaycaster*			vehicle_raycaster;
 	DebugDrawer*						debug_draw;
-
-	
-	
-	p2List<btDefaultMotionState*> motions;
-	p2List<btTypedConstraint*> constraints;
-	p2List<PhysVehicle3D*> vehicles;
 };
 
 class DebugDrawer : public btIDebugDraw
 {
 public:
-	DebugDrawer() : line(0,0,0)
+	DebugDrawer() : line()
 	{}
 
 	void drawLine(const btVector3& from, const btVector3& to, const btVector3& color);

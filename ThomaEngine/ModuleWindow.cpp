@@ -2,7 +2,7 @@
 #include "Application.h"
 #include "ModuleWindow.h"
 
-ModuleWindow::ModuleWindow(Application* app, bool start_enabled) : Module(app, start_enabled)
+ModuleWindow::ModuleWindow(bool start_enabled) : Module(start_enabled)
 {
 	window = NULL;
 	screen_surface = NULL;
@@ -86,6 +86,20 @@ bool ModuleWindow::CleanUp()
 	//Quit SDL subsystems
 	SDL_Quit();
 	return true;
+}
+
+int ModuleWindow::Width() const
+{
+	int w, h;
+	SDL_GetWindowSize(window, &w, &h);
+	return w;
+}
+
+int ModuleWindow::Height() const
+{
+	int w, h;
+	SDL_GetWindowSize(window, &w, &h);
+	return h;
 }
 
 void ModuleWindow::SetTitle(const char* title)

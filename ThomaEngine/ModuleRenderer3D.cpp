@@ -8,7 +8,7 @@
 #pragma comment (lib, "glu32.lib")    /* link OpenGL Utility lib     */
 #pragma comment (lib, "opengl32.lib") /* link Microsoft OpenGL lib   */
 
-ModuleRenderer3D::ModuleRenderer3D(Application* app, bool start_enabled) : Module(app, start_enabled)
+ModuleRenderer3D::ModuleRenderer3D(bool start_enabled) : Module(start_enabled), context()
 {
 }
 
@@ -109,7 +109,8 @@ update_status ModuleRenderer3D::PreUpdate(float dt)
 	glLoadIdentity();
 
 	glMatrixMode(GL_MODELVIEW);
-	glLoadMatrixf(App->camera->GetViewMatrix());
+
+	glLoadMatrixf(App->camera->GetRawViewMatrix());
 
 	// light 0 on cam pos
 	lights[0].SetPos(App->camera->Position.x, App->camera->Position.y, App->camera->Position.z);

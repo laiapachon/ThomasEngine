@@ -5,99 +5,103 @@
 #include "glmath.h"
 #include "Bullet/include/btBulletDynamicsCommon.h"
 
-// =================================================
-PhysBody3D::PhysBody3D(btRigidBody* body) : body(body)
-{}
+// ---------------------------------------------------------
+PhysBody3D::PhysBody3D()
+	: body(nullptr)
+	, colShape(nullptr)
+	, motionState(nullptr)
+	, parentPrimitive(nullptr)
+	, collision_listeners()
+{
+	
+}
 
 // ---------------------------------------------------------
 PhysBody3D::~PhysBody3D()
 {
-	delete body;
+	if (HasBody() == true)
+	{
+		App->physics-> RemoveBodyFromWorld(body);
+		delete body;
+		delete colShape;
+		delete motionState;
+	}
 }
 
-// ---------------------------------------------------------
-void PhysBody3D::Push(float x, float y, float z)
+void PhysBody3D::SetBody(Sphere* primitive, float mass)
 {
-	body->applyCentralImpulse(btVector3(x, y, z));
+	SetBody(new btSphereShape(primitive->GetRadius()),
+		primitive, mass);
+}
+
+bool PhysBody3D::HasBody() const
+{
+	return body != nullptr;
+}
+
+btRigidBody * PhysBody3D::GetBody() const
+{
+	return body;
 }
 
 // ---------------------------------------------------------
 void PhysBody3D::GetTransform(float* matrix) const
 {
-	if(body != NULL && matrix != NULL)
-	{
-		body->getWorldTransform().getOpenGLMatrix(matrix);
-	}
+	if (HasBody() == false)
+		return;
+
+	body->getWorldTransform().getOpenGLMatrix(matrix);
 }
- const vec3 PhysBody3D::GetPos() const
-{
-	btTransform b = body->getWorldTransform();
-	btVector3 vec = b.getOrigin();
-	vec3 ret;
-	ret.Set(vec.getX(), vec.getY(), vec.getZ());
-	return ret;
-}
+
 // ---------------------------------------------------------
 void PhysBody3D::SetTransform(const float* matrix) const
 {
-	if(body != NULL && matrix != NULL)
-	{
-		btTransform t;
-		t.setFromOpenGLMatrix(matrix);
-		body->setWorldTransform(t);
-	}
+	if (HasBody() == false)
+		return;
+
+	btTransform trans;
+	trans.setFromOpenGLMatrix(matrix);
+	body->setWorldTransform(trans);
+	body->activate();
 }
 
 // ---------------------------------------------------------
 void PhysBody3D::SetPos(float x, float y, float z)
 {
-	btTransform t = body->getWorldTransform();
-	t.setOrigin(btVector3(x, y, z));
-	body->setWorldTransform(t);
+	if (HasBody() == false)
+		return;
+
+	btTransform trans = body->getWorldTransform();
+	trans.setOrigin(btVector3(x, y, z));
+	body->setWorldTransform(trans);
+	body->activate();
 }
 
-// ---------------------------------------------------------
-void PhysBody3D::SetVelocity(float x, float y, float z)
+void PhysBody3D::SetSpeed(vec3 speed)
 {
-	body->setLinearVelocity(btVector3(x, y, z));
+	Stop();
+	Push(speed);
 }
 
-
-void PhysBody3D::SetRotation(btQuaternion q)
+void PhysBody3D::Push(vec3 force)
 {
-	btTransform t = body->getWorldTransform();
-	t.setRotation(q);
-	body->setWorldTransform(t);
-}
-
-
-void PhysBody3D::SetAsSensor(bool is_sensor)
-{
-	if (this->is_sensor != is_sensor)
+	if (HasBody())
 	{
-		this->is_sensor = is_sensor;
-		if (is_sensor == true)
-			body->setCollisionFlags(body->getCollisionFlags() | btCollisionObject::CF_NO_CONTACT_RESPONSE);
-		else
-			body->setCollisionFlags(body->getCollisionFlags() & ~btCollisionObject::CF_NO_CONTACT_RESPONSE);
+		body->activate();
+		body->applyCentralForce(btVector3(force.x, force.y, force.z));
 	}
 }
-//// ---------------------------------------------------------
-btRigidBody* PhysBody3D::GetBody() const
+
+void PhysBody3D::Stop()
 {
-return body;
+	if (HasBody())
+		body->clearForces();
 }
-/*void PhysBody3D::SetBody(Sphere* primitive, float mass)
+
+void PhysBody3D::SetBody(btCollisionShape * shape, Primitive* parent, float mass)
 {
-	SetBody(new btSphereShape(primitive->GetRadius()),
-		primitive, mass);
-}
-void PhysBody3D::SetBody(Cube* primitive, float mass) {
-	SetBody(new btBoxShape(btVector3(primitive->GetSize().x * 0.5, primitive->GetSize().y * 0.5, primitive->GetSize().z * 0.5)),
-		primitive, mass);
-}
-void PhysBody3D::SetBody(btCollisionShape* shape, Primitive* parent, float mass)
-{
+	assert(HasBody() == false);
+
 	parentPrimitive = parent;
 
 	colShape = shape;
@@ -117,9 +121,4 @@ void PhysBody3D::SetBody(btCollisionShape* shape, Primitive* parent, float mass)
 	body->setUserPointer(this);
 
 	App->physics->AddBodyToWorld(body);
-}*/
-
-void PhysBody3D::SetId(int id)
-{
-	this->id = id;
 }

@@ -1,11 +1,8 @@
 #include "Globals.h"
 #include "Application.h"
-#include "PhysBody3D.h"
 #include "ModuleCamera3D.h"
-#include "ModulePlayer.h"
-#include "PhysVehicle3D.h"
 
-ModuleCamera3D::ModuleCamera3D(Application* app, bool start_enabled) : Module(app, start_enabled)
+ModuleCamera3D::ModuleCamera3D(bool start_enabled) : Module(start_enabled)
 {
 	CalculateViewMatrix();
 
@@ -47,18 +44,6 @@ update_status ModuleCamera3D::Update(float dt)
 	float speed = 3.0f * dt;
 	if(App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT)
 		speed = 8.0f * dt;
-
-	Position += newPos;
-	Reference += newPos;
-
-	Position.x = App->player->vehicle->vehicle->getChassisWorldTransform().getOrigin().getX() - 10 * App->player->vehicle->vehicle->getForwardVector().getX();
-	Position.y = App->player->vehicle->vehicle->getChassisWorldTransform().getOrigin().getY() + 5 * App->player->vehicle->vehicle->getForwardVector().getY()+10;
-	Position.z = App->player->vehicle->vehicle->getChassisWorldTransform().getOrigin().getZ() - 10 * App->player->vehicle->vehicle->getForwardVector().getZ();
-	 playerPosX = App->player->vehicle->vehicle->getChassisWorldTransform().getOrigin().getX() + 10 * App->player->vehicle->vehicle->getForwardVector().getX();
-	 playerPosZ = App->player->vehicle->vehicle->getChassisWorldTransform().getOrigin().getZ() + 10* App->player->vehicle->vehicle->getForwardVector().getZ();
-	 playerPosY = App->player->vehicle->vehicle->getChassisWorldTransform().getOrigin().getY() + 10 * App->player->vehicle->vehicle->getForwardVector().getY();
-
-	LookAt(vec3(playerPosX, playerPosY, playerPosZ));
 
 	if(App->input->GetKey(SDL_SCANCODE_R) == KEY_REPEAT) newPos.y += speed;
 	if(App->input->GetKey(SDL_SCANCODE_F) == KEY_REPEAT) newPos.y -= speed;
@@ -110,9 +95,6 @@ update_status ModuleCamera3D::Update(float dt)
 		Position = Reference + Z * length(Position);
 	}
 
-	// Recalculate matrix -------------
-	CalculateViewMatrix();
-
 	return UPDATE_CONTINUE;
 }
 
@@ -131,8 +113,6 @@ void ModuleCamera3D::Look(const vec3 &Position, const vec3 &Reference, bool Rota
 		this->Reference = this->Position;
 		this->Position += Z * 0.05f;
 	}
-
-	CalculateViewMatrix();
 }
 
 // -----------------------------------------------------------------
@@ -143,8 +123,6 @@ void ModuleCamera3D::LookAt( const vec3 &Spot)
 	Z = normalize(Position - Reference);
 	X = normalize(cross(vec3(0.0f, 1.0f, 0.0f), Z));
 	Y = cross(Z, X);
-
-	CalculateViewMatrix();
 }
 
 
@@ -153,14 +131,19 @@ void ModuleCamera3D::Move(const vec3 &Movement)
 {
 	Position += Movement;
 	Reference += Movement;
-
-	CalculateViewMatrix();
 }
 
 // -----------------------------------------------------------------
-float* ModuleCamera3D::GetViewMatrix()
+float* ModuleCamera3D::GetRawViewMatrix()
 {
+	CalculateViewMatrix();
 	return &ViewMatrix;
+}
+
+mat4x4 ModuleCamera3D::GetViewMatrix()
+{
+	CalculateViewMatrix();
+	return ViewMatrix;
 }
 
 // -----------------------------------------------------------------

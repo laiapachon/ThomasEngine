@@ -7,6 +7,9 @@
 
 // ---------------------------------------------
 Timer::Timer()
+	: running(false)
+	, started_at(0)
+	, stopped_at(0)
 {
 	Start();
 }
