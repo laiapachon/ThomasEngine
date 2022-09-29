@@ -4,17 +4,17 @@
 #include "PhysBody3D.h"
 #include "Primitive.h"
 
-#include "Source/External/glut/glut.h"
-
-#ifdef _DEBUG
-	#pragma comment (lib, "Bullet/libx86/BulletDynamics_debug.lib")
-	#pragma comment (lib, "Bullet/libx86/BulletCollision_debug.lib")
-	#pragma comment (lib, "Bullet/libx86/LinearMath_debug.lib")
-#else
-	#pragma comment (lib, "Bullet/libx86/BulletDynamics.lib")
-	#pragma comment (lib, "Bullet/libx86/BulletCollision.lib")
-	#pragma comment (lib, "Bullet/libx86/LinearMath.lib")
-#endif
+//#include "Source/External/glut/glut.h"
+//
+//#ifdef _DEBUG
+//	#pragma comment (lib, "Bullet/libx86/BulletDynamics_debug.lib")
+//	#pragma comment (lib, "Bullet/libx86/BulletCollision_debug.lib")
+//	#pragma comment (lib, "Bullet/libx86/LinearMath_debug.lib")
+//#else
+//	#pragma comment (lib, "Bullet/libx86/BulletDynamics.lib")
+//	#pragma comment (lib, "Bullet/libx86/BulletCollision.lib")
+//	#pragma comment (lib, "Bullet/libx86/LinearMath.lib")
+//#endif
 
 ModulePhysics3D::ModulePhysics3D(bool start_enabled) : Module(start_enabled), world(nullptr)
 {
@@ -106,13 +106,13 @@ update_status ModulePhysics3D::PreUpdate(float dt)
 // ---------------------------------------------------------
 update_status ModulePhysics3D::Update(float dt)
 {
-	if (App->debug == true)
+	/*if (App->debug == true)
 	{
 		glDisable(GL_LIGHTING);
 		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 		world->debugDrawWorld();
 		glEnable(GL_LIGHTING);
-	}
+	}*/
 
 	return UPDATE_CONTINUE;
 }

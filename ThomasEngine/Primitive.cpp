@@ -3,11 +3,11 @@
 #include <gl/GL.h>
 #include <gl/GLU.h>
 #include "Primitive.h"
-#include "Source\External\glut\glut.h"
+
 #include "Globals.h"
 #include "Application.h"
 
-#pragma comment (lib, "glut/glut32.lib")
+
 
 // ------------------------------------------------------------
 Primitive::Primitive() : transform(IdentityMatrix), color(White), wire(false), axis(false), type(PrimitiveTypes::Primitive_Point)
@@ -184,7 +184,7 @@ float Sphere::GetRadius() const
 
 void Sphere::InnerRender() const
 {
-	glutSolidSphere(radius, 25, 25);
+	//glutSolidSphere(radius, 25, 25);
 }
 
 
