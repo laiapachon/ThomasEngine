@@ -9,4 +9,7 @@ Week 1 and 2:
 
 Weel 3:
 - Enable and Disable buttons
+- Color material implementation
+- Texture enable and disable button implementation
+- Light enable and disable button implementation
 - Start searching about Wireframe mode
