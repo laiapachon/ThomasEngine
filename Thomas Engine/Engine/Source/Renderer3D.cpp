@@ -200,6 +200,12 @@ update_status Renderer3D::PostUpdate(float dt)
 bool Renderer3D::CleanUp()
 {
 	LOG(LogType::L_NO_PRINTABLE, "Destroying 3D Renderer");
+
+	glDisable(GL_DEPTH_TEST);
+	glDisable(GL_CULL_FACE);
+	glDisable(GL_LIGHTING);
+	glDisable(GL_COLOR_MATERIAL);
+	glDisable(GL_TEXTURE_2D);
 		
 	SDL_GL_DeleteContext(context);
 
@@ -262,5 +268,57 @@ void Renderer3D::OnGUI()
 		IMGUI_PRINT("VRAM Usage:", "%.1f Mb", hardware.VRAMUsage);
 		IMGUI_PRINT("VRAM Available:", "%.1f Mb", hardware.VRAMAvailable);
 		IMGUI_PRINT("VRAM Reserved:", "%.1f Mb", hardware.VRAMReserved);
+
+		
 	}
+	
+	if (ImGui::CollapsingHeader("Debug"))
+		{
+			if (ImGui::Checkbox("GL_DEPTH_TEST", &depthTest)) {
+				if (depthTest) glEnable(GL_DEPTH_TEST);
+				else glDisable(GL_DEPTH_TEST);
+			}
+
+			if (ImGui::IsItemHovered())
+				ImGui::SetTooltip("Enable/Disable GL_DEPTH_TEST");
+
+			ImGui::SameLine();
+
+			if (ImGui::Checkbox("GL_CULL_FACE", &cullFace)) {
+				if (cullFace) glEnable(GL_CULL_FACE);
+				else glDisable(GL_CULL_FACE);
+			}
+
+			if (ImGui::IsItemHovered())
+				ImGui::SetTooltip("Enable/Disable GL_CULL_FACE");
+
+			ImGui::SameLine();
+
+			if (ImGui::Checkbox("GL_COLOR_MATERIAL", &colorMaterial)) {
+				if (colorMaterial) glEnable(GL_COLOR_MATERIAL);
+				else glDisable(GL_COLOR_MATERIAL);
+			}
+
+			if (ImGui::IsItemHovered())
+				ImGui::SetTooltip("Enable/Disable GL_COLOR_MATERIAL");
+
+			if (ImGui::Checkbox("GL_TEXTURE_2D", &texture2D)) {
+				if (texture2D) glEnable(GL_TEXTURE_2D);
+				else glDisable(GL_TEXTURE_2D);
+			}
+
+			if (ImGui::IsItemHovered())
+				ImGui::SetTooltip("Enable/Disable GL_TEXTURE_2D");
+
+			ImGui::SameLine();
+
+			if (ImGui::Checkbox("GL_LIGHTING", &lighting)) {
+				if (lighting) glEnable(GL_LIGHTING);
+				else glDisable(GL_LIGHTING);
+			}
+
+			if (ImGui::IsItemHovered())
+				ImGui::SetTooltip("Enable/Disable GL_LIGHTING");
+
+		}
 }
