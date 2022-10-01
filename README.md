@@ -6,3 +6,7 @@ We are a team of CITM University, in Terrassa, who are creating an engine for vi
 
 Week 1 and 2:
 - We had added ImGui, MathGeoLib and Glew.
+
+Weel 3:
+- Enable and Disable buttons
+- Start searching about Wireframe mode
