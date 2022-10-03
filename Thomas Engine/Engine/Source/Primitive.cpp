@@ -113,43 +113,61 @@ void Cube::InnerRender() const
 	float sy = size.y * 0.5f;
 	float sz = size.z * 0.5f;
 
-	glBegin(GL_QUADS);
+	glBegin(GL_TRIANGLES);  // draw a cube with 12 triangles
 
-	glNormal3f(0.0f, 0.0f, 1.0f);
+	// Front face =================
+	glVertex3f(sx, sy, sz);
+	glVertex3f(-sx, sy, sz);
+	glVertex3f(sx, -sy, sz);
+
+	glVertex3f(-sx, sy, sz);
 	glVertex3f(-sx, -sy, sz);
-	glVertex3f( sx, -sy, sz);
-	glVertex3f( sx,  sy, sz);
-	glVertex3f(-sx,  sy, sz);
+	glVertex3f(sx, -sy, sz);
 
-	glNormal3f(0.0f, 0.0f, -1.0f);
-	glVertex3f( sx, -sy, -sz);
-	glVertex3f(-sx, -sy, -sz);
-	glVertex3f(-sx,  sy, -sz);
-	glVertex3f( sx,  sy, -sz);
-
-	glNormal3f(1.0f, 0.0f, 0.0f);
-	glVertex3f(sx, -sy,  sz);
+	// Right face =================
 	glVertex3f(sx, -sy, -sz);
-	glVertex3f(sx,  sy, -sz);
-	glVertex3f(sx,  sy,  sz);
+	glVertex3f(sx, sy, sz);
+	glVertex3f(sx, -sy, sz);
 
-	glNormal3f(-1.0f, 0.0f, 0.0f);
-	glVertex3f(-sx, -sy, -sz);
-	glVertex3f(-sx, -sy,  sz);
-	glVertex3f(-sx,  sy,  sz);
-	glVertex3f(-sx,  sy, -sz);
+	glVertex3f(sx, sy, sz);
+	glVertex3f(sx, -sy, -sz);
+	glVertex3f(sx, sy, -sz);
 
-	glNormal3f(0.0f, 1.0f, 0.0f);
-	glVertex3f(-sx, sy,  sz);
-	glVertex3f( sx, sy,  sz);
-	glVertex3f( sx, sy, -sz);
+	// Top face ===================
+	glVertex3f(sx, sy, sz);
+	glVertex3f(-sx, sy, -sz);
+	glVertex3f(-sx, sy, sz);
+
+	glVertex3f(sx, sy, sz);
+	glVertex3f(sx, sy, -sz);
 	glVertex3f(-sx, sy, -sz);
 
-	glNormal3f(0.0f, -1.0f, 0.0f);
+	// Down face ===================
+	glVertex3f(sx, -sy, sz);
 	glVertex3f(-sx, -sy, -sz);
-	glVertex3f( sx, -sy, -sz);
-	glVertex3f( sx, -sy,  sz);
-	glVertex3f(-sx, -sy,  sz);
+	glVertex3f(sx, -sy, -sz);
+
+	glVertex3f(sx, -sy, sz);
+	glVertex3f(-sx, -sy, sz);
+	glVertex3f(-sx, -sy, -sz);
+
+	// Left face ===================
+	glVertex3f(-sx, -sy, -sz);
+	glVertex3f(-sx, -sy, sz);
+	glVertex3f(-sx, sy, sz);
+
+	glVertex3f(-sx, -sy, -sz);
+	glVertex3f(-sx, sy, sz);
+	glVertex3f(-sx, sy, -sz);
+
+	// Back face ===================
+	glVertex3f(sx, sy, -sz);
+	glVertex3f(-sx, -sy, -sz);
+	glVertex3f(-sx, sy, -sz);
+
+	glVertex3f(sx, sy, -sz);
+	glVertex3f(sx, -sy, -sz);
+	glVertex3f(-sx, -sy, -sz);
 
 	glEnd();
 }
