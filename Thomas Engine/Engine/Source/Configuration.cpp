@@ -36,7 +36,7 @@ void Configuration::Draw()
 		if (ImGui::CollapsingHeader("Application", ImGuiTreeNodeFlags_DefaultOpen))
 		{
 			// Input Text is to create a text with background and a const text
-			ImGui::InputText("App Name", "Thomas Engine", 12);
+			ImGui::InputText("App Name", "Thomas Engine", 15);
 			ImGui::InputText("Organization", "UPC CITM", 9);
 			ImGui::SliderInt("Max FPS", &app->maxFPS, 0, 144);
 			// TextWrapped is to create a simple text
