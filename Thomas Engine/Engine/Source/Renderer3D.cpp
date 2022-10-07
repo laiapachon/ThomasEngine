@@ -172,23 +172,10 @@ update_status Renderer3D::PostUpdate(float dt)
 	p.axis = true;
 	p.Render();
 
-	glBegin(GL_POLYGON);
+	glBegin(GL_TRIANGLES);
 
-	glVertex3f(1,0, 1);       // P1
-	glVertex3f(1,1, 1);       // P2
-	glVertex3f(0,1, 1);       // P3
-	glVertex3f(0,0,1);       // P4
-
-	glVertex3f(0,0,1);       // P
-	glVertex3f(0, 1, 1);      // P
-	glVertex3f(0, 1, 0);       // P2
-	glVertex3f(0, 0, 0);       // P1
-
-
-	glVertex3f(0, 0, 0);       // P4
-	glVertex3f(0, 1, 0);       // P3
-	glVertex3f(1, 1, 0);       // P2
-	glVertex3f(1, 0, 0);       // P1
+	Cube cube;
+	cube.Render();
 
 
 	glEnd();
