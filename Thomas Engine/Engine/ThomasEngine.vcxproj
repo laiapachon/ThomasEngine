@@ -201,6 +201,7 @@
     <ClInclude Include="Source\External\Mmgr\mmgr.h" />
     <ClInclude Include="Source\External\Mmgr\nommgr.h" />
     <ClInclude Include="Source\External\Parson\parson.h" />
+    <ClInclude Include="Source\External\PhysFS\PhysFS\include\physfs.h" />
     <ClInclude Include="Source\glmath.h" />
     <ClInclude Include="Source\Globals.h" />
     <ClInclude Include="Source\Light.h" />

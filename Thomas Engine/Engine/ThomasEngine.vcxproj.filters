@@ -64,6 +64,9 @@
     <Filter Include="Sources\3rd Party\Assimp\Port">
       <UniqueIdentifier>{d3212c40-a22b-4098-88d6-859cda964814}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\3rd Party\PhysFS">
+      <UniqueIdentifier>{1d334b42-bc85-4546-90bc-5ee704d34ce6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Application.h">
@@ -443,6 +446,9 @@
     </ClInclude>
     <ClInclude Include="Source\External\Assimp\Assimp\Assimp\include\version.h">
       <Filter>Sources\3rd Party\Assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\PhysFS\PhysFS\include\physfs.h">
+      <Filter>Sources\3rd Party\PhysFS</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
