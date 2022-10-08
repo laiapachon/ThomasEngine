@@ -199,6 +199,7 @@ void Window::OnGUI()
 		{
 			SetSize(width, height);
 		}
+		
 
 		IMGUI_PRINT("Refresh rate: ", "%d", current.refresh_rate);
 

@@ -53,7 +53,7 @@ bool Editor::Init()
 	ImGuiStyle& style = ImGui::GetStyle();
 	if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
 	{
-		style.WindowRounding = 0.0f;
+		style.WindowRounding = 12.0f;
 		style.Colors[ImGuiCol_WindowBg].w = 1.0f;
 	}
 
