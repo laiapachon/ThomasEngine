@@ -450,6 +450,9 @@
     <ClInclude Include="Source\External\PhysFS\PhysFS\include\physfs.h">
       <Filter>Sources\3rd Party\PhysFS</Filter>
     </ClInclude>
+    <ClInclude Include="Source\FBXLoader.h">
+      <Filter>Sources\Modules</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Main.cpp">
@@ -631,6 +634,9 @@
     </ClCompile>
     <ClCompile Include="Source\External\Mmgr\mmgr.cpp">
       <Filter>Sources\3rd Party\Mmgr</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\FBXLoader.cpp">
+      <Filter>Sources\Modules</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

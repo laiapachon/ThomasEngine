@@ -14,6 +14,7 @@ Application::Application() : maxFPS(60)
 	camera = new Camera3D(this);
 	physics = new Physics3D(this);
 	editor = new Editor(this);
+	loader = new Loader(this);
 
 	// The order of calls is very important!
 	// Modules will Init() Start() and Update in this order
@@ -29,6 +30,9 @@ Application::Application() : maxFPS(60)
 	// Renderer last!
 	AddModule(renderer3D);
 	AddModule(editor);
+
+	//load FBX
+	AddModule(loader);
 }
 
 Application::~Application()

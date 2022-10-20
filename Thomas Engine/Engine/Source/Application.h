@@ -11,7 +11,10 @@
 #include "Input.h"
 #include "Camera3D.h"
 #include "Physics3D.h"
+#include"FBXLoader.h"
 #include "Editor.h"
+
+
 
 class Application
 {
@@ -22,6 +25,7 @@ public:
 	Renderer3D* renderer3D;
 	Physics3D* physics;
 	Editor* editor;
+	Loader* loader;
 
 	std::vector<Module*> list_modules;
 private:
