@@ -60,8 +60,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
-      <AdditionalLibraryDirectories>$(ProjectDir)Source\External\SDL\libx86;$(ProjectDir)Source\External\Glew\libx86;$(ProjectDir)Source\External\MathGeoLib\libx86\MGDebug;%(AdditionalLibraryDirectories);$(ProjectDir)Source\External\Assimp\Assimp\Assimp\libx86</AdditionalLibraryDirectories>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;glew32.lib;glew32s.lib;MathGeoLib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Users\FX516\Desktop\Trabajos de programar\Repos\ThomasEngine\Thomas Engine\Engine\Source\External;$(ProjectDir)Source\External\SDL\libx86;$(ProjectDir)Source\External\Glew\libx86;$(ProjectDir)Source\External\Assimp\libx86;$(ProjectDir)Source\External\MathGeoLib\libx86\MGDebug;%(AdditionalLibraryDirectories);$(ProjectDir)Source\External\Assimp\Assimp\Assimp\libx86</AdditionalLibraryDirectories>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;glew32.lib;glew32s.lib;MathGeoLib.lib;assimp.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>msvcrt.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
     </Link>
   </ItemDefinitionGroup>
@@ -83,8 +83,8 @@
       <OptimizeReferences>true</OptimizeReferences>
       <SubSystem>Windows</SubSystem>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
-      <AdditionalLibraryDirectories>$(ProjectDir)Source\External\SDL\libx86;$(ProjectDir)Source\External\Glew\libx86;$(ProjectDir)Source\External\MathGeoLib\libx86\MGRelease;%(AdditionalLibraryDirectories);$(ProjectDir)Source\External\Assimp\Assimp\Assimp\libx86</AdditionalLibraryDirectories>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;glew32.lib;glew32s.lib;MathGeoLib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Users\FX516\Desktop\Trabajos de programar\Repos\ThomasEngine\Thomas Engine\Engine\Source\External;$(ProjectDir)Source\External\SDL\libx86;$(ProjectDir)Source\External\Glew\libx86;$(ProjectDir)Source\External\Assimp\libx86;$(ProjectDir)Source\External\MathGeoLib\libx86\MGRelease;%(AdditionalLibraryDirectories);$(ProjectDir)Source\External\Assimp\Assimp\Assimp\libx86</AdditionalLibraryDirectories>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;glew32.lib;glew32s.lib;MathGeoLib.lib;assimp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
