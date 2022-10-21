@@ -4,10 +4,11 @@
 #include "Globals.h"
 #include <vector>
 
-#include "Assimp/Assimp/Assimp/include/cimport.h"
-#include "Assimp/Assimp/Assimp/include/scene.h"
-#include "Assimp/Assimp/Assimp/include/postprocess.h"
-#pragma comment (lib, "Assimp\Assimp\Assimp\libx86\assimp.lib")
+#include "Assimp/include/cimport.h"
+#include "Assimp/include/scene.h"
+#include "Assimp/include/postprocess.h"
+#pragma comment (lib, "Assimp/libx86/assimp.lib")
+
 using namespace std;
 
 struct Mesh {
