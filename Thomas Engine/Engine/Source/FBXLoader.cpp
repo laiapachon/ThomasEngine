@@ -9,7 +9,7 @@
 
 #pragma comment (lib, "glu32.lib")    /* link OpenGL Utility lib     */
 #pragma comment (lib, "opengl32.lib") /* link Microsoft OpenGL lib   */
-#pragma comment (lib, "Assimp/libx86/assimp.lib")
+#pragma comment (lib, "assimp.lib")
 
 Loader::Loader(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
@@ -30,7 +30,7 @@ bool Loader::Init()
 	aiAttachLogStream(&stream);
 	
 	path = "Assets/BakerHouse.fbx";
-	LoadFile(path, meshes);
+	LoadFile(path, meshArray);
 
 	return ret;
 }
@@ -49,10 +49,10 @@ update_status Loader::PostUpdate(float dt)
 	
 	return UPDATE_CONTINUE;
 }
-void LoadFile(string path, vector <Mesh*> meshArray) {
-
+void Loader::LoadFile(string path, vector<Mesh*> meshArray)
+{
 	const aiScene* scene = aiImportFile(path.c_str(), aiProcessPreset_TargetRealtime_MaxQuality);
-	if (scene != nullptr && scene -> HasMeshes())
+	if (scene != nullptr && scene->HasMeshes())
 	{
 		// Use scene->mNumMeshes to iterate on scene->mMeshes array
 		for (int i = 0; i < scene->mNumMeshes; i++) {
@@ -73,11 +73,11 @@ void LoadFile(string path, vector <Mesh*> meshArray) {
 					if (scene->mMeshes[i]->mFaces[j].mNumIndices != 3) {
 						LOG(LogType::L_ERROR, "WARNING, geometry face with != 3 indices!");
 					}
-						
+
 					else {
 						memcpy(&ourMesh->indices[j * 3], scene->mMeshes[i]->mFaces[j].mIndices, 3 * sizeof(uint));
 					}
-						
+
 				}
 				//para gaurdar todas las meshes en una lista, por si importas mas de una cosa
 				//push meshes
@@ -93,7 +93,6 @@ void LoadFile(string path, vector <Mesh*> meshArray) {
 		LOG(LogType::L_ERROR, "Error loading scene % s", path);
 
 	}
-		
 }
 // Called before quitting
 bool Loader::CleanUp()
@@ -105,8 +104,8 @@ bool Loader::CleanUp()
 }
 
 void Loader::Draw() {
-	for(int i = 0; i < meshes.size(); i++) {
-		meshes[i]->Draw();
+	for(int i = 0; i < meshArray.size(); i++) {
+		meshArray[i]->Draw();
 	}
 }
 

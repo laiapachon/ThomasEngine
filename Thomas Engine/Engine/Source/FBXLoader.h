@@ -40,7 +40,7 @@ public:
 
 public:
 
-	vector <Mesh*> meshes;
+	vector <Mesh*> meshArray;
 	string path;
 
 private:
