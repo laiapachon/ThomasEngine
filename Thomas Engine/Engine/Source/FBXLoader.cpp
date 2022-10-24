@@ -30,7 +30,7 @@ bool Loader::Init()
 	aiAttachLogStream(&stream);
 	
 	path = "Assets/BakerHouse.fbx";
-	LoadFile(path, meshArray);
+	LoadFile(path);
 
 	return ret;
 }
@@ -49,7 +49,7 @@ update_status Loader::PostUpdate(float dt)
 	
 	return UPDATE_CONTINUE;
 }
-void Loader::LoadFile(string path, vector<Mesh*> meshArray)
+void Loader::LoadFile(string path)
 {
 	const aiScene* scene = aiImportFile(path.c_str(), aiProcessPreset_TargetRealtime_MaxQuality);
 	if (scene != nullptr && scene->HasMeshes())

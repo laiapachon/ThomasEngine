@@ -30,7 +30,7 @@ public:
 	bool Init();
 	update_status PreUpdate(float dt);
 	update_status PostUpdate(float dt);
-	void LoadFile(string path, vector <Mesh*> meshArray );
+	void LoadFile(string path);
 	void Draw();
 
 

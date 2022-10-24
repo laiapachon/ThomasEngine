@@ -171,12 +171,12 @@ update_status Renderer3D::PostUpdate(float dt)
 	Plane p(0, 1, 0, 0);
 	p.axis = true;
 	p.Render();
-
+	App->loader->Draw();
 	glBegin(GL_TRIANGLES);
 
 	Cube cube;
 	cube.Render();
-
+	
 
 	glEnd();
 
