@@ -58,7 +58,7 @@ bool Renderer3D::Init()
 		LOG(LogType::L_ERROR, "OpenGL context could not be created! SDL_Error: %s\n", SDL_GetError());
 		ret = false;
 	}
-	
+	glewInit();
 	if(ret == true)
 	{
 		//Use Vsync
@@ -185,6 +185,7 @@ update_status Renderer3D::PostUpdate(float dt)
 
 	(wireframe) ? glPolygonMode(GL_FRONT_AND_BACK, GL_FILL) : glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
+	
 	return UPDATE_CONTINUE;
 }
 

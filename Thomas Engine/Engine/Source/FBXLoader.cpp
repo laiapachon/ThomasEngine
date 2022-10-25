@@ -121,7 +121,11 @@ bool Loader::CleanUp()
 {
 	// detach log stream
 	aiDetachAllLogStreams();
-
+	for (int i = 0; i < meshArray.size(); i++) {
+		delete meshArray[i];
+		meshArray[i] = nullptr;
+	}
+	meshArray.clear();
 	return true;
 }
 
