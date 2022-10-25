@@ -54,20 +54,23 @@ void Loader::LoadFile(string path)
 	const aiScene* scene = aiImportFile(path.c_str(), aiProcessPreset_TargetRealtime_MaxQuality);
 	if (scene != nullptr && scene->HasMeshes())
 	{
-		// Use scene->mNumMeshes to iterate on scene->mMeshes array
+		
 		for (int i = 0; i < scene->mNumMeshes; i++) {
+
 			Mesh* ourMesh = new Mesh();
+
 			// copy vertices
 			ourMesh->num_vertices = scene->mMeshes[i]->mNumVertices;
 			ourMesh->vertices = new float[ourMesh->num_vertices * 3];
 			memcpy(ourMesh->vertices, scene->mMeshes[i]->mVertices, sizeof(float) * ourMesh->num_vertices * 3);
-			LOG(LogType::L_ERROR, "New mesh with % d vertices", ourMesh->num_vertices);
+			LOG(LogType::L_NORMAL, "New mesh with % d vertices", ourMesh->num_vertices);
 
 			// copy faces
 			if (scene->mMeshes[i]->HasFaces())
 			{
 				ourMesh->num_indices = scene->mMeshes[i]->mNumFaces * 3;
 				ourMesh->indices = new uint[ourMesh->num_indices]; // assume each face is a triangle
+
 				for (uint j = 0; j < scene->mMeshes[i]->mNumFaces; ++j)
 				{
 					if (scene->mMeshes[i]->mFaces[j].mNumIndices != 3) {
@@ -79,7 +82,7 @@ void Loader::LoadFile(string path)
 					}
 
 				}
-				//para gaurdar todas las meshes en una lista, por si importas mas de una cosa
+				//For saving all meshes in a list in case we import more than one
 				//push meshes
 				meshArray.push_back(ourMesh);
 			}
@@ -93,6 +96,25 @@ void Loader::LoadFile(string path)
 		LOG(LogType::L_ERROR, "Error loading scene % s", path);
 
 	}
+}
+
+void Loader::Buffer(Mesh* Mesh) {
+	//Fill buffers with vertices
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glGenBuffers(1, (GLuint*)&(Mesh->id_vertices));
+	glBindBuffer(GL_ARRAY_BUFFER, Mesh->id_vertices);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * Mesh->num_vertices * 3, Mesh->vertices, GL_STATIC_DRAW);
+
+	//Fill buffers with indices
+	glGenBuffers(1, (GLuint*)&(Mesh->id_indices));
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, Mesh->id_indices);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint) * Mesh->num_indices, Mesh->indices, GL_STATIC_DRAW);
+
+	glDisableClientState(GL_VERTEX_ARRAY);
+
+
+	//Add mesh to meshes vector
+	meshArray.push_back(Mesh);
 }
 // Called before quitting
 bool Loader::CleanUp()
@@ -111,12 +133,22 @@ void Loader::Draw() {
 
 void Mesh::Draw() {
 
-	glBegin(GL_TRIANGLES);
+	//vertices
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glBindBuffer(GL_ARRAY_BUFFER, id_vertices);
+	glVertexPointer(3, GL_FLOAT, 0, NULL);
+
+	//indices
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, id_indices);
+	glDrawElements(GL_TRIANGLES, num_indices, GL_UNSIGNED_INT, NULL);
+
+	glDisableClientState(GL_VERTEX_ARRAY);
+	/*glBegin(GL_TRIANGLES);
 
 	for (int i = 0; i < num_indices; i++) {
 		glVertex3f(vertices[indices[i] * 3], vertices[indices[i] * 3 + 1], vertices[indices[i] * 3 + 2]);
 	}
-	glEnd();
+	glEnd();*/
 }
 
 

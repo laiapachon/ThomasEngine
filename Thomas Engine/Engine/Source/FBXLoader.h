@@ -32,7 +32,7 @@ public:
 	update_status PostUpdate(float dt);
 	void LoadFile(string path);
 	void Draw();
-
+	void Buffer(Mesh* Mesh);
 
 	bool CleanUp();
 
