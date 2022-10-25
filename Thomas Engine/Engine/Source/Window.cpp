@@ -199,36 +199,44 @@ void Window::OnGUI()
 		{
 			SetSize(width, height);
 		}
-		
-
 		IMGUI_PRINT("Refresh rate: ", "%d", current.refresh_rate);
-
 		if (ImGui::Checkbox("Fullscreen", &fullScreen)) {
 			SetFullscreen(fullScreen);
-
 			SDL_GetWindowSize(window, &width, &height);
-			OnResize(width, height);			
+			OnResize(width, height);
 		}
 		if (ImGui::IsItemHovered())
 			ImGui::SetTooltip("Change fullscreen mode");
-
 		ImGui::SameLine();
-
-		if (ImGui::Checkbox("Resizable", &resizable)){
+		if (ImGui::Checkbox("Resizable", &resizable)) {
 			if (!fullScreen && !fullScreenDesktop) SetResizable(resizable);
 			else resizable = !resizable;
 		}
-
 		if (ImGui::IsItemHovered())
 			ImGui::SetTooltip("Change resizable mode, only on Off FullScreen mode");
+
+		ImGui::SameLine();
+
+		if (ImGui::Checkbox("Wireframe", &app->renderer3D->wireframe)) {}
+
+		if (ImGui::IsItemHovered())
+			ImGui::SetTooltip("Change render mode");
 
 		if (ImGui::Checkbox("Borderless", &borderless)) {
 			if (!fullScreen && !fullScreenDesktop) SetBorderless(borderless);
 			else borderless = !borderless;
 		}
-
 		if (ImGui::IsItemHovered())
 			ImGui::SetTooltip("Change borderless mode, only on Off FullScreen mode");
+
+		ImGui::SameLine();
+
+		if (ImGui::Checkbox("VSync    ", &app->renderer3D->vsync)) {
+			app->maxFPS = 0;
+		}
+
+		if (ImGui::IsItemHovered())
+			ImGui::SetTooltip("Enable/Disable VSync");
 
 		ImGui::SameLine();
 
@@ -236,10 +244,11 @@ void Window::OnGUI()
 			SetFullscreenDesktop(fullScreenDesktop);
 
 			SDL_GetWindowSize(window, &width, &height);
-			OnResize(width, height);			
+			OnResize(width, height);
 		}
 		if (ImGui::IsItemHovered())
 			ImGui::SetTooltip("Change fullscreen desktop mode");
+
 
 		ImGui::NewLine();
 	}

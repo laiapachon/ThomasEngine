@@ -1,6 +1,7 @@
 #include "Globals.h"
 #include "Application.h"
 #include "Renderer3D.h"
+#include "Primitive.h"
 
 #include <gl/GL.h>
 #include <gl/GLU.h>
@@ -177,8 +178,12 @@ update_status Renderer3D::PostUpdate(float dt)
 	Cube cube;
 	cube.Render();
 	
+	(wireframe) ? glPolygonMode(GL_FRONT_AND_BACK, GL_LINE) : glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	(wireframe) ? glColor3f(Red.r, Red.g, Red.b) : glColor3f(White.r, White.g, White.b);
 
 	glEnd();
+
+	(wireframe) ? glPolygonMode(GL_FRONT_AND_BACK, GL_FILL) : glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 	return UPDATE_CONTINUE;
 }
@@ -260,52 +265,52 @@ void Renderer3D::OnGUI()
 	}
 	
 	if (ImGui::CollapsingHeader("Debug"))
-		{
-			if (ImGui::Checkbox("GL_DEPTH_TEST", &depthTest)) {
-				if (depthTest) glEnable(GL_DEPTH_TEST);
-				else glDisable(GL_DEPTH_TEST);
-			}
-
-			if (ImGui::IsItemHovered())
-				ImGui::SetTooltip("Enable/Disable GL_DEPTH_TEST");
-
-			ImGui::SameLine();
-
-			if (ImGui::Checkbox("GL_CULL_FACE", &cullFace)) {
-				if (cullFace) glEnable(GL_CULL_FACE);
-				else glDisable(GL_CULL_FACE);
-			}
-
-			if (ImGui::IsItemHovered())
-				ImGui::SetTooltip("Enable/Disable GL_CULL_FACE");
-
-			ImGui::SameLine();
-
-			if (ImGui::Checkbox("GL_COLOR_MATERIAL", &colorMaterial)) {
-				if (colorMaterial) glEnable(GL_COLOR_MATERIAL);
-				else glDisable(GL_COLOR_MATERIAL);
-			}
-
-			if (ImGui::IsItemHovered())
-				ImGui::SetTooltip("Enable/Disable GL_COLOR_MATERIAL");
-
-			if (ImGui::Checkbox("GL_TEXTURE_2D", &texture2D)) {
-				if (texture2D) glEnable(GL_TEXTURE_2D);
-				else glDisable(GL_TEXTURE_2D);
-			}
-
-			if (ImGui::IsItemHovered())
-				ImGui::SetTooltip("Enable/Disable GL_TEXTURE_2D");
-
-			ImGui::SameLine();
-
-			if (ImGui::Checkbox("GL_LIGHTING", &lighting)) {
-				if (lighting) glEnable(GL_LIGHTING);
-				else glDisable(GL_LIGHTING);
-			}
-
-			if (ImGui::IsItemHovered())
-				ImGui::SetTooltip("Enable/Disable GL_LIGHTING");
-
+	{
+		if (ImGui::Checkbox("GL_DEPTH_TEST", &depthTest)) {
+			if (depthTest) glEnable(GL_DEPTH_TEST);
+			else glDisable(GL_DEPTH_TEST);
 		}
+
+		if (ImGui::IsItemHovered())
+			ImGui::SetTooltip("Enable/Disable GL_DEPTH_TEST");
+
+		ImGui::SameLine();
+
+		if (ImGui::Checkbox("GL_CULL_FACE", &cullFace)) {
+			if (cullFace) glEnable(GL_CULL_FACE);
+			else glDisable(GL_CULL_FACE);
+		}
+
+		if (ImGui::IsItemHovered())
+			ImGui::SetTooltip("Enable/Disable GL_CULL_FACE");
+
+		ImGui::SameLine();
+
+		if (ImGui::Checkbox("GL_COLOR_MATERIAL", &colorMaterial)) {
+			if (colorMaterial) glEnable(GL_COLOR_MATERIAL);
+			else glDisable(GL_COLOR_MATERIAL);
+		}
+
+		if (ImGui::IsItemHovered())
+			ImGui::SetTooltip("Enable/Disable GL_COLOR_MATERIAL");
+
+		if (ImGui::Checkbox("GL_TEXTURE_2D", &texture2D)) {
+			if (texture2D) glEnable(GL_TEXTURE_2D);
+			else glDisable(GL_TEXTURE_2D);
+		}
+
+		if (ImGui::IsItemHovered())
+			ImGui::SetTooltip("Enable/Disable GL_TEXTURE_2D");
+
+		ImGui::SameLine();
+
+		if (ImGui::Checkbox("GL_LIGHTING", &lighting)) {
+			if (lighting) glEnable(GL_LIGHTING);
+			else glDisable(GL_LIGHTING);
+		}
+
+		if (ImGui::IsItemHovered())
+			ImGui::SetTooltip("Enable/Disable GL_LIGHTING");
+
+	}
 }
