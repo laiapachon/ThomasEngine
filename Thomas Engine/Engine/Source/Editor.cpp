@@ -253,6 +253,50 @@ void Editor::LogToConsole(const char* msg, LogType _type)
 		consoleWindow->AddLog(msg, _type);
 }
 
+void Editor::CreateDockSpace()
+{
+	ImGuiViewport* viewport = ImGui::GetMainViewport();
+
+	ImVec2 dockPos(viewport->WorkPos);
+	ImGui::SetNextWindowPos(dockPos);
+
+	ImVec2 dockSize(viewport->WorkSize);
+	ImGui::SetNextWindowSize(dockSize);
+
+	dockId = DockSpaceOverViewportCustom(viewport, ImGuiDockNodeFlags_PassthruCentralNode, dockPos, dockSize, nullptr);
+}
+
+ImGuiID Editor::DockSpaceOverViewportCustom(ImGuiViewport* viewport, ImGuiDockNodeFlags dockspaceFlags, ImVec2 position, ImVec2 size, const ImGuiWindowClass* windowClass)
+{
+	if (viewport == NULL)
+		viewport = ImGui::GetMainViewport();
+
+	ImGui::SetNextWindowPos(position);
+	ImGui::SetNextWindowSize(size);
+	ImGui::SetNextWindowViewport(viewport->ID);
+
+	ImGuiWindowFlags host_window_flags = 0;
+	host_window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoDocking;
+	host_window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+	if (dockspaceFlags & ImGuiDockNodeFlags_PassthruCentralNode)
+		host_window_flags |= ImGuiWindowFlags_NoBackground;
+
+	char label[32];
+	ImFormatString(label, IM_ARRAYSIZE(label), "DockSpaceViewport_%08X", viewport->ID);
+
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+	ImGui::Begin(label, NULL, host_window_flags);
+	ImGui::PopStyleVar(3);
+
+	ImGuiID dockspaceId = ImGui::GetID("DockSpace");
+	ImGui::DockSpace(dockspaceId, ImVec2(0.0f, 0.0f), dockspaceFlags, windowClass);
+	ImGui::End();
+
+	return dockspaceId;
+}
+
 Tab* Editor::GetTab(TabType type)
 {
 	unsigned int vecPosition = static_cast<unsigned int>(type);
