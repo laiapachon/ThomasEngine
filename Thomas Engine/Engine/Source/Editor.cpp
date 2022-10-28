@@ -2,13 +2,14 @@
 #include "Globals.h"
 #include "Editor.h"
 
-#include "Parson/parson.h"
 
 #include "Configuration.h"
 #include "ConsoleTab.h"
 
 Editor::Editor(Application* app, bool start_enabled): Module(app, start_enabled)
 {	
+	name = "Editor";
+
 	// Define size of the vector
 	tabs = std::vector<Tab*>(static_cast<unsigned int>(TabType::MAX), nullptr);
 
@@ -29,10 +30,7 @@ Editor::~Editor()
 
 bool Editor::Init()
 {
-	//print_commits_info("torvalds", "linux");
-	//persistence_example();
-	parsonTest();
-	//serialization_example();
+	
 
 	// Setup Dear ImGui context
 	IMGUI_CHECKVERSION();
@@ -46,8 +44,8 @@ bool Editor::Init()
 	ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;       // Enable Multi-Viewport / Platform Windows
 
 	// Setup Dear ImGui style
+	//ImGui::StyleColorsDark();
 	ImGui::StyleColorsClassic();
-	//ImGui::StyleColorsClassic();
 
 	// When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular ones.
 	ImGuiStyle& style = ImGui::GetStyle();
@@ -76,6 +74,7 @@ update_status Editor::PreUpdate(float dt)
 
 update_status Editor::Update(float dt)
 {
+
 	update_status ret = UPDATE_CONTINUE;
 	// Start the Dear ImGui frame
 	ImGui_ImplOpenGL3_NewFrame();
@@ -157,9 +156,9 @@ update_status Editor::ImGuiMenu()
 		{
 			for (int i = 0; i < tabs.size(); i++)
 			{
-				if (ImGui::MenuItem(tabs[i]->name.c_str(), std::to_string(i+1).c_str(), tabs[i]->active, &tabs[i]->active))
-					tabs[i]->active =! tabs[i]->active;
-			}			
+				if (ImGui::MenuItem(tabs[i]->name.c_str(), std::to_string(i + 1).c_str(), tabs[i]->active, &tabs[i]->active))
+					tabs[i]->active = !tabs[i]->active;
+			}
 			ImGui::EndMenu();
 		}
 		if (ImGui::BeginMenu("Help"))
@@ -219,7 +218,7 @@ update_status Editor::ImGuiMenu()
 				PrintLicense();
 
 				ImGui::EndMenu();
-			}			
+			}
 			ImGui::EndMenu();
 		}
 		ImGui::EndMainMenuBar();
@@ -253,50 +252,6 @@ void Editor::LogToConsole(const char* msg, LogType _type)
 		consoleWindow->AddLog(msg, _type);
 }
 
-void Editor::CreateDockSpace()
-{
-	ImGuiViewport* viewport = ImGui::GetMainViewport();
-
-	ImVec2 dockPos(viewport->WorkPos);
-	ImGui::SetNextWindowPos(dockPos);
-
-	ImVec2 dockSize(viewport->WorkSize);
-	ImGui::SetNextWindowSize(dockSize);
-
-	dockId = DockSpaceOverViewportCustom(viewport, ImGuiDockNodeFlags_PassthruCentralNode, dockPos, dockSize, nullptr);
-}
-
-ImGuiID Editor::DockSpaceOverViewportCustom(ImGuiViewport* viewport, ImGuiDockNodeFlags dockspaceFlags, ImVec2 position, ImVec2 size, const ImGuiWindowClass* windowClass)
-{
-	if (viewport == NULL)
-		viewport = ImGui::GetMainViewport();
-
-	ImGui::SetNextWindowPos(position);
-	ImGui::SetNextWindowSize(size);
-	ImGui::SetNextWindowViewport(viewport->ID);
-
-	ImGuiWindowFlags host_window_flags = 0;
-	host_window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoDocking;
-	host_window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
-	if (dockspaceFlags & ImGuiDockNodeFlags_PassthruCentralNode)
-		host_window_flags |= ImGuiWindowFlags_NoBackground;
-
-	char label[32];
-	ImFormatString(label, IM_ARRAYSIZE(label), "DockSpaceViewport_%08X", viewport->ID);
-
-	ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
-	ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-	ImGui::Begin(label, NULL, host_window_flags);
-	ImGui::PopStyleVar(3);
-
-	ImGuiID dockspaceId = ImGui::GetID("DockSpace");
-	ImGui::DockSpace(dockspaceId, ImVec2(0.0f, 0.0f), dockspaceFlags, windowClass);
-	ImGui::End();
-
-	return dockspaceId;
-}
-
 Tab* Editor::GetTab(TabType type)
 {
 	unsigned int vecPosition = static_cast<unsigned int>(type);
@@ -308,7 +263,7 @@ Tab* Editor::GetTab(TabType type)
 void Editor::PrintLicense()
 {
 	ImGui::Text("License:");
-	ImGui::Text("MIT License \nCopyright(c) 2022 laiapachon \n");
+	ImGui::Text("MIT License \nCopyright(c) 2022 Enric Morales Laia Pachon \n");
 	ImGui::NewLine();
 	ImGui::Text("Permission is hereby granted, free of charge, to any person obtaining a copy");
 	ImGui::Text("of this softwareand associated documentation files (the \"Software\"), to deal");
@@ -329,101 +284,4 @@ void Editor::PrintLicense()
 	ImGui::Text("SOFTWARE");
 }
 
-void Editor::print_commits_info(const char* username, const char* repo) {
-	JSON_Value* root_value;
-	JSON_Array* commits;
-	JSON_Object* commit;
-	size_t i;
 
-	char curl_command[512];
-	char cleanup_command[256];
-	char output_filename[] = "commits.json";
-
-	/* it ain't pretty, but it's not a libcurl tutorial */
-	sprintf(curl_command, "curl -s \"https://api.github.com/repos/%s/%s/commits\" > %s", username, repo, output_filename);
-	sprintf(cleanup_command, "rm -f %s", output_filename);
-	system(curl_command);
-
-	/* parsing json and validating output */
-	root_value = json_parse_file(output_filename);
-	if (json_value_get_type(root_value) != JSONArray) {
-		system(cleanup_command);
-		return;
-	}
-
-	/* getting array from root value and printing commit info */
-	commits = json_value_get_array(root_value);
-	printf("%-10.10s %-10.10s %s\n", "Date", "SHA", "Author");
-	for (i = 0; i < json_array_get_count(commits); i++) {
-		commit = json_array_get_object(commits, i);
-		printf("%.10s %.10s %s\n",
-			json_object_dotget_string(commit, "commit.author.date"),
-			json_object_get_string(commit, "sha"),
-			json_object_dotget_string(commit, "commit.author.name"));
-	}
-
-	/* cleanup code */
-	json_value_free(root_value);
-	system(cleanup_command);
-}
-
-void Editor::persistence_example(void) {
-	JSON_Value* schema = json_parse_string("{\"name\":\"\"}");
-	JSON_Value* user_data = json_parse_file("user_data.json");
-	char buf[256];
-	const char* name = NULL;
-	if (user_data == NULL || json_validate(schema, user_data) != JSONSuccess) {
-		puts("Enter your name:");
-		scanf("%s", buf);
-		user_data = json_value_init_object();
-		json_object_set_string(json_object(user_data), "name", buf);
-		json_serialize_to_file(user_data, "user_data.json");
-	}
-	name = json_object_get_string(json_object(user_data), "name");
-	printf("Hello, %s.", name);
-	json_value_free(schema);
-	json_value_free(user_data);
-	return;
-}
-
-void  Editor::serialization_example(void) {
-	JSON_Value* root_value = json_value_init_object();
-	JSON_Object* root_object = json_value_get_object(root_value);
-
-	char* serialized_string = NULL;
-	json_object_set_string(root_object, " nombre ", " John Smith ");
-	json_object_set_number(root_object, " edad ", 25);
-	json_object_dotset_string(root_object, " address.city ", " Cupertino ");
-	json_object_dotset_value(root_object, " contacto.", json_parse_string(" [ \" email@example.com \" , \"email2@example.com \" ] "));
-	serialized_string = json_serialize_to_string_pretty(root_value);
-	puts(serialized_string);
-	json_free_serialized_string(serialized_string);
-	json_value_free(root_value);
-
-}
-
-void Editor::parsonTest(void) {
-	JSON_Value* schema = json_parse_string("{\"name\":\"\"}");
-	const char* filename= "userData.json";
-	JSON_Value* user_data = json_parse_file(filename);
-
-	JSON_Value* root_value = json_value_init_object();
-
-	JSON_Object* root_object = json_value_get_object(root_value);
-
-	char buf[256];
-	const char* name = NULL;
-	if (user_data == NULL || json_validate(schema, user_data) != JSONSuccess) {
-		puts("Enter your name:");
-		
-		user_data = json_value_init_object();
-		json_object_set_string(json_object(user_data), "name", "Enric");
-		json_object_dotset_string(json_object(user_data), "address.city", "Cupertino");
-		json_serialize_to_file(user_data, filename);
-	}
-	name = json_object_get_string(json_object(user_data), "name");
-	printf("Hello, %s.", name);
-	json_value_free(schema);
-	json_value_free(user_data);
-	return;
-}

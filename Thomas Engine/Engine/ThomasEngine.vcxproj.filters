@@ -31,41 +31,14 @@
     <Filter Include="Sources\3rd Party\GPU Detected">
       <UniqueIdentifier>{8645fb03-cfc1-4335-ba05-2c17d8f55bf1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Sources\3rd Party\MathGeoLib">
-      <UniqueIdentifier>{1c6fe7f3-013f-4d65-b74c-ce1c513195cf}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Sources\3rd Party\MathGeoLib\Math">
-      <UniqueIdentifier>{8bb6402c-b0cc-40d3-b456-ee238a539703}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Sources\3rd Party\MathGeoLib\Time">
-      <UniqueIdentifier>{5e62be16-e373-4e5b-9fed-4b706880471c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Sources\3rd Party\MathGeoLib\Geometry">
-      <UniqueIdentifier>{1a7ce03c-2eb3-4427-9f6a-57baecb70e23}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Sources\3rd Party\MathGeoLib\Algorithm">
-      <UniqueIdentifier>{6e88ba3d-219f-4131-845e-951a58b1e8c1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Sources\3rd Party\MathGeoLib\Algorithm\Random">
-      <UniqueIdentifier>{c63608ad-9929-4c7f-8460-3a00ec40fd5f}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Sources\3rd Party\Parson">
       <UniqueIdentifier>{202ea345-b9a1-46c5-bddc-c09ff95e177e}</UniqueIdentifier>
     </Filter>
     <Filter Include="Sources\3rd Party\Mmgr">
       <UniqueIdentifier>{58462921-e4ae-4079-82eb-0f3d6df7e30d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Sources\3rd Party\Assimp">
-      <UniqueIdentifier>{53641981-73ae-42ca-b326-342c1c00ee47}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Sources\3rd Party\Assimp\Compiler">
-      <UniqueIdentifier>{2466caa6-b9db-4ce1-91f3-63c6eaed57b5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Sources\3rd Party\Assimp\Port">
-      <UniqueIdentifier>{d3212c40-a22b-4098-88d6-859cda964814}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Sources\3rd Party\PhysFS">
-      <UniqueIdentifier>{1d334b42-bc85-4546-90bc-5ee704d34ce6}</UniqueIdentifier>
+    <Filter Include="Sources\3rd Party\Aassimp">
+      <UniqueIdentifier>{ed5ee3a5-52ca-457f-a62a-ed15a65499bd}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -156,177 +129,6 @@
     <ClInclude Include="Source\External\imgui\imgui_impl_opengl3_loader.h">
       <Filter>Sources\3rd Party\Imgui</Filter>
     </ClInclude>
-    <ClInclude Include="Source\External\MathGeoLib\include\Math\BitOps.h">
-      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\External\MathGeoLib\include\Math\Complex.h">
-      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\External\MathGeoLib\include\Math\CoordinateAxisConvention.h">
-      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\External\MathGeoLib\include\Math\FixedPoint.h">
-      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\External\MathGeoLib\include\Math\float2.h">
-      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\External\MathGeoLib\include\Math\float3.h">
-      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\External\MathGeoLib\include\Math\float3x3.h">
-      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\External\MathGeoLib\include\Math\float3x4.h">
-      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\External\MathGeoLib\include\Math\float4.h">
-      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\External\MathGeoLib\include\Math\float4_neon.h">
-      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\External\MathGeoLib\include\Math\float4_sse.h">
-      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\External\MathGeoLib\include\Math\float4x4.h">
-      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\External\MathGeoLib\include\Math\float4x4_neon.h">
-      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\External\MathGeoLib\include\Math\float4x4_sse.h">
-      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\External\MathGeoLib\include\Math\FloatCmp.h">
-      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\External\MathGeoLib\include\Math\MathAll.h">
-      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\External\MathGeoLib\include\Math\MathConstants.h">
-      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\External\MathGeoLib\include\Math\MathFunc.h">
-      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\External\MathGeoLib\include\Math\MathLog.h">
-      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\External\MathGeoLib\include\Math\MathNamespace.h">
-      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\External\MathGeoLib\include\Math\MathTypes.h">
-      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\External\MathGeoLib\include\Math\MatrixProxy.h">
-      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\External\MathGeoLib\include\Math\myassert.h">
-      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\External\MathGeoLib\include\Math\Polynomial.h">
-      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\External\MathGeoLib\include\Math\Quat.h">
-      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\External\MathGeoLib\include\Math\quat_simd.h">
-      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\External\MathGeoLib\include\Math\Rect.h">
-      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\External\MathGeoLib\include\Math\Reinterpret.h">
-      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\External\MathGeoLib\include\Math\sse_mathfun.h">
-      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\External\MathGeoLib\include\Math\SSEMath.h">
-      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\External\MathGeoLib\include\Math\TransformOps.h">
-      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\External\MathGeoLib\include\Math\assume.h">
-      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\External\MathGeoLib\include\Geometry\Circle.h">
-      <Filter>Sources\3rd Party\MathGeoLib\Geometry</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\External\MathGeoLib\include\Geometry\Cone.h">
-      <Filter>Sources\3rd Party\MathGeoLib\Geometry</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\External\MathGeoLib\include\Geometry\Cylinder.h">
-      <Filter>Sources\3rd Party\MathGeoLib\Geometry</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\External\MathGeoLib\include\Geometry\Frustum.h">
-      <Filter>Sources\3rd Party\MathGeoLib\Geometry</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\External\MathGeoLib\include\Geometry\GeometryAll.h">
-      <Filter>Sources\3rd Party\MathGeoLib\Geometry</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\External\MathGeoLib\include\Geometry\GeomType.h">
-      <Filter>Sources\3rd Party\MathGeoLib\Geometry</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\External\MathGeoLib\include\Geometry\HitInfo.h">
-      <Filter>Sources\3rd Party\MathGeoLib\Geometry</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\External\MathGeoLib\include\Geometry\KDTree.h">
-      <Filter>Sources\3rd Party\MathGeoLib\Geometry</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\External\MathGeoLib\include\Geometry\Line.h">
-      <Filter>Sources\3rd Party\MathGeoLib\Geometry</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\External\MathGeoLib\include\Geometry\LineSegment.h">
-      <Filter>Sources\3rd Party\MathGeoLib\Geometry</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\External\MathGeoLib\include\Geometry\OBB.h">
-      <Filter>Sources\3rd Party\MathGeoLib\Geometry</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\External\MathGeoLib\include\Geometry\PBVolume.h">
-      <Filter>Sources\3rd Party\MathGeoLib\Geometry</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\External\MathGeoLib\include\Geometry\Plane.h">
-      <Filter>Sources\3rd Party\MathGeoLib\Geometry</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\External\MathGeoLib\include\Geometry\Polygon.h">
-      <Filter>Sources\3rd Party\MathGeoLib\Geometry</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\External\MathGeoLib\include\Geometry\Polyhedron.h">
-      <Filter>Sources\3rd Party\MathGeoLib\Geometry</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\External\MathGeoLib\include\Geometry\QuadTree.h">
-      <Filter>Sources\3rd Party\MathGeoLib\Geometry</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\External\MathGeoLib\include\Geometry\Ray.h">
-      <Filter>Sources\3rd Party\MathGeoLib\Geometry</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\External\MathGeoLib\include\Geometry\Sphere.h">
-      <Filter>Sources\3rd Party\MathGeoLib\Geometry</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\External\MathGeoLib\include\Geometry\Triangle.h">
-      <Filter>Sources\3rd Party\MathGeoLib\Geometry</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\External\MathGeoLib\include\Geometry\TriangleMesh.h">
-      <Filter>Sources\3rd Party\MathGeoLib\Geometry</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\External\MathGeoLib\include\Geometry\AABB.h">
-      <Filter>Sources\3rd Party\MathGeoLib\Geometry</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\External\MathGeoLib\include\Geometry\AABB2D.h">
-      <Filter>Sources\3rd Party\MathGeoLib\Geometry</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\External\MathGeoLib\include\Geometry\Capsule.h">
-      <Filter>Sources\3rd Party\MathGeoLib\Geometry</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\External\MathGeoLib\include\Algorithm\Random\LCG.h">
-      <Filter>Sources\3rd Party\MathGeoLib\Algorithm\Random</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\External\MathGeoLib\include\Time\Clock.h">
-      <Filter>Sources\3rd Party\MathGeoLib\Time</Filter>
-    </ClInclude>
     <ClInclude Include="Source\External\Parson\parson.h">
       <Filter>Sources\3rd Party\Parson</Filter>
     </ClInclude>
@@ -336,119 +138,245 @@
     <ClInclude Include="Source\External\Mmgr\nommgr.h">
       <Filter>Sources\3rd Party\Mmgr</Filter>
     </ClInclude>
-    <ClInclude Include="Source\External\Assimp\Assimp\Assimp\include\Compiler\poppack1.h">
-      <Filter>Sources\3rd Party\Assimp\Compiler</Filter>
+    <ClInclude Include="Source\JsonParser.h">
+      <Filter>Sources\Modules</Filter>
     </ClInclude>
-    <ClInclude Include="Source\External\Assimp\Assimp\Assimp\include\Compiler\pstdint.h">
-      <Filter>Sources\3rd Party\Assimp\Compiler</Filter>
+    <ClInclude Include="Source\External\Assimp\include\aabb.h">
+      <Filter>Sources\3rd Party\Aassimp</Filter>
     </ClInclude>
-    <ClInclude Include="Source\External\Assimp\Assimp\Assimp\include\Compiler\pushpack1.h">
-      <Filter>Sources\3rd Party\Assimp\Compiler</Filter>
+    <ClInclude Include="Source\External\Assimp\include\ai_assert.h">
+      <Filter>Sources\3rd Party\Aassimp</Filter>
     </ClInclude>
-    <ClInclude Include="Source\External\Assimp\Assimp\Assimp\include\port\AndroidJNI\AndroidJNIIOSystem.h">
-      <Filter>Sources\3rd Party\Assimp\Port</Filter>
+    <ClInclude Include="Source\External\Assimp\include\port\AndroidJNI\AndroidJNIIOSystem.h">
+      <Filter>Sources\3rd Party\Aassimp</Filter>
     </ClInclude>
-    <ClInclude Include="Source\External\Assimp\Assimp\Assimp\include\ai_assert.h">
-      <Filter>Sources\3rd Party\Assimp</Filter>
+    <ClInclude Include="Source\External\Assimp\include\anim.h">
+      <Filter>Sources\3rd Party\Aassimp</Filter>
     </ClInclude>
-    <ClInclude Include="Source\External\Assimp\Assimp\Assimp\include\anim.h">
-      <Filter>Sources\3rd Party\Assimp</Filter>
+    <ClInclude Include="Source\External\Assimp\include\BaseImporter.h">
+      <Filter>Sources\3rd Party\Aassimp</Filter>
     </ClInclude>
-    <ClInclude Include="Source\External\Assimp\Assimp\Assimp\include\camera.h">
-      <Filter>Sources\3rd Party\Assimp</Filter>
+    <ClInclude Include="Source\External\Assimp\include\Bitmap.h">
+      <Filter>Sources\3rd Party\Aassimp</Filter>
     </ClInclude>
-    <ClInclude Include="Source\External\Assimp\Assimp\Assimp\include\cexport.h">
-      <Filter>Sources\3rd Party\Assimp</Filter>
+    <ClInclude Include="Source\External\Assimp\include\BlobIOSystem.h">
+      <Filter>Sources\3rd Party\Aassimp</Filter>
     </ClInclude>
-    <ClInclude Include="Source\External\Assimp\Assimp\Assimp\include\cfileio.h">
-      <Filter>Sources\3rd Party\Assimp</Filter>
+    <ClInclude Include="Source\External\Assimp\include\ByteSwapper.h">
+      <Filter>Sources\3rd Party\Aassimp</Filter>
     </ClInclude>
-    <ClInclude Include="Source\External\Assimp\Assimp\Assimp\include\cimport.h">
-      <Filter>Sources\3rd Party\Assimp</Filter>
+    <ClInclude Include="Source\External\Assimp\include\camera.h">
+      <Filter>Sources\3rd Party\Aassimp</Filter>
     </ClInclude>
-    <ClInclude Include="Source\External\Assimp\Assimp\Assimp\include\color4.h">
-      <Filter>Sources\3rd Party\Assimp</Filter>
+    <ClInclude Include="Source\External\Assimp\include\cexport.h">
+      <Filter>Sources\3rd Party\Aassimp</Filter>
     </ClInclude>
-    <ClInclude Include="Source\External\Assimp\Assimp\Assimp\include\config.h">
-      <Filter>Sources\3rd Party\Assimp</Filter>
+    <ClInclude Include="Source\External\Assimp\include\cfileio.h">
+      <Filter>Sources\3rd Party\Aassimp</Filter>
     </ClInclude>
-    <ClInclude Include="Source\External\Assimp\Assimp\Assimp\include\DefaultLogger.hpp">
-      <Filter>Sources\3rd Party\Assimp</Filter>
+    <ClInclude Include="Source\External\Assimp\include\cimport.h">
+      <Filter>Sources\3rd Party\Aassimp</Filter>
     </ClInclude>
-    <ClInclude Include="Source\External\Assimp\Assimp\Assimp\include\defs.h">
-      <Filter>Sources\3rd Party\Assimp</Filter>
+    <ClInclude Include="Source\External\Assimp\include\color4.h">
+      <Filter>Sources\3rd Party\Aassimp</Filter>
     </ClInclude>
-    <ClInclude Include="Source\External\Assimp\Assimp\Assimp\include\Exporter.hpp">
-      <Filter>Sources\3rd Party\Assimp</Filter>
+    <ClInclude Include="Source\External\Assimp\include\config.h">
+      <Filter>Sources\3rd Party\Aassimp</Filter>
     </ClInclude>
-    <ClInclude Include="Source\External\Assimp\Assimp\Assimp\include\Importer.hpp">
-      <Filter>Sources\3rd Party\Assimp</Filter>
+    <ClInclude Include="Source\External\Assimp\include\CreateAnimMesh.h">
+      <Filter>Sources\3rd Party\Aassimp</Filter>
     </ClInclude>
-    <ClInclude Include="Source\External\Assimp\Assimp\Assimp\include\importerdesc.h">
-      <Filter>Sources\3rd Party\Assimp</Filter>
+    <ClInclude Include="Source\External\Assimp\include\DefaultIOStream.h">
+      <Filter>Sources\3rd Party\Aassimp</Filter>
     </ClInclude>
-    <ClInclude Include="Source\External\Assimp\Assimp\Assimp\include\IOStream.hpp">
-      <Filter>Sources\3rd Party\Assimp</Filter>
+    <ClInclude Include="Source\External\Assimp\include\DefaultIOSystem.h">
+      <Filter>Sources\3rd Party\Aassimp</Filter>
     </ClInclude>
-    <ClInclude Include="Source\External\Assimp\Assimp\Assimp\include\IOSystem.hpp">
-      <Filter>Sources\3rd Party\Assimp</Filter>
+    <ClInclude Include="Source\External\Assimp\include\DefaultLogger.hpp">
+      <Filter>Sources\3rd Party\Aassimp</Filter>
     </ClInclude>
-    <ClInclude Include="Source\External\Assimp\Assimp\Assimp\include\light.h">
-      <Filter>Sources\3rd Party\Assimp</Filter>
+    <ClInclude Include="Source\External\Assimp\include\Defines.h">
+      <Filter>Sources\3rd Party\Aassimp</Filter>
     </ClInclude>
-    <ClInclude Include="Source\External\Assimp\Assimp\Assimp\include\Logger.hpp">
-      <Filter>Sources\3rd Party\Assimp</Filter>
+    <ClInclude Include="Source\External\Assimp\include\defs.h">
+      <Filter>Sources\3rd Party\Aassimp</Filter>
     </ClInclude>
-    <ClInclude Include="Source\External\Assimp\Assimp\Assimp\include\LogStream.hpp">
-      <Filter>Sources\3rd Party\Assimp</Filter>
+    <ClInclude Include="Source\External\Assimp\include\Exceptional.h">
+      <Filter>Sources\3rd Party\Aassimp</Filter>
     </ClInclude>
-    <ClInclude Include="Source\External\Assimp\Assimp\Assimp\include\material.h">
-      <Filter>Sources\3rd Party\Assimp</Filter>
+    <ClInclude Include="Source\External\Assimp\include\Exporter.hpp">
+      <Filter>Sources\3rd Party\Aassimp</Filter>
     </ClInclude>
-    <ClInclude Include="Source\External\Assimp\Assimp\Assimp\include\matrix3x3.h">
-      <Filter>Sources\3rd Party\Assimp</Filter>
+    <ClInclude Include="Source\External\Assimp\include\fast_atof.h">
+      <Filter>Sources\3rd Party\Aassimp</Filter>
     </ClInclude>
-    <ClInclude Include="Source\External\Assimp\Assimp\Assimp\include\matrix4x4.h">
-      <Filter>Sources\3rd Party\Assimp</Filter>
+    <ClInclude Include="Source\External\Assimp\include\GenericProperty.h">
+      <Filter>Sources\3rd Party\Aassimp</Filter>
     </ClInclude>
-    <ClInclude Include="Source\External\Assimp\Assimp\Assimp\include\mesh.h">
-      <Filter>Sources\3rd Party\Assimp</Filter>
+    <ClInclude Include="Source\External\Assimp\include\Hash.h">
+      <Filter>Sources\3rd Party\Aassimp</Filter>
     </ClInclude>
-    <ClInclude Include="Source\External\Assimp\Assimp\Assimp\include\metadata.h">
-      <Filter>Sources\3rd Party\Assimp</Filter>
+    <ClInclude Include="Source\External\Assimp\include\Importer.hpp">
+      <Filter>Sources\3rd Party\Aassimp</Filter>
     </ClInclude>
-    <ClInclude Include="Source\External\Assimp\Assimp\Assimp\include\NullLogger.hpp">
-      <Filter>Sources\3rd Party\Assimp</Filter>
+    <ClInclude Include="Source\External\Assimp\include\importerdesc.h">
+      <Filter>Sources\3rd Party\Aassimp</Filter>
     </ClInclude>
-    <ClInclude Include="Source\External\Assimp\Assimp\Assimp\include\postprocess.h">
-      <Filter>Sources\3rd Party\Assimp</Filter>
+    <ClInclude Include="Source\External\Assimp\include\IOStream.hpp">
+      <Filter>Sources\3rd Party\Aassimp</Filter>
     </ClInclude>
-    <ClInclude Include="Source\External\Assimp\Assimp\Assimp\include\ProgressHandler.hpp">
-      <Filter>Sources\3rd Party\Assimp</Filter>
+    <ClInclude Include="Source\External\Assimp\include\IOStreamBuffer.h">
+      <Filter>Sources\3rd Party\Aassimp</Filter>
     </ClInclude>
-    <ClInclude Include="Source\External\Assimp\Assimp\Assimp\include\quaternion.h">
-      <Filter>Sources\3rd Party\Assimp</Filter>
+    <ClInclude Include="Source\External\Assimp\include\IOSystem.hpp">
+      <Filter>Sources\3rd Party\Aassimp</Filter>
     </ClInclude>
-    <ClInclude Include="Source\External\Assimp\Assimp\Assimp\include\scene.h">
-      <Filter>Sources\3rd Party\Assimp</Filter>
+    <ClInclude Include="Source\External\Assimp\include\irrXMLWrapper.h">
+      <Filter>Sources\3rd Party\Aassimp</Filter>
     </ClInclude>
-    <ClInclude Include="Source\External\Assimp\Assimp\Assimp\include\texture.h">
-      <Filter>Sources\3rd Party\Assimp</Filter>
+    <ClInclude Include="Source\External\Assimp\include\light.h">
+      <Filter>Sources\3rd Party\Aassimp</Filter>
     </ClInclude>
-    <ClInclude Include="Source\External\Assimp\Assimp\Assimp\include\types.h">
-      <Filter>Sources\3rd Party\Assimp</Filter>
+    <ClInclude Include="Source\External\Assimp\include\LineSplitter.h">
+      <Filter>Sources\3rd Party\Aassimp</Filter>
     </ClInclude>
-    <ClInclude Include="Source\External\Assimp\Assimp\Assimp\include\vector2.h">
-      <Filter>Sources\3rd Party\Assimp</Filter>
+    <ClInclude Include="Source\External\Assimp\include\LogAux.h">
+      <Filter>Sources\3rd Party\Aassimp</Filter>
     </ClInclude>
-    <ClInclude Include="Source\External\Assimp\Assimp\Assimp\include\vector3.h">
-      <Filter>Sources\3rd Party\Assimp</Filter>
+    <ClInclude Include="Source\External\Assimp\include\Logger.hpp">
+      <Filter>Sources\3rd Party\Aassimp</Filter>
     </ClInclude>
-    <ClInclude Include="Source\External\Assimp\Assimp\Assimp\include\version.h">
-      <Filter>Sources\3rd Party\Assimp</Filter>
+    <ClInclude Include="Source\External\Assimp\include\LogStream.hpp">
+      <Filter>Sources\3rd Party\Aassimp</Filter>
     </ClInclude>
-    <ClInclude Include="Source\External\PhysFS\PhysFS\include\physfs.h">
-      <Filter>Sources\3rd Party\PhysFS</Filter>
+    <ClInclude Include="Source\External\Assimp\include\Macros.h">
+      <Filter>Sources\3rd Party\Aassimp</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\Assimp\include\material.h">
+      <Filter>Sources\3rd Party\Aassimp</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\Assimp\include\MathFunctions.h">
+      <Filter>Sources\3rd Party\Aassimp</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\Assimp\include\matrix3x3.h">
+      <Filter>Sources\3rd Party\Aassimp</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\Assimp\include\matrix4x4.h">
+      <Filter>Sources\3rd Party\Aassimp</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\Assimp\include\MemoryIOWrapper.h">
+      <Filter>Sources\3rd Party\Aassimp</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\Assimp\include\mesh.h">
+      <Filter>Sources\3rd Party\Aassimp</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\Assimp\include\metadata.h">
+      <Filter>Sources\3rd Party\Aassimp</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\Assimp\include\NullLogger.hpp">
+      <Filter>Sources\3rd Party\Aassimp</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\Assimp\include\ParsingUtils.h">
+      <Filter>Sources\3rd Party\Aassimp</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\Assimp\include\pbrmaterial.h">
+      <Filter>Sources\3rd Party\Aassimp</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\Assimp\include\Compiler\poppack1.h">
+      <Filter>Sources\3rd Party\Aassimp</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\Assimp\include\postprocess.h">
+      <Filter>Sources\3rd Party\Aassimp</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\Assimp\include\Profiler.h">
+      <Filter>Sources\3rd Party\Aassimp</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\Assimp\include\ProgressHandler.hpp">
+      <Filter>Sources\3rd Party\Aassimp</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\Assimp\include\Compiler\pstdint.h">
+      <Filter>Sources\3rd Party\Aassimp</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\Assimp\include\Compiler\pushpack1.h">
+      <Filter>Sources\3rd Party\Aassimp</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\Assimp\include\qnan.h">
+      <Filter>Sources\3rd Party\Aassimp</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\Assimp\include\quaternion.h">
+      <Filter>Sources\3rd Party\Aassimp</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\Assimp\include\RemoveComments.h">
+      <Filter>Sources\3rd Party\Aassimp</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\Assimp\include\scene.h">
+      <Filter>Sources\3rd Party\Aassimp</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\Assimp\include\SceneCombiner.h">
+      <Filter>Sources\3rd Party\Aassimp</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\Assimp\include\SGSpatialSort.h">
+      <Filter>Sources\3rd Party\Aassimp</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\Assimp\include\SkeletonMeshBuilder.h">
+      <Filter>Sources\3rd Party\Aassimp</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\Assimp\include\SmoothingGroups.h">
+      <Filter>Sources\3rd Party\Aassimp</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\Assimp\include\SpatialSort.h">
+      <Filter>Sources\3rd Party\Aassimp</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\Assimp\include\StandardShapes.h">
+      <Filter>Sources\3rd Party\Aassimp</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\Assimp\include\StreamReader.h">
+      <Filter>Sources\3rd Party\Aassimp</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\Assimp\include\StreamWriter.h">
+      <Filter>Sources\3rd Party\Aassimp</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\Assimp\include\StringComparison.h">
+      <Filter>Sources\3rd Party\Aassimp</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\Assimp\include\StringUtils.h">
+      <Filter>Sources\3rd Party\Aassimp</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\Assimp\include\Subdivision.h">
+      <Filter>Sources\3rd Party\Aassimp</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\Assimp\include\texture.h">
+      <Filter>Sources\3rd Party\Aassimp</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\Assimp\include\TinyFormatter.h">
+      <Filter>Sources\3rd Party\Aassimp</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\Assimp\include\types.h">
+      <Filter>Sources\3rd Party\Aassimp</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\Assimp\include\vector2.h">
+      <Filter>Sources\3rd Party\Aassimp</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\Assimp\include\vector3.h">
+      <Filter>Sources\3rd Party\Aassimp</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\Assimp\include\version.h">
+      <Filter>Sources\3rd Party\Aassimp</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\Assimp\include\Vertex.h">
+      <Filter>Sources\3rd Party\Aassimp</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\Assimp\include\XMLTools.h">
+      <Filter>Sources\3rd Party\Aassimp</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\Assimp\include\ZipArchiveIOSystem.h">
+      <Filter>Sources\3rd Party\Aassimp</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\FileSystem.h">
+      <Filter>Sources\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Mesh.h">
+      <Filter>Sources\Modules</Filter>
     </ClInclude>
     <ClInclude Include="Source\FBXLoader.h">
       <Filter>Sources\Modules</Filter>
@@ -533,154 +461,52 @@
     <ClCompile Include="Source\External\imgui\imgui_impl_opengl3.cpp">
       <Filter>Sources\3rd Party\Imgui</Filter>
     </ClCompile>
-    <ClCompile Include="Source\External\MathGeoLib\include\Math\float2.cpp">
-      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\External\MathGeoLib\include\Math\float3.cpp">
-      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\External\MathGeoLib\include\Math\float3x3.cpp">
-      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\External\MathGeoLib\include\Math\float3x4.cpp">
-      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\External\MathGeoLib\include\Math\float4.cpp">
-      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\External\MathGeoLib\include\Math\float4x4.cpp">
-      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\External\MathGeoLib\include\Math\MathFunc.cpp">
-      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\External\MathGeoLib\include\Math\MathLog.cpp">
-      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\External\MathGeoLib\include\Math\MathOps.cpp">
-      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\External\MathGeoLib\include\Math\Polynomial.cpp">
-      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\External\MathGeoLib\include\Math\Quat.cpp">
-      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\External\MathGeoLib\include\Math\SSEMath.cpp">
-      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\External\MathGeoLib\include\Math\TransformOps.cpp">
-      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\External\MathGeoLib\include\Math\BitOps.cpp">
-      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\External\MathGeoLib\include\Geometry\Circle.cpp">
-      <Filter>Sources\3rd Party\MathGeoLib\Geometry</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\External\MathGeoLib\include\Geometry\Cone.cpp">
-      <Filter>Sources\3rd Party\MathGeoLib\Geometry</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\External\MathGeoLib\include\Geometry\Cylinder.cpp">
-      <Filter>Sources\3rd Party\MathGeoLib\Geometry</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\External\MathGeoLib\include\Geometry\Frustum.cpp">
-      <Filter>Sources\3rd Party\MathGeoLib\Geometry</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\External\MathGeoLib\include\Geometry\Line.cpp">
-      <Filter>Sources\3rd Party\MathGeoLib\Geometry</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\External\MathGeoLib\include\Geometry\LineSegment.cpp">
-      <Filter>Sources\3rd Party\MathGeoLib\Geometry</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\External\MathGeoLib\include\Geometry\OBB.cpp">
-      <Filter>Sources\3rd Party\MathGeoLib\Geometry</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\External\MathGeoLib\include\Geometry\Plane.cpp">
-      <Filter>Sources\3rd Party\MathGeoLib\Geometry</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\External\MathGeoLib\include\Geometry\Polygon.cpp">
-      <Filter>Sources\3rd Party\MathGeoLib\Geometry</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\External\MathGeoLib\include\Geometry\Polyhedron.cpp">
-      <Filter>Sources\3rd Party\MathGeoLib\Geometry</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\External\MathGeoLib\include\Geometry\Ray.cpp">
-      <Filter>Sources\3rd Party\MathGeoLib\Geometry</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\External\MathGeoLib\include\Geometry\Sphere.cpp">
-      <Filter>Sources\3rd Party\MathGeoLib\Geometry</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\External\MathGeoLib\include\Geometry\Triangle.cpp">
-      <Filter>Sources\3rd Party\MathGeoLib\Geometry</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\External\MathGeoLib\include\Geometry\TriangleMesh.cpp">
-      <Filter>Sources\3rd Party\MathGeoLib\Geometry</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\External\MathGeoLib\include\Geometry\AABB.cpp">
-      <Filter>Sources\3rd Party\MathGeoLib\Geometry</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\External\MathGeoLib\include\Geometry\Capsule.cpp">
-      <Filter>Sources\3rd Party\MathGeoLib\Geometry</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\External\MathGeoLib\include\Algorithm\Random\LCG.cpp">
-      <Filter>Sources\3rd Party\MathGeoLib\Algorithm\Random</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\External\MathGeoLib\include\Time\Clock.cpp">
-      <Filter>Sources\3rd Party\MathGeoLib\Time</Filter>
-    </ClCompile>
     <ClCompile Include="Source\External\Parson\parson.c">
       <Filter>Sources\3rd Party\Parson</Filter>
     </ClCompile>
     <ClCompile Include="Source\External\Mmgr\mmgr.cpp">
       <Filter>Sources\3rd Party\Mmgr</Filter>
     </ClCompile>
+    <ClCompile Include="Source\JsonParser.cpp">
+      <Filter>Sources\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\FileSystem.cpp">
+      <Filter>Sources\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Mesh.cpp">
+      <Filter>Sources\Modules</Filter>
+    </ClCompile>
     <ClCompile Include="Source\FBXLoader.cpp">
       <Filter>Sources\Modules</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Source\External\MathGeoLib\include\Math\Matrix.inl">
-      <Filter>Sources\3rd Party\MathGeoLib\Math</Filter>
+    <None Include="Source\External\Assimp\include\color4.inl">
+      <Filter>Sources\3rd Party\Aassimp</Filter>
     </None>
-    <None Include="Source\External\MathGeoLib\include\Geometry\KDTree.inl">
-      <Filter>Sources\3rd Party\MathGeoLib\Geometry</Filter>
+    <None Include="Source\External\Assimp\include\material.inl">
+      <Filter>Sources\3rd Party\Aassimp</Filter>
     </None>
-    <None Include="Source\External\MathGeoLib\include\Geometry\QuadTree.inl">
-      <Filter>Sources\3rd Party\MathGeoLib\Geometry</Filter>
+    <None Include="Source\External\Assimp\include\matrix3x3.inl">
+      <Filter>Sources\3rd Party\Aassimp</Filter>
     </None>
-    <None Include="Source\External\MathGeoLib\include\Geometry\TriangleMesh_IntersectRay_AVX.inl">
-      <Filter>Sources\3rd Party\MathGeoLib\Geometry</Filter>
+    <None Include="Source\External\Assimp\include\matrix4x4.inl">
+      <Filter>Sources\3rd Party\Aassimp</Filter>
     </None>
-    <None Include="Source\External\MathGeoLib\include\Geometry\TriangleMesh_IntersectRay_CPP.inl">
-      <Filter>Sources\3rd Party\MathGeoLib\Geometry</Filter>
+    <None Include="Source\External\Assimp\include\quaternion.inl">
+      <Filter>Sources\3rd Party\Aassimp</Filter>
     </None>
-    <None Include="Source\External\MathGeoLib\include\Geometry\TriangleMesh_IntersectRay_SSE.inl">
-      <Filter>Sources\3rd Party\MathGeoLib\Geometry</Filter>
+    <None Include="Source\External\Assimp\include\SmoothingGroups.inl">
+      <Filter>Sources\3rd Party\Aassimp</Filter>
     </None>
-    <None Include="Source\External\Assimp\Assimp\Assimp\include\.editorconfig">
-      <Filter>Sources\3rd Party\Assimp</Filter>
+    <None Include="Source\External\Assimp\include\vector2.inl">
+      <Filter>Sources\3rd Party\Aassimp</Filter>
     </None>
-    <None Include="Source\External\Assimp\Assimp\Assimp\include\color4.inl">
-      <Filter>Sources\3rd Party\Assimp</Filter>
+    <None Include="Source\External\Assimp\include\vector3.inl">
+      <Filter>Sources\3rd Party\Aassimp</Filter>
     </None>
-    <None Include="Source\External\Assimp\Assimp\Assimp\include\material.inl">
-      <Filter>Sources\3rd Party\Assimp</Filter>
-    </None>
-    <None Include="Source\External\Assimp\Assimp\Assimp\include\matrix3x3.inl">
-      <Filter>Sources\3rd Party\Assimp</Filter>
-    </None>
-    <None Include="Source\External\Assimp\Assimp\Assimp\include\matrix4x4.inl">
-      <Filter>Sources\3rd Party\Assimp</Filter>
-    </None>
-    <None Include="Source\External\Assimp\Assimp\Assimp\include\quaternion.inl">
-      <Filter>Sources\3rd Party\Assimp</Filter>
-    </None>
-    <None Include="Source\External\Assimp\Assimp\Assimp\include\vector2.inl">
-      <Filter>Sources\3rd Party\Assimp</Filter>
-    </None>
-    <None Include="Source\External\Assimp\Assimp\Assimp\include\vector3.inl">
-      <Filter>Sources\3rd Party\Assimp</Filter>
-    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="ThomasEngine.rc" />
   </ItemGroup>
 </Project>

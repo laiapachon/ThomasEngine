@@ -14,7 +14,6 @@ Application::Application() : maxFPS(60)
 	camera = new Camera3D(this);
 	physics = new Physics3D(this);
 	editor = new Editor(this);
-	loader = new Loader(this);
 
 	// The order of calls is very important!
 	// Modules will Init() Start() and Update in this order
@@ -31,38 +30,56 @@ Application::Application() : maxFPS(60)
 	AddModule(renderer3D);
 	AddModule(editor);
 
-	//load FBX
-	AddModule(loader);
+	loadRequested = true;
+	saveRequested = false;
 }
 
 Application::~Application()
 {
 	
-	for (int i = list_modules.size() - 1; i >= 0; --i)
+	for (int i = listModules.size() - 1; i >= 0; --i)
 	{
-		delete list_modules[i];
-		list_modules[i] = nullptr;
+		delete listModules[i];
+		listModules[i] = nullptr;
 	}
 
-	list_modules.clear();
+	listModules.clear();
 }
 
 bool Application::Init()
 {
 	bool ret = true;
 
-	// Call Init() in all modules
-	for (unsigned int i = 0; i < list_modules.size() && ret == true; i++)
 	{
-		ret = list_modules[i]->Init();
+		bool ret = true;
+
+		JSON_Value* root = jsonFile.FileToValue(FILE_CONFIG);
+
+		if (jsonFile.GetRootValue() == NULL)
+		{
+			LOG(LogType::L_NORMAL,"Couldn't load %s", FILE_CONFIG);
+			ret = false;
+		}
+
+		JsonParser application = jsonFile.GetChild(root, "App");
+
+		maxFPS = application.JsonValToNumber("FPS");
+	}
+
+
+
+	// Call Init() in all modules
+	for (unsigned int i = 0; i < listModules.size() && ret == true; i++)
+	{
+		ret = listModules[i]->Init();
 	}
 	// After all Init calls we call Start() in all modules
 	LOG(LogType::L_NORMAL, "-------------- Application Start --------------");
 
 	// Call Init() in all modules
-	for (unsigned int i = 0; i < list_modules.size() && ret == true; i++)
+	for (unsigned int i = 0; i < listModules.size() && ret == true; i++)
 	{
-		ret = list_modules[i]->Start();
+		ret = listModules[i]->Start();
 	}
 
 	return ret;
@@ -78,6 +95,9 @@ void Application::PrepareUpdate()
 // ---------------------------------------------
 void Application::FinishUpdate()
 {
+	if (loadRequested) LoadConfig();
+	if (saveRequested) SaveConfig();
+
 	if (maxFPS == 0 || renderer3D->vsync || maxFPS > screenRefresh)
 	{
 		Uint32 last_frame_ms = ms_timer.Read();
@@ -98,17 +118,18 @@ update_status Application::Update()
 	update_status ret = UPDATE_CONTINUE;
 	PrepareUpdate();	
 
-	for (unsigned int i = 0; i < list_modules.size() && ret == UPDATE_CONTINUE; i++)
+
+	for (unsigned int i = 0; i < listModules.size() && ret == UPDATE_CONTINUE; i++)
 	{
-		ret = list_modules[i]->PreUpdate(dt);
+		ret = listModules[i]->PreUpdate(dt);
 	}
-	for (unsigned int i = 0; i < list_modules.size() && ret == UPDATE_CONTINUE; i++)
+	for (unsigned int i = 0; i < listModules.size() && ret == UPDATE_CONTINUE; i++)
 	{
-		ret = list_modules[i]->Update(dt);
+		ret = listModules[i]->Update(dt);
 	}
-	for (unsigned int i = 0; i < list_modules.size() && ret == UPDATE_CONTINUE; i++)
+	for (unsigned int i = 0; i < listModules.size() && ret == UPDATE_CONTINUE; i++)
 	{
-		ret = list_modules[i]->PostUpdate(dt);
+		ret = listModules[i]->PostUpdate(dt);
 	}
 
 	FinishUpdate();
@@ -122,9 +143,9 @@ bool Application::CleanUp()
 
 	// Cleanup
 
-	for (int i = list_modules.size() - 1; i >= 0 && ret == true; --i)
+	for (int i = listModules.size() - 1; i >= 0 && ret == true; --i)
 	{
-		ret = list_modules[i]->CleanUp();
+		ret = listModules[i]->CleanUp();
 	}
 
 	return ret;
@@ -132,6 +153,50 @@ bool Application::CleanUp()
 
 void Application::AddModule(Module* mod)
 {
-	//list_modules.add(mod);
-	list_modules.push_back(mod);
+	//listModules.add(mod);
+	listModules.push_back(mod);
+}
+void Application::SaveConfig()
+{
+	LOG(LogType::L_NORMAL,"Saving configuration");
+
+	JSON_Value* root = jsonFile.GetRootValue();
+
+	JsonParser application = jsonFile.SetChild(root, "App");
+
+	application.SetNewJsonNumber(application.ValueToObject(application.GetRootValue()), "FPS", maxFPS);
+
+
+	// Call SaveConfig() in all modules
+	std::vector<Module*>::iterator item;
+
+	for (item = listModules.begin(); item != listModules.end(); ++item)
+	{
+		(*item)->SaveConfig(jsonFile.SetChild(root, (*item)->name));
+	}
+
+	jsonFile.SerializeFile(root, FILE_CONFIG);
+	saveRequested = false;
+}
+
+
+void Application::LoadConfig()
+{
+	LOG(LogType::L_NORMAL,"Loading configurations");
+
+	JSON_Value* root = jsonFile.GetRootValue();
+
+	JsonParser application = jsonFile.GetChild(root, "App");
+
+	maxFPS = application.JsonValToNumber("FPS");
+
+	
+	std::vector<Module*>::iterator item;
+
+	for (item = listModules.begin(); item != listModules.end(); ++item)
+	{
+		(*item)->LoadConfig(jsonFile.GetChild(root, (*item)->name));
+	}
+
+	loadRequested = false;
 }

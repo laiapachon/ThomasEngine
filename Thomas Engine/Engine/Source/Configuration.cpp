@@ -33,6 +33,14 @@ void Configuration::Draw()
 	if (ImGui::Begin("Configuration"))
 	{
 		// CollapsingHeader is to create new Header
+		if (ImGui::CollapsingHeader("Config saver"))
+		{
+			if (ImGui::Button("Save"))app->SaveConfigRequest();
+			ImGui::SameLine();
+			if (ImGui::Button("Load"))app->LoadConfigRequest();
+			
+			//ImGui::TreePop();
+		}
 		if (ImGui::CollapsingHeader("Application", ImGuiTreeNodeFlags_DefaultOpen))
 		{
 			// Input Text is to create a text with background and a const text
@@ -69,9 +77,9 @@ void Configuration::Draw()
 			IMGUI_PRINT("Total Alloc Unit Count: ", "%u", stats.totalAllocUnitCount);
 			IMGUI_PRINT("Peak Alloc Unit Count: ", "%u", stats.peakAllocUnitCount);
 		}
-		for (unsigned int i = 0; i < app->list_modules.size(); ++i)
+		for (unsigned int i = 0; i < app->listModules.size(); ++i)
 		{
-			app->list_modules[i]->OnGUI();
+			app->listModules[i]->OnGUI();
 		}
 	}
 	ImGui::End();

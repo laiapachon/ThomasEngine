@@ -4,6 +4,8 @@
 
 Camera3D::Camera3D(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
+	name = "Camera3D";
+
 	CalculateViewMatrix();
 
 	X = vec3(1.0f, 0.0f, 0.0f);
@@ -120,6 +122,16 @@ void Camera3D::Look(const vec3 &Position, const vec3 &Reference, bool RotateArou
 	CalculateViewMatrix();
 }
 
+void Camera3D::Look()
+{
+
+	Z = normalize(Position - Reference);
+	X = normalize(cross(vec3(0.0f, 1.0f, 0.0f), Z));
+	Y = cross(Z, X);
+
+	CalculateViewMatrix();
+}
+
 // -----------------------------------------------------------------
 void Camera3D::LookAt( const vec3 &Spot)
 {
@@ -153,4 +165,57 @@ void Camera3D::CalculateViewMatrix()
 {
 	ViewMatrix = mat4x4(X.x, Y.x, Z.x, 0.0f, X.y, Y.y, Z.y, 0.0f, X.z, Y.z, Z.z, 0.0f, -dot(X, Position), -dot(Y, Position), -dot(Z, Position), 1.0f);
 	ViewMatrixInverse = inverse(ViewMatrix);
+}
+bool Camera3D::SaveConfig(JsonParser& node) const
+{
+	node.SetNewJsonNumber(node.ValueToObject(node.GetRootValue()), "X.x", X.x);
+	node.SetNewJsonNumber(node.ValueToObject(node.GetRootValue()), "X.y", X.y);
+	node.SetNewJsonNumber(node.ValueToObject(node.GetRootValue()), "X.z", X.z);
+
+	node.SetNewJsonNumber(node.ValueToObject(node.GetRootValue()), "Y.x", Y.x);
+	node.SetNewJsonNumber(node.ValueToObject(node.GetRootValue()), "Y.y", Y.y);
+	node.SetNewJsonNumber(node.ValueToObject(node.GetRootValue()), "Y.z", Y.z);
+
+	node.SetNewJsonNumber(node.ValueToObject(node.GetRootValue()), "Z.x", Z.x);
+	node.SetNewJsonNumber(node.ValueToObject(node.GetRootValue()), "Z.y", Z.y);
+	node.SetNewJsonNumber(node.ValueToObject(node.GetRootValue()), "Z.z", Z.z);
+
+	node.SetNewJsonNumber(node.ValueToObject(node.GetRootValue()), "Reference.x", Reference.x);
+	node.SetNewJsonNumber(node.ValueToObject(node.GetRootValue()), "Reference.y", Reference.y);
+	node.SetNewJsonNumber(node.ValueToObject(node.GetRootValue()), "Reference.z", Reference.z);
+
+	node.SetNewJsonNumber(node.ValueToObject(node.GetRootValue()), "Position.x", Position.x);
+	node.SetNewJsonNumber(node.ValueToObject(node.GetRootValue()), "Position.y", Position.y);
+	node.SetNewJsonNumber(node.ValueToObject(node.GetRootValue()), "Position.z", Position.z);
+
+	return true;
+}
+
+bool Camera3D::LoadConfig(JsonParser& node)
+{
+	
+	X.x = (float)node.JsonValToNumber("X.x");
+	X.y = (float)node.JsonValToNumber("X.y");
+	X.z = (float)node.JsonValToNumber("X.z");
+	
+	Y.x = (float)node.JsonValToNumber("Y.x");
+	Y.y = (float)node.JsonValToNumber("Y.y");
+	Y.z = (float)node.JsonValToNumber("Y.z");
+	
+	Z.x = (float)node.JsonValToNumber("Z.x");
+	Z.y = (float)node.JsonValToNumber("Z.y");
+	Z.z = (float)node.JsonValToNumber("Z.z");
+	
+	Position.x = (float)node.JsonValToNumber("Position.x");
+	Position.y = (float)node.JsonValToNumber("Position.y");
+	Position.z = (float)node.JsonValToNumber("Position.z");
+
+	Reference.x = (float)node.JsonValToNumber("Reference.x");
+	Reference.y = (float)node.JsonValToNumber("Reference.y");
+	Reference.z = (float)node.JsonValToNumber("Reference.z");
+
+	Look();
+	//CalculateViewMatrix();
+
+	return true;
 }

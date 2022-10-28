@@ -1,15 +1,16 @@
 #pragma once
+
+#include "JsonParser.h"
 class Application;
+
 
 class Module
 {
-private :
-	bool enabled = true;
 
 public:
 	Application* App;
 
-	Module(Application* parent, bool start_enabled = true) : App(parent) {}
+	Module(Application* parent, bool startEnabled = true) : App(parent), enabled(startEnabled), name("") {}
 
 	virtual ~Module(){}
 
@@ -44,4 +45,19 @@ public:
 	{ 
 		return true; 
 	}
+
+	virtual bool LoadConfig(JsonParser& node)
+	{
+		return true;
+	}
+
+	virtual bool SaveConfig(JsonParser& node) const
+	{
+		return true;
+	}
+private :
+	bool enabled = true;
+
+public:
+	const char* name;
 };

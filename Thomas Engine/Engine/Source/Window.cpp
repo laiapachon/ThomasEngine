@@ -2,10 +2,15 @@
 #include "Application.h"
 #include "Window.h"
 
-Window::Window(Application* app, bool start_enabled) : Module(app, start_enabled)
+#include "mmgr/mmgr.h"
+
+
+Window::Window(Application* app, bool startEnabled) : Module(app, startEnabled)
 {
+	name = "Window";
+
 	window = NULL;
-	screen_surface = NULL;
+	screenSurface = NULL;
 }
 
 // Destructor
@@ -29,9 +34,9 @@ bool Window::Init()
 		// Get Screen Refresh of monitor
 		for (int i = 0; i < SDL_GetNumVideoDisplays(); ++i) {
 
-			int should_be_zero = SDL_GetCurrentDisplayMode(i, &current);
+			int shouldBeZero = SDL_GetCurrentDisplayMode(i, &current);
 
-			if (should_be_zero != 0)
+			if (shouldBeZero != 0)
 				// In case of error...
 				SDL_Log("Could not get display mode for video display #%d: %s", i, SDL_GetError());
 			else
@@ -90,7 +95,7 @@ bool Window::Init()
 		else
 		{
 			//Get window surface
-			screen_surface = SDL_GetWindowSurface(window);
+			screenSurface = SDL_GetWindowSurface(window);
 		}
 	}
 	SDL_bool res = SDL_bool(false);
@@ -132,11 +137,20 @@ void Window::SetBrightness(float bright)
 	SDL_SetWindowBrightness(window, bright);
 }
 
+void Window::SetBrightness( )
+{
+	SDL_SetWindowBrightness(window, brightness);
+}
+
 void Window::SetSize(uint w, uint h)
 {
 	height = h;
 	width = w;
 	SDL_SetWindowSize(window, w, h);
+}
+void Window::SetSize()
+{
+	SDL_SetWindowSize(window, width, height);
 }
 
 void Window::GetSize(int& w, int& h)const
@@ -149,14 +163,23 @@ void Window::SetFullscreen(bool _fullscreen)
 {
 	fullScreen = _fullscreen;
 	if (fullScreen)fullScreenDesktop = !fullScreen;
-	(fullScreen) ? SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN) : SDL_SetWindowFullscreen(window, 0);
+	(fullScreen) ? SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN) : SDL_SetWindowFullscreen(window, false);
+
+}
+void Window::SetFullscreen()
+{
+	(fullScreen) ? SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN) : SDL_SetWindowFullscreen(window, false);
 }
 
 void Window::SetResizable(bool _resizable)
 {
-	resizable = _resizable;
+	isResizable = _resizable;
 	SDL_bool res = SDL_bool(_resizable);
 	SDL_SetWindowResizable(window, res);
+}
+void Window::SetResizable()
+{
+	SDL_SetWindowResizable(window, SDL_bool(isResizable));
 }
 void Window::SetBorderless(bool _borderless)
 {
@@ -164,11 +187,20 @@ void Window::SetBorderless(bool _borderless)
 	SDL_bool bord = SDL_bool(!_borderless);
 	SDL_SetWindowBordered(window, bord);
 }
+void Window::SetBorderless()
+{
+	(borderless) ? SDL_SetWindowBordered(window, SDL_bool(false)) : SDL_SetWindowBordered(window, SDL_bool(true));
+}
 
 void Window::SetFullscreenDesktop(bool _fulldesktop)
 {
 	fullScreenDesktop = _fulldesktop;
 	if (fullScreenDesktop) fullScreen = !fullScreenDesktop;
+	(fullScreenDesktop) ? SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP) : SDL_SetWindowFullscreen(window, 0);
+}
+
+void Window::SetFullscreenDesktop()
+{
 	(fullScreenDesktop) ? SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP) : SDL_SetWindowFullscreen(window, 0);
 }
 
@@ -199,19 +231,25 @@ void Window::OnGUI()
 		{
 			SetSize(width, height);
 		}
+
 		IMGUI_PRINT("Refresh rate: ", "%d", current.refresh_rate);
+
 		if (ImGui::Checkbox("Fullscreen", &fullScreen)) {
 			SetFullscreen(fullScreen);
+
 			SDL_GetWindowSize(window, &width, &height);
-			OnResize(width, height);
+			OnResize(width, height);			
 		}
 		if (ImGui::IsItemHovered())
 			ImGui::SetTooltip("Change fullscreen mode");
+
 		ImGui::SameLine();
-		if (ImGui::Checkbox("Resizable", &resizable)) {
-			if (!fullScreen && !fullScreenDesktop) SetResizable(resizable);
-			else resizable = !resizable;
+
+		if (ImGui::Checkbox("Resizable", &isResizable)){
+			if (!fullScreen && !fullScreenDesktop) SetResizable(isResizable);
+			else isResizable = !isResizable;
 		}
+
 		if (ImGui::IsItemHovered())
 			ImGui::SetTooltip("Change resizable mode, only on Off FullScreen mode");
 
@@ -226,6 +264,7 @@ void Window::OnGUI()
 			if (!fullScreen && !fullScreenDesktop) SetBorderless(borderless);
 			else borderless = !borderless;
 		}
+
 		if (ImGui::IsItemHovered())
 			ImGui::SetTooltip("Change borderless mode, only on Off FullScreen mode");
 
@@ -244,7 +283,7 @@ void Window::OnGUI()
 			SetFullscreenDesktop(fullScreenDesktop);
 
 			SDL_GetWindowSize(window, &width, &height);
-			OnResize(width, height);
+			OnResize(width, height);			
 		}
 		if (ImGui::IsItemHovered())
 			ImGui::SetTooltip("Change fullscreen desktop mode");
@@ -252,4 +291,40 @@ void Window::OnGUI()
 
 		ImGui::NewLine();
 	}
+}
+
+bool Window::SaveConfig(JsonParser& node) const
+{
+	node.SetNewJsonNumber(node.ValueToObject(node.GetRootValue()), "width", width);
+	node.SetNewJsonNumber(node.ValueToObject(node.GetRootValue()), "height", height);
+	node.SetNewJsonNumber(node.ValueToObject(node.GetRootValue()), "brightness", brightness);
+
+	node.SetNewJsonBool(node.ValueToObject(node.GetRootValue()), "fullscreen", fullScreen);
+	node.SetNewJsonBool(node.ValueToObject(node.GetRootValue()), "fullscreen desktop", fullScreenDesktop);
+	node.SetNewJsonBool(node.ValueToObject(node.GetRootValue()), "borderless", borderless);
+	node.SetNewJsonBool(node.ValueToObject(node.GetRootValue()), "resizable", isResizable);
+
+	return true;
+}
+
+bool Window::LoadConfig(JsonParser& node)
+{
+	width = (int)node.JsonValToNumber("width") * SCREEN_SIZE;
+	height = (int)node.JsonValToNumber("height") * SCREEN_SIZE;
+	brightness = (float)node.JsonValToNumber("brightness");
+
+	fullScreen = node.JsonValToBool("fullscreen");
+	fullScreenDesktop = node.JsonValToBool("fullscreen desktop");
+	borderless = node.JsonValToBool("borderless");
+	isResizable = node.JsonValToBool("resizable");
+
+	SetFullscreen();
+	SetFullscreenDesktop();
+	SetBorderless();
+
+	SetBrightness();
+	SetResizable();
+	SetSize();
+
+	return true;
 }

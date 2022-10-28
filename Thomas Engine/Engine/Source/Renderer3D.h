@@ -43,6 +43,10 @@ public:
 	void OnResize(int width, int height);
 	void OnGUI() override;
 
+	bool SaveConfig(JsonParser& node) const;
+
+	bool LoadConfig(JsonParser& node);
+
 	Hardware GetHardware() { return hardware; };
 
 public:

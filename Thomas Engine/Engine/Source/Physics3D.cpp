@@ -7,6 +7,8 @@
 
 Physics3D::Physics3D(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
+	name = "Physics3D";
+
 	debug_draw = NULL;
 	debug = true;
 

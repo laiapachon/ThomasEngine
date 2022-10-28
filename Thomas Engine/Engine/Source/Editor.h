@@ -39,20 +39,8 @@ public:
 
 	void LogToConsole(const char* msg, LogType _type);
 
-	void CreateDockSpace();
-
-	ImGuiID DockSpaceOverViewportCustom(ImGuiViewport* viewport, ImGuiDockNodeFlags dockspaceFlags, ImVec2 position, ImVec2 size, const ImGuiWindowClass* windowClass);
-
 	Tab* GetTab(TabType type);
 	void PrintLicense();
-
-    void print_commits_info(const char* username, const char* repo);
-
-	void persistence_example(void);
-
-	void serialization_example(void);
-
-	void parsonTest(void);
 
 private:
 	std::vector<Tab*> tabs;
@@ -63,7 +51,4 @@ private:
 	std::vector<float> msLog;
 
 	bool showCase = false;
-
-	// DockingSpace
-	ImGuiID dockId = 0;
 };

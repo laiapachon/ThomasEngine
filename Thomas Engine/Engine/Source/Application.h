@@ -11,9 +11,13 @@
 #include "Input.h"
 #include "Camera3D.h"
 #include "Physics3D.h"
-#include"FBXLoader.h"
 #include "Editor.h"
 
+//#include "mmgr/mmgr.h"
+
+#include "JsonParser.h"
+
+#define FILE_CONFIG	"../Output/Settings/config.json"
 
 
 class Application
@@ -25,9 +29,8 @@ public:
 	Renderer3D* renderer3D;
 	Physics3D* physics;
 	Editor* editor;
-	Loader* loader;
 
-	std::vector<Module*> list_modules;
+	std::vector<Module*> listModules;
 private:
 
 	Timer	ms_timer;
@@ -45,14 +48,29 @@ public:
 	float GetDt() const { return dt; }
 	float GetFrameRate() const { return 1.f / dt; }
 
+	void SaveConfig();
+	void LoadConfig();
+
+	inline void SaveConfigRequest() { saveRequested = true; }
+	inline void LoadConfigRequest() { loadRequested = true; }
+
+	inline const char* GetAppName() const { return TITLE; }
+	inline const char* GetOrganizationName() const { return ORGANIZATION_NAME; }
+
 	int maxFPS;
 	int screenRefresh;
+
 
 private:
 
 	void AddModule(Module* mod);
 	void PrepareUpdate();
 	void FinishUpdate();
+
+	JsonParser jsonFile;
+
+	bool saveRequested;
+	bool loadRequested;
 
 };
 extern Application* app;

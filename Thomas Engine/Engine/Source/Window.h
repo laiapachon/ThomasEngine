@@ -3,6 +3,9 @@
 
 #include "Module.h"
 #include "SDL/include/SDL.h"
+#include "Parson/parson.h"
+
+#include "JsonParser.h"
 
 class Application;
 
@@ -21,13 +24,19 @@ public:
 	void SetTitle(const char* title);
 
 	void SetBrightness(float bright);
+	void SetBrightness();
 	void SetSize(uint w, uint h);
+	void SetSize();
 	void SetFullscreen(bool fullscreen);
-	void SetResizable(bool resizable);
+	void SetFullscreen();
+	void SetResizable(bool isResizable);
+	void SetResizable();
 	void SetBorderless(bool borderless);
+	void SetBorderless();
 	void SetFullscreenDesktop(bool fullsdesktop);
+	void SetFullscreenDesktop();
 	bool IsFullscreen() const { return fullScreen; }
-	bool IsResizable() const { return resizable; }
+	bool IsResizable() const { return isResizable; }
 	bool IsBorderless() const { return borderless; }
 	bool IsFullscreenDesktop() const { return fullScreenDesktop; }
 
@@ -38,13 +47,17 @@ public:
 
 	void OnGUI() override;
 
+	bool SaveConfig(JsonParser& node) const;
+
+	bool LoadConfig(JsonParser& node);
+
 public:
 	//The window we'll be rendering to
 	SDL_Window* window;
 	SDL_GLContext gl_context;
 
 	//The surface contained by the window
-	SDL_Surface* screen_surface;
+	SDL_Surface* screenSurface;
 
 private:
 	SDL_DisplayMode current;
@@ -55,7 +68,7 @@ private:
 
 	bool fullScreen = false;
 	bool borderless = false;
-	bool resizable = false;
+	bool isResizable = false;
 	bool fullScreenDesktop = false;
 };
 

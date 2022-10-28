@@ -108,7 +108,7 @@ Cube::Cube(float sizeX, float sizeY, float sizeZ) : Primitive(), size(sizeX, siz
 }
 
 void Cube::InnerRender() const
-{
+{	
 	float sx = size.x * 0.5f;
 	float sy = size.y * 0.5f;
 	float sz = size.z * 0.5f;
@@ -123,6 +123,7 @@ void Cube::InnerRender() const
 	//GLfloat v7 = (-sx, -sy, -sz);
 
 	glBegin(GL_TRIANGLES);  // draw a cube with 12 triangles
+	//glBegin(GL_TRIANGLE_STRIP); 
 
 	// Front face =================
 	glVertex3f(sx, sy, sz);

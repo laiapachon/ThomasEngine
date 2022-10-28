@@ -3,6 +3,8 @@
 #include "Globals.h"
 #include "glmath.h"
 
+
+
 class Camera3D : public Module
 {
 public:
@@ -14,6 +16,7 @@ public:
 	bool CleanUp();
 
 	void Look(const vec3 &Position, const vec3 &Reference, bool RotateAroundReference = false);
+	void Look();
 	void LookAt(const vec3 &Spot);
 	void Move(const vec3 &Movement);
 	float* GetViewMatrix();
@@ -21,6 +24,10 @@ public:
 private:
 
 	void CalculateViewMatrix();
+
+	bool SaveConfig(JsonParser& node) const;
+
+	bool LoadConfig(JsonParser& node);
 
 public:
 	

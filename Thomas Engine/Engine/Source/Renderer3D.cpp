@@ -13,6 +13,8 @@
 
 Renderer3D::Renderer3D(Application* app, bool start_enabled) : Module(app, start_enabled), vsync(false)
 {
+	name = "Renderer3D";
+
 	GetCaps(hardware.caps);
 
 	SDL_version version;
@@ -58,7 +60,7 @@ bool Renderer3D::Init()
 		LOG(LogType::L_ERROR, "OpenGL context could not be created! SDL_Error: %s\n", SDL_GetError());
 		ret = false;
 	}
-	glewInit();
+	
 	if(ret == true)
 	{
 		//Use Vsync
@@ -130,6 +132,15 @@ bool Renderer3D::Init()
 		glEnable(GL_TEXTURE_2D);
 	}
 
+	// TODO: What is num_vertices and vertices? And this shoud be here?
+
+	//uint vboId;
+	//glGenBuffers(1, &vboId);
+	//// bind VBO in order to use
+	//glBindBuffer(GL_ARRAY_BUFFER, vboId);
+	//// upload data to VBO
+	//glBufferData(GL_ARRAY_BUFFER, sizeof(float) * num_vertices * 3, vertices, GL_STATIC_DRAW);
+
 	App->camera->Move(vec3(1.0f, 1.0f, 0.0f));
 	App->camera->LookAt(vec3(0, 0, 0));
 
@@ -172,20 +183,16 @@ update_status Renderer3D::PostUpdate(float dt)
 	Plane p(0, 1, 0, 0);
 	p.axis = true;
 	p.Render();
-	App->loader->Draw();
-	glBegin(GL_TRIANGLES);
+
+	(wireframe) ? glPolygonMode(GL_FRONT_AND_BACK, GL_LINE) : glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	(wireframe) ? glColor3f(Yellow.r, Yellow.g, Yellow.b) : glColor3f(White.r, White.g, White.b);
 
 	Cube cube;
-	cube.Render();
-	
-	(wireframe) ? glPolygonMode(GL_FRONT_AND_BACK, GL_LINE) : glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	(wireframe) ? glColor3f(Red.r, Red.g, Red.b) : glColor3f(White.r, White.g, White.b);
+	cube.InnerRender();
 
 	glEnd();
-
 	(wireframe) ? glPolygonMode(GL_FRONT_AND_BACK, GL_FILL) : glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-	
 	return UPDATE_CONTINUE;
 }
 
@@ -193,13 +200,13 @@ update_status Renderer3D::PostUpdate(float dt)
 bool Renderer3D::CleanUp()
 {
 	LOG(LogType::L_NO_PRINTABLE, "Destroying 3D Renderer");
-
+		
 	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_CULL_FACE);
 	glDisable(GL_LIGHTING);
 	glDisable(GL_COLOR_MATERIAL);
 	glDisable(GL_TEXTURE_2D);
-		
+
 	SDL_GL_DeleteContext(context);
 
 	return true;
@@ -261,14 +268,11 @@ void Renderer3D::OnGUI()
 		IMGUI_PRINT("VRAM Usage:", "%.1f Mb", hardware.VRAMUsage);
 		IMGUI_PRINT("VRAM Available:", "%.1f Mb", hardware.VRAMAvailable);
 		IMGUI_PRINT("VRAM Reserved:", "%.1f Mb", hardware.VRAMReserved);
-
-		
 	}
-	
 	if (ImGui::CollapsingHeader("Debug"))
 	{
 		if (ImGui::Checkbox("GL_DEPTH_TEST", &depthTest)) {
-			if (depthTest) glEnable(GL_DEPTH_TEST);
+			if(depthTest) glEnable(GL_DEPTH_TEST);
 			else glDisable(GL_DEPTH_TEST);
 		}
 
@@ -311,7 +315,25 @@ void Renderer3D::OnGUI()
 		}
 
 		if (ImGui::IsItemHovered())
-			ImGui::SetTooltip("Enable/Disable GL_LIGHTING");
+			ImGui::SetTooltip("Enable/Disable GL_LIGHTING");		
 
 	}
+}
+
+bool Renderer3D::SaveConfig(JsonParser& node) const
+{
+
+	node.SetNewJsonBool(node.ValueToObject(node.GetRootValue()), "vsync", vsync);
+	node.SetNewJsonBool(node.ValueToObject(node.GetRootValue()), "wireframe", wireframe);
+
+	return true;
+}
+
+bool Renderer3D::LoadConfig(JsonParser& node)
+{
+
+	vsync = node.JsonValToBool("vsync");
+	wireframe = node.JsonValToBool("wireframe");
+
+	return true;
 }
