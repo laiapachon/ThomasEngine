@@ -1,7 +1,8 @@
-
 #pragma once
 #include "glmath.h"
 #include "Color.h"
+#include <vector>
+#include "Mesh.h"
 
 enum PrimitiveTypes
 {
@@ -13,7 +14,7 @@ enum PrimitiveTypes
 	Primitive_Cylinder
 };
 
-class Primitive
+class Primitive : public Mesh
 {
 public:
 
@@ -22,15 +23,15 @@ public:
 	virtual void	Render() const;
 	virtual void	InnerRender() const;
 	void			SetPos(float x, float y, float z);
-	void			SetRotation(float angle, const vec3 &u);
+	void			SetRotation(float angle, const vec3& u);
 	void			Scale(float x, float y, float z);
 	PrimitiveTypes	GetType() const;
 
 public:
-	
+
 	Color color;
 	mat4x4 transform;
-	bool axis,wire;
+	bool axis, wire;
 
 protected:
 	PrimitiveTypes type;
@@ -39,12 +40,12 @@ protected:
 // ============================================
 class Cube : public Primitive
 {
-public :
-	Cube();
-	Cube(float sizeX, float sizeY, float sizeZ);
-	void InnerRender() const;
 public:
-	vec3 size;
+	Cube();
+	Cube(vec3 _size, vec3 pos);
+	void InnerMesh();
+public:
+	vec3 size = { 0.5f, 0.5f, 0.5f };
 };
 
 // ============================================
@@ -52,10 +53,17 @@ class Sphere : public Primitive
 {
 public:
 	Sphere();
-	Sphere(float radius);
-	void InnerRender() const;
+	Sphere(float radius, int sectors, int stacks);
+	void InnerMesh();
+
+private:
+	void SetVerticesMesh();
+	void SetIndicesMesh();
+
 public:
-	float radius;
+	float radius = 1;
+	int sectors = 36;
+	int stacks = 18;
 };
 
 // ============================================
@@ -63,11 +71,39 @@ class Cylinder : public Primitive
 {
 public:
 	Cylinder();
-	Cylinder(float radius, float height);
-	void InnerRender() const;
+	Cylinder(float radius, float height, int sectorCount);
+	void InnerMesh();
+
+private:
+	std::vector<float> GetUnitCircleVertices();
+	void SetVerticesMesh();
+	void SetIndicesMesh();
+
 public:
-	float radius;
-	float height;
+	float radius = 1;
+	float height = 3;
+	int sectorCount = 24;
+
+private:
+	int baseCenterIndex;
+	int topCenterIndex;
+};
+
+
+class Pyramid : public Primitive
+{
+public:
+	Pyramid();
+	Pyramid(float radius, float height, int sectorCount);
+	void InnerMesh();
+
+private:
+	void SetVerticesMesh();
+	void SetIndicesMesh();
+
+public:
+	float radius = 2;
+	float height = 2;
 };
 
 // ============================================

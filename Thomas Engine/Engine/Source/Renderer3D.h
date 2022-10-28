@@ -3,9 +3,12 @@
 #include "Globals.h"
 #include "glmath.h"
 #include "Light.h"
+#include "Primitive.h"
 
 #include "Glew/include/glew.h"
 #include "SDL\include\SDL_opengl.h"
+
+#include "FBXLoader.h"
 
 
 #define MAX_LIGHTS 8
@@ -65,4 +68,12 @@ private:
 	bool lighting = true;
 	bool colorMaterial = true;
 	bool texture2D = true;
+
+	Cube cube;
+	Sphere sphere;
+	Cylinder cylinder;
+	Pyramid pyramid;
+
+	MeshData* exampleFBX;
+
 };

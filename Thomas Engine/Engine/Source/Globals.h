@@ -10,6 +10,9 @@
 //#define LOG(format, ...) log(__FILE__, __LINE__, format, __VA_ARGS__);
 
 
+#define INVALID_OGL_VALUE 0xffffffff
+#define ASSIMP_LOAD_FLAGS (aiProcess_Triangulate | aiProcess_GenSmoothNormals |  aiProcess_JoinIdenticalVertices )
+
 enum class LogType
 {
 	L_NORMAL,
@@ -26,7 +29,7 @@ void log(const char file[], int line, LogType _type, const char* format, ...);
 
 #define DEGTORAD 0.0174532925199432957f
 #define RADTODEG 57.295779513082320876f
-#define HAVE_M_PI
+#define PI 3.14159265358979323846
 
 // Deletes a buffer
 #define RELEASE( x )\
