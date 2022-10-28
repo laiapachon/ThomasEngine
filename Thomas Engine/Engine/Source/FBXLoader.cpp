@@ -31,6 +31,7 @@ bool Loader::Init()
 	
 	path = "Assets/BakerHouse.fbx";
 	LoadFile(path);
+	
 
 	return ret;
 }
@@ -62,7 +63,17 @@ void Loader::LoadFile(string path)
 			// copy vertices
 			ourMesh->num_vertices = scene->mMeshes[i]->mNumVertices;
 			ourMesh->vertices = new float[ourMesh->num_vertices * 3];
-			memcpy(ourMesh->vertices, scene->mMeshes[i]->mVertices, sizeof(float) * ourMesh->num_vertices * 3);
+
+			//memcpy(ourMesh->vertices, scene->mMeshes[i]->mVertices, sizeof(float) * ourMesh->num_vertices * 3);
+			for (int k = 0; k < ourMesh->num_vertices; k++) {
+
+				ourMesh->vertices[k * VERTICES] = scene->mMeshes[i]->mVertices[k].x;
+				ourMesh->vertices[k * VERTICES + 1] = scene->mMeshes[i]->mVertices[k].y;
+				ourMesh->vertices[k * VERTICES + 2] = scene->mMeshes[i]->mVertices[k].z;
+							
+
+			}
+
 			LOG(LogType::L_NORMAL, "New mesh with % d vertices", ourMesh->num_vertices);
 
 			// copy faces
@@ -84,16 +95,18 @@ void Loader::LoadFile(string path)
 				}
 				//For saving all meshes in a list in case we import more than one
 				//push meshes
-				meshArray.push_back(ourMesh);
+				//meshArray.push_back(ourMesh);
+				Buffer(ourMesh);
 			}
 			else {
 				delete ourMesh;
 			}
 		}
 		aiReleaseImport(scene);
+
 	}
 	else {
-		LOG(LogType::L_ERROR, "Error loading scene % s", path);
+		LOG(LogType::L_ERROR, "Error loading FBX % s", path);
 
 	}
 }

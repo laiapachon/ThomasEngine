@@ -9,7 +9,7 @@
 #include "Assimp/include/postprocess.h"
 
 using namespace std;
-
+#define VERTICES 5
 struct Mesh {
 	uint id_indices = 0; // index in VRAM
 	uint num_indices = 0;
