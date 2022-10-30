@@ -111,3 +111,24 @@ JsonParser JsonParser::SetChild(JSON_Value* parent, const char* name)
 
 	return GetChild(parent, name);
 }
+
+JsonConfig::JsonConfig()
+{
+	root = json_value_init_object();
+	nObj = json_value_get_object(root);
+}
+
+JsonConfig::JsonConfig(JSON_Object* _nObj)
+{
+	nObj = _nObj;
+}
+
+void JsonConfig::WriteInt(const char* name, int value)
+{
+	json_object_set_number(nObj, name, value);
+}
+
+int JsonConfig::ReadInt(const char* name)
+{
+	return json_object_get_number(nObj, name);
+}

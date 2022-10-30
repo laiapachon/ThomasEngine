@@ -8,9 +8,6 @@
 #include "Glew/include/glew.h"
 #include "SDL\include\SDL_opengl.h"
 
-#include "FBXLoader.h"
-
-
 #define MAX_LIGHTS 8
 
 class Hardware {
@@ -69,11 +66,8 @@ private:
 	bool colorMaterial = true;
 	bool texture2D = true;
 
-	Cube cube;
-	Sphere sphere;
-	Cylinder cylinder;
-	Pyramid pyramid;
-
-	MeshData* exampleFBX;
-
+	PrimitiveCube cube;
+	PrimitiveSphere sphere;
+	PrimitiveCylinder cylinder;
+	PrimitivePyramid pyramid;	
 };

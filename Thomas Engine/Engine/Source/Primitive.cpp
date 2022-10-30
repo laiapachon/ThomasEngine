@@ -1,11 +1,11 @@
-#include "Globals.h"
+#include "Application.h"
 #include <gl/GL.h>
 #include <gl/GLU.h>
 #include "Primitive.h"
 #include <cmath>
 
 // ------------------------------------------------------------
-Primitive::Primitive() : transform(IdentityMatrix), color(White), wire(false), axis(false), type(PrimitiveTypes::Primitive_Point)
+Primitive::Primitive() : transform(IdentityMatrix), color(White), wire(false), axis(false), type(PrimitiveTypes::Primitive_Point), Mesh(app->GetNewUID())
 {}
 
 // ------------------------------------------------------------
@@ -20,7 +20,7 @@ void Primitive::Render() const
 	glPushMatrix();
 	glMultMatrixf(transform.M);
 
-	if (axis == true)
+	if(axis == true)
 	{
 		// Draw Axis Grid
 		glLineWidth(2.0f);
@@ -54,7 +54,7 @@ void Primitive::Render() const
 
 	glColor3f(color.r, color.g, color.b);
 
-	if (wire)
+	if(wire)
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	else
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -85,7 +85,7 @@ void Primitive::SetPos(float x, float y, float z)
 }
 
 // ------------------------------------------------------------
-void Primitive::SetRotation(float angle, const vec3& u)
+void Primitive::SetRotation(float angle, const vec3 &u)
 {
 	transform.rotate(angle, u);
 }
@@ -97,19 +97,19 @@ void Primitive::Scale(float x, float y, float z)
 }
 
 // CUBE ============================================
-Cube::Cube() : Primitive()
+PrimitiveCube::PrimitiveCube() : Primitive()
 {
 	type = PrimitiveTypes::Primitive_Cube;
 }
 
-Cube::Cube(vec3 size, vec3 pos) : Primitive(), size(size)
+PrimitiveCube::PrimitiveCube(vec3 size, vec3 pos) : Primitive(), size(size)
 {
 	type = PrimitiveTypes::Primitive_Cube;
 	glTranslatef(pos.x, pos.y, pos.z);
 }
 
-void Cube::InnerMesh()
-{
+void PrimitiveCube::InnerMesh()
+{	
 	float vertex[] =
 	{
 		-1.0f, -1.0f, 1.0f,
@@ -121,11 +121,11 @@ void Cube::InnerMesh()
 		1.0f, 1.0f, -1.0f,
 		-1.0f, 1.0f, -1.0f
 	};
-	for (int i = 0; i < 24; i += 3)
+	for (int i = 0; i < 24; i +=3)
 	{
 		vertex[i] *= size.x;
-		vertex[i + 1] *= size.y;
-		vertex[i + 2] *= size.z;
+		vertex[i+1] *= size.y;
+		vertex[i+2] *= size.z;
 	}
 	int index[] =
 	{
@@ -136,37 +136,44 @@ void Cube::InnerMesh()
 		5, 1, 0, 0, 4, 5,
 		1, 5, 6, 6, 2, 1
 	};
+	float texCoords[] =
+	{
+		1.0000, 0.0000, 0.0000,
+		1.0000, 1.0000, 0.0000,
+		0.0000, 1.0000, 0.0000,
+		0.0000, 0.0000, 0.0000
+	};
+
 	SetVertices(vertex, 24);
 	SetIndices(index, 36);
+	SetTexCoords(texCoords, 12);
 }
-
-
 
 // SPHERE ============================================
-Sphere::Sphere() : Primitive()
+PrimitiveSphere::PrimitiveSphere() : Primitive()
 {
 	type = PrimitiveTypes::Primitive_Sphere;
 }
 
-Sphere::Sphere(float radius, int sectors, int stacks) : Primitive(), radius(radius), sectors(sectors), stacks(stacks)
+PrimitiveSphere::PrimitiveSphere(float radius, int sectors, int stacks) : Primitive(), radius(radius), sectors(sectors), stacks(stacks)
 {
 	type = PrimitiveTypes::Primitive_Sphere;
 }
 
-void Sphere::InnerMesh()
+void PrimitiveSphere::InnerMesh()
 {
 	SetVerticesMesh();
-	SetIndicesMesh();
+	SetIndicesMesh();	
 }
 
-void Sphere::SetVerticesMesh()
+void PrimitiveSphere::SetVerticesMesh()
 {
 	// clear memory of prev arrays
 	std::vector<float>().swap(vertices);
-	//std::vector<float>().swap(texCoords);
+	std::vector<float>().swap(texCoords);
 
 	float x, y, z, xz;                              // vertex position
-	//float s, t;                                     // vertex texCoord
+	float s, t;                                     // vertex texCoord
 
 	float sectorStep = 2 * PI / sectors;
 	float stackStep = PI / stacks;
@@ -192,15 +199,15 @@ void Sphere::SetVerticesMesh()
 			vertices.push_back(z);
 
 			// vertex tex coord (s, t) range between [0, 1]
-			/*s = (float)j / sectorCount;
-			t = (float)i / stackCount;
+			s = (float)j / sectors;
+			t = (float)i / stacks;
 			texCoords.push_back(s);
-			texCoords.push_back(t);*/
+			texCoords.push_back(t);
 		}
 	}
 }
 
-void Sphere::SetIndicesMesh()
+void PrimitiveSphere::SetIndicesMesh()
 {
 	// generate CCW index list of sphere triangles
 	// k1--k1+1
@@ -238,23 +245,23 @@ void Sphere::SetIndicesMesh()
 
 
 // CYLINDER ============================================
-Cylinder::Cylinder() : Primitive()
+PrimitiveCylinder::PrimitiveCylinder() : Primitive()
 {
 	type = PrimitiveTypes::Primitive_Cylinder;
 }
 
-Cylinder::Cylinder(float radius, float height, int sectorCount) : Primitive(), radius(radius), height(height), sectorCount(sectorCount)
+PrimitiveCylinder::PrimitiveCylinder(float radius, float height, int sectorCount) : Primitive(), radius(radius), height(height), sectorCount(sectorCount)
 {
 	type = PrimitiveTypes::Primitive_Cylinder;
 }
 
-void Cylinder::InnerMesh()
+void PrimitiveCylinder::InnerMesh()
 {
 	SetVerticesMesh();
 	SetIndicesMesh();
 }
 
-std::vector<float> Cylinder::GetUnitCircleVertices()
+std::vector<float> PrimitiveCylinder::GetUnitCircleVertices()
 {
 	float sectorStep = 2 * PI / sectorCount;
 	float sectorAngle;  // radian
@@ -270,11 +277,11 @@ std::vector<float> Cylinder::GetUnitCircleVertices()
 	return unitCircleVertices;
 }
 
-void Cylinder::SetVerticesMesh()
+void PrimitiveCylinder::SetVerticesMesh()
 {
 	// clear memory of prev arrays
 	std::vector<float>().swap(vertices);
-	//std::vector<float>().swap(texCoords);
+	std::vector<float>().swap(texCoords);
 
 	// get unit circle vectors on XY-plane
 	std::vector<float> unitVertices = GetUnitCircleVertices();
@@ -283,7 +290,7 @@ void Cylinder::SetVerticesMesh()
 	for (int i = 0; i < 2; ++i)
 	{
 		float h = -height / 2.0f + i * height;           // y value; -h/2 to h/2
-		//float t = 1.0f - i;                              // vertical tex coord; 1 to 0
+		float t = 1.0f - i;                              // vertical tex coord; 1 to 0
 
 		for (int j = 0, k = 0; j <= sectorCount; ++j, k += 3)
 		{
@@ -318,13 +325,13 @@ void Cylinder::SetVerticesMesh()
 			vertices.push_back(h);                       // vz
 			vertices.push_back(uz * radius);             // vy
 			// texture coordinate
-			//texCoords.push_back(-ux * 0.5f + 0.5f);      // s
-			//texCoords.push_back(-uy * 0.5f + 0.5f);      // t
+			texCoords.push_back(-ux * 0.5f + 0.5f);      // s
+			texCoords.push_back(-uz * 0.5f + 0.5f);      // t
 		}
 	}
 }
 
-void Cylinder::SetIndicesMesh()
+void PrimitiveCylinder::SetIndicesMesh()
 {
 	// generate CCW index list of cylinder triangles
 	int k2 = 0;                         // 1st vertex index at base
@@ -385,23 +392,17 @@ void Cylinder::SetIndicesMesh()
 
 
 // PYRAMID ============================================
-Pyramid::Pyramid() : Primitive()
+PrimitivePyramid::PrimitivePyramid() : Primitive()
 {
 	type = PrimitiveTypes::Primitive_Cylinder;
 }
 
-Pyramid::Pyramid(float radius, float height, int sectorCount) : Primitive(), radius(radius), height(height)
+PrimitivePyramid::PrimitivePyramid(float radius, float height, int sectorCount) : Primitive(), radius(radius), height(height)
 {
 	type = PrimitiveTypes::Primitive_Cylinder;
 }
 
-void Pyramid::InnerMesh()
-{
-	SetVerticesMesh();
-	SetIndicesMesh();
-}
-
-void Pyramid::SetVerticesMesh()
+void PrimitivePyramid::InnerMesh()
 {
 	float vertex[] =
 	{
@@ -415,11 +416,6 @@ void Pyramid::SetVerticesMesh()
 	{
 		vertex[i] *= radius;
 	}
-	SetVertices(vertex, 24);
-}
-
-void Pyramid::SetIndicesMesh()
-{
 	int index[] =
 	{
 		0, 2, 4,
@@ -429,23 +425,50 @@ void Pyramid::SetIndicesMesh()
 		0, 1, 3,
 		0, 3, 2,
 	};
-	SetIndices(index, 36);
-}
+	float texCoords[] =
+	{
+		0.5000, 0.1910,
+		0.1910, 0.5000,
+		0.5000, 0.8090,
+		0.5000, 0.1910,
+		0.5000, 0.8090,
+		0.8090, 0.5000,
 
+		0.5000, 0.1910,
+		0.8090, 0.5000,
+		1.0000, 0.0000,
+
+		0.8090, 0.5000,
+		0.5000, 0.8090,
+		1.0000, 1.0000,
+
+		0.5000, 0.8090,
+		0.1910, 0.5000,
+		0.0000, 1.0000,
+
+		0.1910, 0.5000,
+		0.5000, 0.1910,
+		0.0000, 0.0000,
+	};
+
+	SetVertices(vertex, 15);
+	SetIndices(index, 18);
+	SetTexCoords(texCoords, 36);
+}
 
 
 // LINE ==================================================
-Line::Line() : Primitive(), origin(0, 0, 0), destination(1, 1, 1)
+PrimitiveLine::PrimitiveLine() : Primitive(), origin(0, 0, 0), destination(1, 1, 1)
 {
 	type = PrimitiveTypes::Primitive_Line;
 }
 
-Line::Line(float x, float y, float z) : Primitive(), origin(0, 0, 0), destination(x, y, z)
+PrimitiveLine::PrimitiveLine(float x, float y, float z) : Primitive(), origin(0, 0, 0), destination(x, y, z)
 {
 	type = PrimitiveTypes::Primitive_Line;
 }
 
-void Line::InnerRender() const
+void PrimitiveLine::InnerRender() const
 {
 	glLineWidth(2.0f);
 
@@ -460,17 +483,17 @@ void Line::InnerRender() const
 }
 
 // PLANE ==================================================
-Plane::Plane() : Primitive(), normal(0, 1, 0), constant(1)
+PrimitivePlane::PrimitivePlane() : Primitive(), normal(0, 1, 0), constant(1)
 {
 	type = PrimitiveTypes::Primitive_Plane;
 }
 
-Plane::Plane(float x, float y, float z, float d) : Primitive(), normal(x, y, z), constant(d)
+PrimitivePlane::PrimitivePlane(float x, float y, float z, float d) : Primitive(), normal(x, y, z), constant(d)
 {
 	type = PrimitiveTypes::Primitive_Plane;
 }
 
-void Plane::InnerRender() const
+void PrimitivePlane::InnerRender() const
 {
 	glLineWidth(1.0f);
 
@@ -478,7 +501,7 @@ void Plane::InnerRender() const
 
 	float d = 200.0f;
 
-	for (float i = -d; i <= d; i += 1.0f)
+	for(float i = -d; i <= d; i += 1.0f)
 	{
 		glVertex3f(i, 0.0f, -d);
 		glVertex3f(i, 0.0f, d);

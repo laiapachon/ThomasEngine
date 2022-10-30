@@ -6,8 +6,8 @@
 #include "Configuration.h"
 #include "ConsoleTab.h"
 
-Editor::Editor(Application* app, bool start_enabled): Module(app, start_enabled)
-{	
+Editor::Editor(Application * app, bool start_enabled) : Module(app, start_enabled)
+{
 	name = "Editor";
 
 	// Define size of the vector
@@ -30,7 +30,7 @@ Editor::~Editor()
 
 bool Editor::Init()
 {
-	
+
 
 	// Setup Dear ImGui context
 	IMGUI_CHECKVERSION();
@@ -59,17 +59,17 @@ bool Editor::Init()
 	ImGui_ImplSDL2_InitForOpenGL(App->window->window, App->window->gl_context);
 	ImGui_ImplOpenGL3_Init();
 
-    return true;
+	return true;
 }
 
 bool Editor::Start()
 {
-    return true;
+	return true;
 }
 
 update_status Editor::PreUpdate(float dt)
 {
-    return UPDATE_CONTINUE;
+	return UPDATE_CONTINUE;
 }
 
 update_status Editor::Update(float dt)
@@ -89,7 +89,7 @@ update_status Editor::Update(float dt)
 			tabs[i]->active = !tabs[i]->active;
 		}
 	}
-	
+
 	// Call Updates of tabs
 	for (int i = 0; i < tabs.size(); i++)
 	{
@@ -99,11 +99,11 @@ update_status Editor::Update(float dt)
 		}
 	}
 
-    return ret;
+	return ret;
 }
 
 update_status Editor::PostUpdate(float dt)
-{	
+{
 	update_status ret = UPDATE_CONTINUE;
 	// Rendering the tabs
 	ret = ImGuiMenu();
@@ -137,7 +137,7 @@ update_status Editor::PostUpdate(float dt)
 	}
 	SDL_GL_SwapWindow(App->window->window);
 
-    return ret;
+	return ret;
 }
 
 update_status Editor::ImGuiMenu()
@@ -228,7 +228,7 @@ update_status Editor::ImGuiMenu()
 
 bool Editor::CleanUp()
 {
-	bool ret= true;
+	bool ret = true;
 
 	// CleanUp all tabs
 	ImGui_ImplOpenGL3_Shutdown();

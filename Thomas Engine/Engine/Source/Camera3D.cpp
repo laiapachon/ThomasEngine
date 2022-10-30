@@ -1,5 +1,7 @@
 #include "Globals.h"
 #include "Application.h"
+#include "Math/float4x4.h"
+#include "Math/float3.h"
 #include "Camera3D.h"
 
 Camera3D::Camera3D(Application* app, bool start_enabled) : Module(app, start_enabled)
@@ -57,21 +59,42 @@ update_status Camera3D::Update(float dt)
 	if(App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT) newPos -= X * speed;
 	if(App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) newPos += X * speed;
 
+	 newPos -= Z * App->input->GetWheel();
+
 	Position += newPos;
 	Reference += newPos;
 
 	// Mouse motion ----------------
+	OrbitRotation();
 
-	if(App->input->GetMouseButton(SDL_BUTTON_RIGHT) == KEY_REPEAT)
+	// Recalculate matrix -------------
+	CalculateViewMatrix();
+
+	return UPDATE_CONTINUE;
+}
+
+void Camera3D::OrbitRotation()
+{
+
+	vec3 pivot = vec3(0,0,0);
+	if (App->input->GetMouseButton(SDL_BUTTON_RIGHT) == KEY_REPEAT)
 	{
 		int dx = -App->input->GetMouseXMotion();
 		int dy = -App->input->GetMouseYMotion();
 
 		float Sensitivity = 0.25f;
 
-		Position -= Reference;
+		if (App->input->GetKey(SDL_SCANCODE_LALT) == KEY_REPEAT)
+		{
+			//Position -= Object;
 
-		if(dx != 0)
+		}
+		else {
+
+			Position -= Reference;
+		}
+
+		if (dx != 0)
 		{
 			float DeltaX = (float)dx * Sensitivity;
 
@@ -80,27 +103,22 @@ update_status Camera3D::Update(float dt)
 			Z = rotate(Z, DeltaX, vec3(0.0f, 1.0f, 0.0f));
 		}
 
-		if(dy != 0)
+		if (dy != 0)
 		{
 			float DeltaY = (float)dy * Sensitivity;
 
 			Y = rotate(Y, DeltaY, X);
 			Z = rotate(Z, DeltaY, X);
 
-			if(Y.y < 0.0f)
+			if (Y.y < 0.0f)
 			{
 				Z = vec3(0.0f, Z.y > 0.0f ? 1.0f : -1.0f, 0.0f);
 				Y = cross(Z, X);
 			}
 		}
-
 		Position = Reference + Z * length(Position);
+
 	}
-
-	// Recalculate matrix -------------
-	CalculateViewMatrix();
-
-	return UPDATE_CONTINUE;
 }
 
 // -----------------------------------------------------------------

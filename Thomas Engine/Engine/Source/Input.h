@@ -10,7 +10,9 @@ enum KEY_STATE
 	KEY_IDLE = 0,
 	KEY_DOWN,
 	KEY_REPEAT,
-	KEY_UP
+	KEY_UP,
+	SCROLL_UP,
+	SCROLL_DOWN
 };
 
 class Input : public Module

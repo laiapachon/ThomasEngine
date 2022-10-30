@@ -1,8 +1,9 @@
+
 #pragma once
 #include "glmath.h"
 #include "Color.h"
 #include <vector>
-#include "Mesh.h"
+#include "ResourceMesh.h"
 
 enum PrimitiveTypes
 {
@@ -23,37 +24,37 @@ public:
 	virtual void	Render() const;
 	virtual void	InnerRender() const;
 	void			SetPos(float x, float y, float z);
-	void			SetRotation(float angle, const vec3& u);
+	void			SetRotation(float angle, const vec3 &u);
 	void			Scale(float x, float y, float z);
 	PrimitiveTypes	GetType() const;
 
 public:
-
+	
 	Color color;
 	mat4x4 transform;
-	bool axis, wire;
+	bool axis,wire;
 
 protected:
 	PrimitiveTypes type;
 };
 
 // ============================================
-class Cube : public Primitive
+class PrimitiveCube : public Primitive
 {
-public:
-	Cube();
-	Cube(vec3 _size, vec3 pos);
+public :
+	PrimitiveCube();
+	PrimitiveCube(vec3 _size, vec3 pos);
 	void InnerMesh();
 public:
 	vec3 size = { 0.5f, 0.5f, 0.5f };
 };
 
 // ============================================
-class Sphere : public Primitive
+class PrimitiveSphere : public Primitive
 {
 public:
-	Sphere();
-	Sphere(float radius, int sectors, int stacks);
+	PrimitiveSphere();
+	PrimitiveSphere(float radius, int sectors, int stacks);
 	void InnerMesh();
 
 private:
@@ -67,11 +68,11 @@ public:
 };
 
 // ============================================
-class Cylinder : public Primitive
+class PrimitiveCylinder : public Primitive
 {
 public:
-	Cylinder();
-	Cylinder(float radius, float height, int sectorCount);
+	PrimitiveCylinder();
+	PrimitiveCylinder(float radius, float height, int sectorCount);
 	void InnerMesh();
 
 private:
@@ -90,16 +91,12 @@ private:
 };
 
 
-class Pyramid : public Primitive
+class PrimitivePyramid : public Primitive
 {
 public:
-	Pyramid();
-	Pyramid(float radius, float height, int sectorCount);
+	PrimitivePyramid();
+	PrimitivePyramid(float radius, float height, int sectorCount);
 	void InnerMesh();
-
-private:
-	void SetVerticesMesh();
-	void SetIndicesMesh();
 
 public:
 	float radius = 2;
@@ -107,11 +104,11 @@ public:
 };
 
 // ============================================
-class Line : public Primitive
+class PrimitiveLine : public Primitive
 {
 public:
-	Line();
-	Line(float x, float y, float z);
+	PrimitiveLine();
+	PrimitiveLine(float x, float y, float z);
 	void InnerRender() const;
 public:
 	vec3 origin;
@@ -119,11 +116,11 @@ public:
 };
 
 // ============================================
-class Plane : public Primitive
+class PrimitivePlane : public Primitive
 {
 public:
-	Plane();
-	Plane(float x, float y, float z, float d);
+	PrimitivePlane();
+	PrimitivePlane(float x, float y, float z, float d);
 	void InnerRender() const;
 public:
 	vec3 normal;

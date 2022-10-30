@@ -43,5 +43,14 @@ private:
 
 };
 
+struct JsonConfig
+{
+	JsonConfig();
+	JsonConfig(JSON_Object* _nObj);
 
+	void WriteInt(const char* name, int value);
+	int ReadInt(const char* name);
 
+	JSON_Object* nObj;
+	JSON_Value* root;
+};

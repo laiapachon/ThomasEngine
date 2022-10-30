@@ -33,7 +33,7 @@ void Configuration::Draw()
 	if (ImGui::Begin("Configuration"))
 	{
 		// CollapsingHeader is to create new Header
-		if (ImGui::CollapsingHeader("Config saver"))
+		if (ImGui::CollapsingHeader("Editor Config"))
 		{
 			if (ImGui::Button("Save"))app->SaveConfigRequest();
 			ImGui::SameLine();

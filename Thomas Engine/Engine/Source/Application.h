@@ -11,9 +11,9 @@
 #include "Input.h"
 #include "Camera3D.h"
 #include "Physics3D.h"
+#include "ResourceManager.h"
 #include "Editor.h"
-
-//#include "mmgr/mmgr.h"
+#include "ResourceManager.h"
 
 #include "JsonParser.h"
 
@@ -28,6 +28,7 @@ public:
 	Input* input;
 	Renderer3D* renderer3D;
 	Physics3D* physics;
+	ResourceManager* resources;
 	Editor* editor;
 
 	std::vector<Module*> listModules;
@@ -57,6 +58,8 @@ public:
 	inline const char* GetAppName() const { return TITLE; }
 	inline const char* GetOrganizationName() const { return ORGANIZATION_NAME; }
 
+	int GetNewUID() { UID++; return UID; }
+
 	int maxFPS;
 	int screenRefresh;
 
@@ -71,6 +74,6 @@ private:
 
 	bool saveRequested;
 	bool loadRequested;
-
+	int UID = 0;
 };
 extern Application* app;
