@@ -39,7 +39,6 @@ GLuint TextureLoader::LoadToMemory(char* buffer, int size, int* w, int* h)
 	glGenerateMipmap(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, 0);
 
-
 	ilDeleteImages(1, &imageID);
 	glBindTexture(GL_TEXTURE_2D, 0);
 

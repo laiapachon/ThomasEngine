@@ -12,7 +12,6 @@ Application::Application() : maxFPS(60)
 	renderer3D = new Renderer3D(this);
 	camera = new Camera3D(this);
 	physics = new Physics3D(this);
-	resources = new ResourceManager(this);
 	editor = new Editor(this);
 
 	// The order of calls is very important!
@@ -24,8 +23,7 @@ Application::Application() : maxFPS(60)
 	AddModule(camera);
 	AddModule(input);
 	AddModule(physics);
-	AddModule(resources);	
-	
+
 	// Renderer last!
 	AddModule(renderer3D);
 	AddModule(editor);
@@ -36,7 +34,7 @@ Application::Application() : maxFPS(60)
 
 Application::~Application()
 {
-	
+
 	for (int i = listModules.size() - 1; i >= 0; --i)
 	{
 		delete listModules[i];
@@ -57,7 +55,7 @@ bool Application::Init()
 
 		if (jsonFile.GetRootValue() == NULL)
 		{
-			LOG(LogType::L_NORMAL,"Couldn't load %s", FILE_CONFIG);
+			LOG(LogType::L_NORMAL, "Couldn't load %s", FILE_CONFIG);
 			ret = false;
 		}
 
@@ -116,7 +114,7 @@ void Application::FinishUpdate()
 update_status Application::Update()
 {
 	update_status ret = UPDATE_CONTINUE;
-	PrepareUpdate();	
+	PrepareUpdate();
 
 
 	for (unsigned int i = 0; i < listModules.size() && ret == UPDATE_CONTINUE; i++)
@@ -158,7 +156,7 @@ void Application::AddModule(Module* mod)
 }
 void Application::SaveConfig()
 {
-	LOG(LogType::L_NORMAL,"Saving configuration");
+	LOG(LogType::L_NORMAL, "Saving configuration");
 
 	JSON_Value* root = jsonFile.GetRootValue();
 
@@ -182,7 +180,7 @@ void Application::SaveConfig()
 
 void Application::LoadConfig()
 {
-	LOG(LogType::L_NORMAL,"Loading configurations");
+	LOG(LogType::L_NORMAL, "Loading configurations");
 
 	JSON_Value* root = jsonFile.GetRootValue();
 
@@ -190,7 +188,7 @@ void Application::LoadConfig()
 
 	maxFPS = application.JsonValToNumber("FPS");
 
-	
+
 	std::vector<Module*>::iterator item;
 
 	for (item = listModules.begin(); item != listModules.end(); ++item)

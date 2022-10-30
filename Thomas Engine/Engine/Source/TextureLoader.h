@@ -2,6 +2,7 @@
 
 #include<vector>
 #include<string>
+
 typedef unsigned int GLuint;
 class Resource;
 
@@ -12,4 +13,3 @@ namespace TextureLoader
 
 	void Import(char* buffer, int bSize, Resource* res);
 };
-

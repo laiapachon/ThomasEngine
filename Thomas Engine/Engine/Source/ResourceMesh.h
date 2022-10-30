@@ -4,7 +4,7 @@
 #include <vector>
 #include "Resource.h"
 
-#define VERTEX_ATTRIBUTES 11
+typedef unsigned int GLuint;
 
 class Mesh : public Resource
 {
@@ -19,7 +19,7 @@ public:
 	void SetVertices(float _vertices[], int size);
 	void SetTexCoords(float _texCoords[], int size);
 
-	void RenderMesh();
+	void RenderMesh(GLuint textureID);
 	void CleanUp();
 
 public:
@@ -30,6 +30,7 @@ public:
 	// Counts
 	uint numIndices = 0;
 	uint numVertex = 0;
+	uint numTexCoords = 0;
 	// Vectors
 	std::vector<uint> indices;
 	std::vector<float> vertices;

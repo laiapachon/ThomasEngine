@@ -1,7 +1,6 @@
 #pragma once
 
 #include <vector>
-#include"MathGeoLib/include/Math/Quat.h"
 
 class Mesh;
 class aiNode;

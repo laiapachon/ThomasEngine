@@ -11,13 +11,12 @@
 #include "Input.h"
 #include "Camera3D.h"
 #include "Physics3D.h"
-#include "ResourceManager.h"
 #include "Editor.h"
-#include "ResourceManager.h"
 
 #include "JsonParser.h"
 
 #define FILE_CONFIG	"../Output/Settings/config.json"
+#include "Algorithm/Random/LCG.h"
 
 
 class Application
@@ -28,7 +27,6 @@ public:
 	Input* input;
 	Renderer3D* renderer3D;
 	Physics3D* physics;
-	ResourceManager* resources;
 	Editor* editor;
 
 	std::vector<Module*> listModules;
@@ -58,7 +56,7 @@ public:
 	inline const char* GetAppName() const { return TITLE; }
 	inline const char* GetOrganizationName() const { return ORGANIZATION_NAME; }
 
-	int GetNewUID() { UID++; return UID; }
+	int GetNewUID() { return randomizer.Int(); }
 
 	int maxFPS;
 	int screenRefresh;
@@ -74,6 +72,7 @@ private:
 
 	bool saveRequested;
 	bool loadRequested;
-	int UID = 0;
+
+	LCG randomizer;
 };
 extern Application* app;

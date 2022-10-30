@@ -9,9 +9,7 @@
 
 
 struct SDL_RWops;
-int close_sdl_rwops(SDL_RWops *rw);
-
-struct aiFileIO;
+int close_sdl_rwops(SDL_RWops* rw);
 
 enum class ImportType {
 	NOTYPE = -1,
@@ -20,46 +18,41 @@ enum class ImportType {
 };
 
 namespace StringLogic {
+
+	std::string FileNameFromPath(const char* _path);
 	std::string GlobalToLocalPath(const char* _globalPath);
 }
 
-namespace FileSystem 
+namespace FileSystem
 {
-
 	ImportType GetTypeFromPath(const char* path);
 
 	void FSInit();
 	void FSDeInit();
-	void GetFileName(const char* file, std::string& fileName, bool extension);
-	void SplitFilePath(const char* full_path, std::string* path, std::string* file = nullptr, std::string* extension = nullptr) /*const*/;
+	void CreateLibraryDirectories();
 
 	// Utility functions
-	bool Exists(const char* file) /*const*/;
-	bool CreateDir(const char* dir);
-	bool IsDirectory(const char* file) /*const*/;
 	bool AddPath(const char* path_or_zip);
+	bool Exists(const char* file);
+	bool CreateDir(const char* dir);
+	bool IsDirectory(const char* file);
 
-	std::string NormalizePath(const char* path) /*const*/;
+	std::string NormalizePath(const char* path);
 	std::string UnNormalizePath(const char* full_path);
-
+	void SplitFilePath(const char* full_path, std::string* path, std::string* file = nullptr, std::string* extension = nullptr);
 
 	// Open for Read/Write
-	unsigned int LoadToBuffer(const char* file, char** buffer) /*const*/;
-	unsigned int Load(const char* path, const char* file, char** buffer) /*const*/;
+	unsigned int LoadToBuffer(const char* file, char** buffer);
+	unsigned int Load(const char* path, const char* file, char** buffer);
 
-	unsigned int Save(const char* file, char* buffer, unsigned int size, bool append);
 	unsigned int Copy(const char* file, const char* dir, std::string& outputFile);
+	unsigned int Save(const char* file, char* buffer, unsigned int size, bool append);
+	bool Remove(const char* file);
+	void GetFileName(const char* file, std::string& fileName, bool extension);
 
 	inline const char* GetBasePath() { return PHYSFS_getBaseDir(); }
 	inline const char* GetWritePath() { return PHYSFS_getWriteDir(); }
 	const char* GetReadPaths();
-
-	// IO interfaces for other libs to handle files via PHYSfs
-	//aiFileIO* GetAssimpIO();
-
-	//void CreateAssimpIO();
-
-	//aiFileIO* assimpIO = nullptr;
 
 };
 

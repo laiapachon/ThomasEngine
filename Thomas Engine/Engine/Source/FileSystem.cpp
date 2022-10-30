@@ -2,15 +2,19 @@
 #include "Application.h"
 #include "FileSystem.h"
 
+// Extract file name, from last "/" until the "."
+std::string StringLogic::FileNameFromPath(const char* _path)
+{
+	std::string fileName(_path);
 
-//#include "Assimp/include/cfileio.h"
-//#include "Assimp/include/types.h"
+	fileName = fileName.substr(fileName.find_last_of("/\\") + 1);
+	fileName = fileName.substr(0, fileName.find_last_of('.'));
 
-
-//#include "Leaks.h"
-
-
-/*Convert global path to local path*/
+	return fileName;
+}
+// Convert global path to local path, example:
+// C:\Users\aleja\OneDrive\Escritorio\Universidad\3r Carrera\Motores\ThomasEngine\ThomasEngine\Output\Assets\BakerHouse.fbx
+// to: Assets\BakerHouse.fbx
 std::string StringLogic::GlobalToLocalPath(const char* _globalPath)
 {
 	std::string localPath = FileSystem::NormalizePath(_globalPath);
@@ -27,8 +31,7 @@ std::string StringLogic::GlobalToLocalPath(const char* _globalPath)
 	localPath.clear();
 	return localPath;
 }
-
-/*Get the type of importer using any path with a file extension*/
+// Get file type from path according to its extension 
 ImportType FileSystem::GetTypeFromPath(const char* path)
 {
 	std::string ext(path);
@@ -47,10 +50,17 @@ ImportType FileSystem::GetTypeFromPath(const char* path)
 	return ImportType::NOTYPE;
 }
 
-/*Init PhysFS*/
+int close_sdl_rwops(SDL_RWops* rw)
+{
+	RELEASE_ARRAY(rw->hidden.mem.base);
+	SDL_FreeRW(rw);
+	return 0;
+}
+
+// File System Init
 void FileSystem::FSInit()
 {
-	// needs to be created before Init so other modules can use it
+	// Needs to be created before Init so other modules can use it
 	char* base_path = SDL_GetBasePath();
 	PHYSFS_init(base_path);
 	SDL_free(base_path);
@@ -66,24 +76,34 @@ void FileSystem::FSInit()
 	LOG(LogType::L_NORMAL, "FileSystem Operations base is [%s] plus:", GetBasePath());
 	LOG(LogType::L_NORMAL, GetReadPaths());
 
-	// Make sure standard paths exist
-	const char* dirs[] = {
-		SETTINGS_FOLDER, ASSETS_FOLDER
-	};
-
-	for (uint i = 0; i < sizeof(dirs) / sizeof(const char*); ++i)
-	{
-		if (PHYSFS_exists(dirs[i]) == 0)
-			PHYSFS_mkdir(dirs[i]);
-	}
-
-	// Generate IO interfaces
-	//CreateAssimpIO();
+	FileSystem::CreateLibraryDirectories();
 }
 
 void FileSystem::FSDeInit()
 {
 	PHYSFS_deinit();
+}
+// If don't exist this paths, let's create 
+void FileSystem::CreateLibraryDirectories()
+{
+	CreateDir(LIBRARY_FOLDER);
+	CreateDir(MESHES_FOLDER);
+	CreateDir(TEXTURES_FOLDER);
+	CreateDir(MATERIALS_FOLDER);
+}
+bool FileSystem::CreateDir(const char* dir)
+{
+	if (IsDirectory(dir) == false)
+	{
+		PHYSFS_mkdir(dir);
+		return true;
+	}
+	return true;
+}
+// Check if a file exists
+bool FileSystem::Exists(const char* file)
+{
+	return PHYSFS_exists(file) != 0;
 }
 
 // Add a new zip file or folder
@@ -100,6 +120,7 @@ bool FileSystem::AddPath(const char* path_or_zip)
 
 	return ret;
 }
+// Return all existing paths
 const char* FileSystem::GetReadPaths()
 {
 	static char paths[512];
@@ -115,50 +136,13 @@ const char* FileSystem::GetReadPaths()
 
 	return paths;
 }
-
-// Check if a file exists
-bool FileSystem::Exists(const char* file) /*const*/
-{
-	return PHYSFS_exists(file) != 0;
-}
-
-bool FileSystem::CreateDir(const char* dir)
-{
-	if (IsDirectory(dir) == false)
-	{
-		PHYSFS_mkdir(dir);
-		return true;
-	}
-	return true;
-}
-
 // Check if a file is a directory
-bool FileSystem::IsDirectory(const char* file) /*const*/
+bool FileSystem::IsDirectory(const char* file)
 {
 	return PHYSFS_isDirectory(file) != 0;
 }
-
-//*PHYSFS_getSearchPath() not working and causing a crash
-//void FileSystem::GetRealDir(const char* path, std::string& output)
-//{
-//	output = PHYSFS_getBaseDir();
-//
-//	std::string baseDir = PHYSFS_getBaseDir();
-//	std::string searchPath = *PHYSFS_getSearchPath();
-//	std::string realDir = PHYSFS_getRealDir(path);
-//
-//	output.append(*PHYSFS_getSearchPath()).append("/");
-//	output.append(PHYSFS_getRealDir(path)).append("/").append(path);
-//}
-//std::string FileSystem::GetPathRelativeToAssets(const char* originalPath) /*const*/
-//{
-//	std::string ret;
-//	GetRealDir(originalPath, ret);
-//
-//	return ret;
-//}
-
-std::string FileSystem::NormalizePath(const char* full_path) /*const*/
+// Substitute "\\" to "/"
+std::string FileSystem::NormalizePath(const char* full_path)
 {
 	std::string newPath(full_path);
 	for (int i = 0; i < newPath.size(); ++i)
@@ -168,7 +152,7 @@ std::string FileSystem::NormalizePath(const char* full_path) /*const*/
 	}
 	return newPath;
 }
-std::string FileSystem::UnNormalizePath(const char* full_path) /*const*/
+std::string FileSystem::UnNormalizePath(const char* full_path)
 {
 	std::string newPath(full_path);
 	for (int i = 0; i < newPath.size(); ++i)
@@ -178,8 +162,8 @@ std::string FileSystem::UnNormalizePath(const char* full_path) /*const*/
 	}
 	return newPath;
 }
-
-void FileSystem::SplitFilePath(const char* full_path, std::string* path, std::string* file, std::string* extension) /*const*/
+// Split file path
+void FileSystem::SplitFilePath(const char* full_path, std::string* path, std::string* file, std::string* extension)
 {
 	if (full_path != nullptr)
 	{
@@ -213,7 +197,7 @@ void FileSystem::SplitFilePath(const char* full_path, std::string* path, std::st
 	}
 }
 
-unsigned int FileSystem::Load(const char* path, const char* file, char** buffer) /*const*/
+unsigned int FileSystem::Load(const char* path, const char* file, char** buffer)
 {
 	std::string full_path(path);
 	full_path += file;
@@ -221,7 +205,7 @@ unsigned int FileSystem::Load(const char* path, const char* file, char** buffer)
 }
 
 // Read a whole file and put it in a new buffer
-uint FileSystem::LoadToBuffer(const char* file, char** buffer) /*const*/
+uint FileSystem::LoadToBuffer(const char* file, char** buffer)
 {
 	uint ret = 0;
 
@@ -258,23 +242,13 @@ uint FileSystem::LoadToBuffer(const char* file, char** buffer) /*const*/
 	return ret;
 }
 
-int close_sdl_rwops(SDL_RWops* rw)
-{
-	RELEASE_ARRAY(rw->hidden.mem.base);
-	SDL_FreeRW(rw);
-	return 0;
-}
-
-/*Duplicate a file to a local PhysFS valid path*/
+// Duplicate a file to a local PhysFS valid path
 unsigned int FileSystem::Copy(const char* file, const char* dir, std::string& outputFile)
 {
 	uint size = 0;
 
 	if (file == nullptr || dir == nullptr)
-	{
-		/*assert(file != nullptr && dir != nullptr);*/
 		return size;
-	}
 
 	std::FILE* filehandle;
 	fopen_s(&filehandle, file, "rb");
@@ -313,48 +287,12 @@ unsigned int FileSystem::Copy(const char* file, const char* dir, std::string& ou
 	return size;
 }
 
-
-//std::string FileSystem::FileToText(const char* path)
-//{
-//	// Read from the text file
-//	std::ifstream readFile(path);
-//
-//	std::stringstream buffer;
-//	buffer << readFile.rdbuf();
-//
-//	// Close the file
-//	readFile.close();
-//
-//	return buffer.str();
-//}
-
-void FileSystem::GetFileName(const char* file, std::string& fileName, bool extension)
-{
-	fileName = file;
-
-	uint found = fileName.find_last_of("\\");
-	if (found != std::string::npos)
-		fileName = fileName.substr(found + 1, fileName.size());
-
-	found = fileName.find_last_of("//");
-	if (found != std::string::npos)
-		fileName = fileName.substr(found + 1, fileName.size());
-
-	if (!extension)
-	{
-		found = fileName.find_last_of(".");
-		if (found != std::string::npos)
-			fileName = fileName.substr(0, found);
-	}
-}
-
 unsigned int FileSystem::Save(const char* file, char* buffer, unsigned int size, bool append)
 {
 	uint objCount = 0;
 
 	std::string fileName;
 	GetFileName(file, fileName, true);
-
 
 	bool exists = Exists(file);
 
@@ -394,107 +332,40 @@ unsigned int FileSystem::Save(const char* file, char* buffer, unsigned int size,
 	return objCount;
 }
 
+bool FileSystem::Remove(const char* file)
+{
+	bool ret = false;
 
-// -----------------------------------------------------
-// ASSIMP IO
-// -----------------------------------------------------
+	if (file != nullptr)
+	{
+		if (PHYSFS_delete(file) != 0)
+		{
+			LOG(LogType::L_NORMAL, "File deleted: [%s]", file);
+			ret = true;
+		}
+		else
+			LOG(LogType::L_ERROR, "File System error while trying to delete [%s]: %s", file, PHYSFS_getLastError());
+	}
 
-//size_t AssimpWrite(aiFile* file, const char* data, size_t size, size_t chunks)
-//{
-//	PHYSFS_sint64 ret = PHYSFS_write((PHYSFS_File*)file->UserData, (void*)data, size, chunks);
-//	if(ret == -1)
-//		LOG(LogType::L_ERROR, "File System error while WRITE via assimp: %s", PHYSFS_getLastError());
-//
-//	return (size_t) ret;
-//}
-//
-//size_t AssimpRead(aiFile* file, char* data, size_t size, size_t chunks)
-//{
-//	PHYSFS_sint64 ret = PHYSFS_read((PHYSFS_File*)file->UserData, (void*)data, size, chunks);
-//	if(ret == -1)
-//		LOG(LogType::L_ERROR, "File System error while READ via assimp: %s", PHYSFS_getLastError());
-//
-//	return (size_t) ret;
-//}
-//
-//size_t AssimpTell(aiFile* file)
-//{
-//	PHYSFS_sint64 ret = PHYSFS_tell((PHYSFS_File*)file->UserData);
-//	if(ret == -1)
-//		LOG(LogType::L_ERROR, "File System error while TELL via assimp: %s", PHYSFS_getLastError());
-//
-//	return (size_t) ret;
-//}
-//
-//size_t AssimpSize(aiFile* file)
-//{
-//	PHYSFS_sint64 ret = PHYSFS_fileLength((PHYSFS_File*)file->UserData);
-//	if(ret == -1)
-//		LOG(LogType::L_ERROR, "File System error while SIZE via assimp: %s", PHYSFS_getLastError());
-//
-//	return (size_t) ret;
-//}
-//
-//void AssimpFlush(aiFile* file)
-//{
-//	if(PHYSFS_flush((PHYSFS_File*)file->UserData) == 0)
-//		LOG(LogType::L_ERROR, "File System error while FLUSH via assimp: %s", PHYSFS_getLastError());
-//}
-//
-//aiReturn AssimpSeek(aiFile* file, size_t pos, aiOrigin from)
-//{
-//	int res = 0;
-//
-//	switch (from)
-//	{
-//	case aiOrigin_SET:
-//		res = PHYSFS_seek((PHYSFS_File*)file->UserData, pos);
-//		break;
-//	case aiOrigin_CUR:
-//		res = PHYSFS_seek((PHYSFS_File*)file->UserData, PHYSFS_tell((PHYSFS_File*)file->UserData) + pos);
-//		break;
-//	case aiOrigin_END:
-//		res = PHYSFS_seek((PHYSFS_File*)file->UserData, PHYSFS_fileLength((PHYSFS_File*)file->UserData) + pos);
-//		break;
-//	}
-//
-//	if(res == 0)
-//		LOG(LogType::L_ERROR, "File System error while SEEK via assimp: %s", PHYSFS_getLastError());
-//
-//	return (res != 0) ? aiReturn_SUCCESS : aiReturn_FAILURE;
-//}
+	return ret;
+}
 
-//aiFile* AssimpOpen(aiFileIO* io, const char* name, const char* format)
-//{
-//	static aiFile file;
-//
-//	file.UserData = (char*) PHYSFS_openRead(name);
-//	file.ReadProc = AssimpRead;
-//	file.WriteProc = AssimpWrite;
-//	file.TellProc = AssimpTell;
-//	file.FileSizeProc = AssimpSize;
-//	file.FlushProc= AssimpFlush;
-//	file.SeekProc = AssimpSeek;
-//
-//	return &file;
-//}
-//
-//void AssimpClose(aiFileIO* io, aiFile* file)
-//{
-//	if (PHYSFS_close((PHYSFS_File*)file->UserData) == 0)
-//		LOG(LogType::L_ERROR, "File System error while CLOSE via assimp: %s", PHYSFS_getLastError());
-//}
-//
-//void FileSystem::CreateAssimpIO()
-//{
-//	RELEASE(assimpIO);
-//
-//	assimpIO = new aiFileIO;
-//	assimpIO->OpenProc = AssimpOpen;
-//	assimpIO->CloseProc = AssimpClose;
-//}
-//
-//aiFileIO* FileSystem::GetAssimpIO()
-//{
-//	return assimpIO;
-//}
+void FileSystem::GetFileName(const char* file, std::string& fileName, bool extension)
+{
+	fileName = file;
+
+	uint found = fileName.find_last_of("\\");
+	if (found != std::string::npos)
+		fileName = fileName.substr(found + 1, fileName.size());
+
+	found = fileName.find_last_of("//");
+	if (found != std::string::npos)
+		fileName = fileName.substr(found + 1, fileName.size());
+
+	if (!extension)
+	{
+		found = fileName.find_last_of(".");
+		if (found != std::string::npos)
+			fileName = fileName.substr(0, found);
+	}
+}

@@ -8,23 +8,28 @@
 
 bool Rect::Contains(Rect b)
 {
-    if ((b.x + b.w) <= (x + w)
-        && (b.x) >= (x)
-        && (b.y) >= (y)
-        && (b.y + b.h) <= (y + h)
-        )
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
+	if ((b.x + b.w) <= (x + w)
+		&& (b.x) >= (x)
+		&& (b.y) >= (y)
+		&& (b.y + b.h) <= (y + h)
+		)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
 
-Texture::Texture(unsigned int _uid) : Resource(_uid, Resource::Type::TEXTURE), textureID(0), tWidth(0), tHeight(0)
+Texture::Texture(unsigned int _uid) : Resource(_uid, Resource::Type::TEXTURE), textureID(0), texWidth(0), texHeight(0)
 {
 	color = White;
+}
+
+Texture::Texture(GLuint textureID, int texWidth, int texHeight, const char* name, const char* path) :
+	Resource(textureID, Resource::Type::TEXTURE), textureID(textureID), texWidth(texWidth), texHeight(texHeight), name(name), path(path)
+{
 }
 
 Texture::~Texture()
@@ -37,7 +42,7 @@ bool Texture::LoadToMemory()
 	char* buffer = nullptr;
 	int size = FileSystem::LoadToBuffer(GetLibraryPath(), &buffer);
 
-	textureID = TextureLoader::LoadToMemory(buffer, size, &tWidth, &tHeight);
+	textureID = TextureLoader::LoadToMemory(buffer, size, &texWidth, &texHeight);
 
 	delete[] buffer;
 	buffer = nullptr;
@@ -51,8 +56,8 @@ bool Texture::UnloadFromMemory()
 		glDeleteTextures(1, &textureID);
 
 	textureID = 0;
-	tWidth = 0;
-	tHeight = 0;
+	texWidth = 0;
+	texHeight = 0;
 
 	return true;
 }
@@ -61,17 +66,17 @@ Rect Texture::GetTextureChunk(Rect area)
 {
 	//Rect of the chunk we need to get
 	Rect ret;
-	if (!Rect(0, 0, this->tWidth, this->tHeight).Contains(area))
+	if (!Rect(0, 0, this->texWidth, this->texHeight).Contains(area))
 		return ret;
 
 	//Calculate rect as normalized rect
 	ret = area;
 
-	ret.x = ret.x / tWidth;
-	ret.w = (ret.x + ret.w) / tWidth;
+	ret.x = ret.x / texWidth;
+	ret.w = (ret.x + ret.w) / texWidth;
 
-	ret.y = ret.y / tHeight;
-	ret.h = (ret.y + ret.h) / tHeight;
+	ret.y = ret.y / texHeight;
+	ret.h = (ret.y + ret.h) / texHeight;
 
 	//Position should be inside the 0, 1 range and position + width (normalized) should not be more than 1
 	return ret;
