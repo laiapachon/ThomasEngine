@@ -1,7 +1,6 @@
 #pragma once
-#include <vector>
 #include "Tab.h"
-#include "Application.h"
+#include <vector>
 
 #define FPS_MS_LOG_MAXLENGHT 100
 
@@ -27,25 +26,19 @@ public:
 
 	~ConsoleTab();
 
-	void Update() override;
 	void Draw() override;
 
 	void AddLog(const char*, LogType);
-
 	char GetMsgType(LogType, ImVec4&);
-
 
 public:
 
-	bool collapsed=false;
-	bool bottom= false;
-	ImVec2 winSize = {200,400};
+	bool collapsed = true;
+	ImVec2 winSize = { 200,400 };
 	LogMsg* charLog;
 	std::vector<LogMsg> logs;
 
 private:
-
 	float offset;
-
 };
 

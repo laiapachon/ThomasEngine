@@ -3,9 +3,6 @@
 
 #include "Module.h"
 #include "SDL/include/SDL.h"
-#include "Parson/parson.h"
-
-#include "JsonParser.h"
 
 class Application;
 
@@ -50,6 +47,9 @@ public:
 	bool SaveConfig(JsonParser& node) const;
 
 	bool LoadConfig(JsonParser& node);
+
+	int GetWindowWidth() { return width; };
+	int GetWindowHeight() { return height; };
 
 public:
 	//The window we'll be rendering to

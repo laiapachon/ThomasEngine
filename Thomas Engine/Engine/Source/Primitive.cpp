@@ -205,6 +205,8 @@ void PrimitiveSphere::SetVerticesMesh()
 			texCoords.push_back(t);
 		}
 	}
+	numVertex = vertices.size() / 3;
+	numTexCoords = texCoords.size() / 2;
 }
 
 void PrimitiveSphere::SetIndicesMesh()
@@ -240,6 +242,7 @@ void PrimitiveSphere::SetIndicesMesh()
 			}
 		}
 	}
+	numIndices = indices.size();
 }
 
 
@@ -329,6 +332,8 @@ void PrimitiveCylinder::SetVerticesMesh()
 			texCoords.push_back(-uz * 0.5f + 0.5f);      // t
 		}
 	}
+	numVertex = vertices.size() / 3;
+	numTexCoords = texCoords.size() / 2;
 }
 
 void PrimitiveCylinder::SetIndicesMesh()
@@ -387,6 +392,7 @@ void PrimitiveCylinder::SetIndicesMesh()
 			indices.push_back(topCenterIndex);
 		}
 	}
+	numIndices = indices.size();
 }
 
 

@@ -87,8 +87,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Source\AboutTab.h" />
     <ClInclude Include="Source\Application.h" />
     <ClInclude Include="Source\Color.h" />
+    <ClInclude Include="Source\Component.h" />
     <ClInclude Include="Source\Configuration.h" />
     <ClInclude Include="Source\ConsoleTab.h" />
     <ClInclude Include="Source\External\Assimp\include\aabb.h" />
@@ -243,11 +245,17 @@
     <ClInclude Include="Source\External\Mmgr\mmgr.h" />
     <ClInclude Include="Source\External\Mmgr\nommgr.h" />
     <ClInclude Include="Source\External\Parson\parson.h" />
+    <ClInclude Include="Source\GameObject.h" />
+    <ClInclude Include="Source\Inspector.h" />
+    <ClInclude Include="Source\Material.h" />
     <ClInclude Include="Source\MeshLoader.h" />
     <ClInclude Include="Source\glmath.h" />
     <ClInclude Include="Source\Globals.h" />
+    <ClInclude Include="Source\MeshRenderer.h" />
     <ClInclude Include="Source\ModelImporter.h" />
     <ClInclude Include="Source\ResourceManager.h" />
+    <ClInclude Include="Source\Scene.h" />
+    <ClInclude Include="Source\SceneTab.h" />
     <ClInclude Include="Source\TextureLoader.h" />
     <ClInclude Include="Source\JsonParser.h" />
     <ClInclude Include="Source\Light.h" />
@@ -257,16 +265,17 @@
     <ClInclude Include="Source\Editor.h" />
     <ClInclude Include="Source\Input.h" />
     <ClInclude Include="Source\FileSystem.h" />
-    <ClInclude Include="Source\Physics3D.h" />
     <ClInclude Include="Source\Renderer3D.h" />
     <ClInclude Include="Source\Resource.h" />
     <ClInclude Include="Source\Tab.h" />
     <ClInclude Include="Source\ResourceTexture.h" />
+    <ClInclude Include="Source\Transform.h" />
     <ClInclude Include="Source\Window.h" />
     <ClInclude Include="Source\Primitive.h" />
     <ClInclude Include="Source\Timer.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\AboutTab.cpp" />
     <ClCompile Include="Source\Application.cpp" />
     <ClCompile Include="Source\Color.cpp" />
     <ClCompile Include="Source\Configuration.cpp" />
@@ -314,10 +323,16 @@
     <ClCompile Include="Source\External\MathGeoLib\include\Time\Clock.cpp" />
     <ClCompile Include="Source\External\Mmgr\mmgr.cpp" />
     <ClCompile Include="Source\External\Parson\parson.c" />
+    <ClCompile Include="Source\GameObject.cpp" />
+    <ClCompile Include="Source\Inspector.cpp" />
+    <ClCompile Include="Source\Material.cpp" />
     <ClCompile Include="Source\MeshLoader.cpp" />
     <ClCompile Include="Source\glmath.cpp" />
+    <ClCompile Include="Source\MeshRenderer.cpp" />
     <ClCompile Include="Source\ModelImporter.cpp" />
     <ClCompile Include="Source\ResourceManager.cpp" />
+    <ClCompile Include="Source\Scene.cpp" />
+    <ClCompile Include="Source\SceneTab.cpp" />
     <ClCompile Include="Source\TextureLoader.cpp" />
     <ClCompile Include="Source\JsonParser.cpp" />
     <ClCompile Include="Source\Light.cpp" />
@@ -328,11 +343,11 @@
     <ClCompile Include="Source\Input.cpp" />
     <ClCompile Include="Source\FileSystem.cpp" />
     <ClCompile Include="Source\ResourceMesh.cpp" />
-    <ClCompile Include="Source\Physics3D.cpp" />
     <ClCompile Include="Source\Renderer3D.cpp" />
     <ClCompile Include="Source\Resource.cpp" />
     <ClCompile Include="Source\Tab.cpp" />
     <ClCompile Include="Source\ResourceTexture.cpp" />
+    <ClCompile Include="Source\Transform.cpp" />
     <ClCompile Include="Source\Window.cpp" />
     <ClCompile Include="Source\Primitive.cpp" />
     <ClCompile Include="Source\Timer.cpp" />

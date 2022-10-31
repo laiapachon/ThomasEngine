@@ -1,6 +1,6 @@
-#include "Globals.h"
 #include "Application.h"
 #include "Input.h"
+#include "Globals.h"
 
 #define MAX_KEYS 300
 

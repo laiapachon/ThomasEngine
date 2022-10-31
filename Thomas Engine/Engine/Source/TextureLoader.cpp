@@ -1,15 +1,13 @@
 #include "TextureLoader.h"
 #include "FileSystem.h"
-
 #include"Globals.h"
+
 #include "Glew/include/glew.h"
 
-//#include "OpenGL.h"
 #include "DevIL\include\ilu.h"
 #include "DevIL\include\ilut.h"
 
 #include"Resource.h"
-//#include "Textures.h"
 
 
 GLuint TextureLoader::LoadToMemory(char* buffer, int size, int* w, int* h)

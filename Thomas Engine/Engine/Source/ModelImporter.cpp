@@ -2,21 +2,32 @@
 #include "ModelImporter.h"
 #include "Globals.h"
 
-#include "Resource.h"
-#include "ResourceTexture.h"
-#include "ResourceMesh.h"
+// Components
+#include "GameObject.h"
+#include "Component.h"
+#include "MeshRenderer.h"
+#include "Material.h"
+#include "Transform.h"
 
+// Importers
 #include "FileSystem.h"
 #include "MeshLoader.h"
 #include "TextureLoader.h"
+
+// Resources
+#include "Resource.h"
+#include "ResourceTexture.h"
+#include "ResourceMesh.h"
 
 #include "Assimp/include/cimport.h"
 #include "Assimp/include/scene.h"
 #include "Assimp/include/postprocess.h"
 #include "Assimp/include/cfileio.h"
 
+#include"MathGeoLib/include/Math/Quat.h"
 
-void ModelImporter::Import(const char* fullPath, char* buffer, int bSize, Resource* res)
+
+void ModelImporter::Import(const char* fullPath,  char* buffer, int bSize, GameObject* objRoot)
 {
 	const aiScene* scene = aiImportFileFromMemory(buffer, bSize, aiProcessPreset_TargetRealtime_MaxQuality, nullptr);
 
@@ -73,9 +84,8 @@ void ModelImporter::Import(const char* fullPath, char* buffer, int bSize, Resour
 			sceneMeshes.push_back(MeshLoader::LoadMesh(scene->mMeshes[i]));
 		}
 
-		// META
-		//LOG(LogType::L_NORMAL, "-- Loading FBX as GameObject --");
-		//NodeToGameObject(scene->mMeshes, testTextures, sceneMeshes, scene->mRootNode, gmRoot, fileName.c_str());
+		LOG(LogType::L_NORMAL, "-- Loading FBX as GameObject --");
+		NodeToGameObject(scene->mMeshes, testTextures, sceneMeshes, scene->mRootNode, objRoot, fileName.c_str());
 
 		//Only for memory cleanup, needs an update ASAP
 		for (unsigned int i = 0; i < sceneMeshes.size(); i++)
@@ -94,4 +104,72 @@ void ModelImporter::Import(const char* fullPath, char* buffer, int bSize, Resour
 	}
 	else
 		LOG(LogType::L_ERROR, "Error loading scene % s", fullPath);
+}
+
+void ModelImporter::NodeToGameObject(aiMesh** meshArray, std::vector<Texture*>& sceneTextures, std::vector<Mesh*>& sceneMeshes, aiNode* node, GameObject* objParent, const char* holderName)
+{
+	for (unsigned int i = 0; i < node->mNumMeshes; i++)
+	{
+		Mesh* meshPointer = sceneMeshes[node->mMeshes[i]];
+
+		GameObject* gmNode = new GameObject(node->mName.C_Str());
+		gmNode->parent = objParent;
+
+		//Load mesh to GameObject
+		MeshRenderer* gmMeshRenderer = dynamic_cast<MeshRenderer*>(gmNode->AddComponent(ComponentType::MESHRENDERER));
+
+		gmMeshRenderer->mesh = meshPointer;
+
+		aiMesh* importedMesh = meshArray[node->mMeshes[i]];
+		if (importedMesh->mMaterialIndex < sceneTextures.size())
+		{
+			Material* material = dynamic_cast<Material*>(gmNode->AddComponent(ComponentType::MATERIAL));
+			material->matTexture = sceneTextures[importedMesh->mMaterialIndex];
+		}
+
+		PopulateTransform(gmNode, node);
+
+		objParent->GetChildrens().push_back(gmNode);
+	}
+
+	if (node->mNumChildren > 0)
+	{
+		GameObject* rootGO = objParent;
+
+		if (node->mNumChildren == 1 && node->mParent == nullptr && node->mChildren[0]->mNumChildren == 0)
+		{
+			LOG(LogType::L_WARNING, "This is a 1 child gameObject, you could ignore the root node parent creation");
+			node->mChildren[0]->mName = holderName;
+		}
+		else
+		{
+			rootGO = new GameObject(holderName);
+			rootGO->parent = objParent;
+			PopulateTransform(rootGO, node);
+			objParent->GetChildrens().push_back(rootGO);
+		}
+
+
+		for (unsigned int i = 0; i < node->mNumChildren; i++)
+		{
+			NodeToGameObject(meshArray, sceneTextures, sceneMeshes, node->mChildren[i], rootGO, node->mChildren[i]->mName.C_Str());
+		}
+	}
+}
+
+void ModelImporter::PopulateTransform(GameObject* child, aiNode* node)
+{
+	Transform* transform = child->transform;
+	Transform* parentTransform = child->parent->transform;
+
+	aiVector3D transformD;
+	aiVector3D scaleD;
+	aiQuaternion rotationD;
+	node->mTransformation.Decompose(scaleD, rotationD, transformD);
+
+	float3 position(transformD.x, transformD.y, transformD.z);
+	float3 size(scaleD.x, scaleD.y, scaleD.z);
+	Quat rotationQuat(rotationD.x, rotationD.y, rotationD.z, rotationD.w);
+
+	transform->SetTransformMatrix(position, rotationQuat, size, parentTransform);
 }

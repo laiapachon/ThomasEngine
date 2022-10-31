@@ -1,6 +1,5 @@
 #pragma once
 #include "Module.h"
-#include "Globals.h"
 #include "glmath.h"
 #include "Light.h"
 #include "Primitive.h"
@@ -9,13 +8,16 @@
 #include "SDL\include\SDL_opengl.h"
 
 class Texture;
+class MeshRenderer;
 
 #define MAX_LIGHTS 8
+#define SQUARE_TEXTURE_W 256
+#define SQUARE_TEXTURE_H 256
 
 class Hardware {
 public:
 	std::string caps;
-	char SDLVersion[25] = "";
+	std::string SDLVersion;
 
 	uint CPUCount;
 	uint CPUCache;
@@ -45,6 +47,8 @@ public:
 	void OnResize(int width, int height);
 	void OnGUI() override;
 
+	void ReGenerateFrameBuffer(int w, int h);
+
 	bool SaveConfig(JsonParser& node) const;
 
 	bool LoadConfig(JsonParser& node);
@@ -60,9 +64,20 @@ public:
 	bool vsync;
 	bool wireframe = false;
 
-	//Mesh testMesh;
+	// Mesh testMesh;
 	std::vector<Mesh*> globalMeshes;
 	std::vector<Texture*> globalTextures;
+
+	// Textures
+	GLuint checkersTexture;
+	GLubyte checkerImage[SQUARE_TEXTURE_W][SQUARE_TEXTURE_H][4];
+
+	std::vector<MeshRenderer*> renderQueue;
+
+	// FrameBuffer
+	unsigned int framebuffer = 0;
+	unsigned int texColorBuffer = 0;
+	unsigned int rbo = 0;
 
 private:
 	Hardware hardware;
@@ -75,5 +90,5 @@ private:
 	PrimitiveCube cube;
 	PrimitiveSphere sphere;
 	PrimitiveCylinder cylinder;
-	PrimitivePyramid pyramid;
+	PrimitivePyramid pyramid;	
 };

@@ -1,7 +1,6 @@
 #pragma once
-#include <vector>
 #include "Tab.h"
-#include "Application.h"
+#include <vector>
 
 #define FPS_MS_LOG_MAXLENGHT 100
 
@@ -9,10 +8,9 @@ class Configuration : public Tab
 {
 public:
 	Configuration();
-
 	~Configuration();
 
-	void Update() override;
+	void Update();
 	void Draw() override;
 	void PushBackLog(std::vector<float> *log, float current);
 

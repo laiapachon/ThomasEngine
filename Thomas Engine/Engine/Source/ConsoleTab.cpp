@@ -1,90 +1,81 @@
+#include "Application.h"
 #include "ConsoleTab.h"
 
 ConsoleTab::ConsoleTab() : Tab()
 {
 	name = "Console";
-	// Reserve 100 positions
 }
 
 ConsoleTab::~ConsoleTab()
 {
 }
 
-void ConsoleTab::Update()
-{
-	update_status ret = UPDATE_CONTINUE;
-
-}
-
 void ConsoleTab::Draw()
-{
-	
-	winSize = ImGui::GetWindowSize();
-
-	if (ImGui::Begin("Console"))
+{	
+	if (ImGui::Begin(name.c_str()))
 	{
-		
-		if (ImGui::Begin(name.c_str(), NULL, ImGuiWindowFlags_::ImGuiWindowFlags_NoCollapse /*| ImGuiWindowFlags_NoResize*/ | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoScrollbar))
+		// Draw button Clear by clear the console
+		// Get the ContentRegionMax (position + width) and substract the size of the box by know the position where draw it
+		offset = ImGui::GetWindowContentRegionMax().x - ImGui::CalcTextSize("Clear").x - 7;
+		ImGui::SetCursorPosX(offset);
+		if (ImGui::Button("Clear"))
 		{
-			offset = ImGui::GetWindowContentRegionMax().x - ImGui::CalcTextSize("Clear").x - 7;
+			logs.clear();
+		}
+		ImGui::SameLine();
 
-			ImGui::SetCursorPosX(offset);
+		offset -= ImGui::CalcTextSize("Collapse").x + (ImGui::CalcTextSize("Clear").x / 2) - 7;
+		ImGui::SetCursorPosX(offset);
+		if (ImGui::Button("Collapse"))
+		{
+			collapsed = !collapsed;
+		}
 
-			offset -= ImGui::CalcTextSize("Collapse").x + (ImGui::CalcTextSize("Clear").x / 2) - 7;
-			ImGui::SetCursorPosX(offset);
-			//if (ImGui::Button("Collapse"/*, ImGuiDir_Right*/)) collapsed = !collapsed;
-		
-			ImGui::Separator();
-			//ImGui::SetWindowSize("Console", { winSize.x/2, winSize.y/2 });
+		ImGui::Separator();
+		// Get WindowSize and substract some pixels because:
+		// In Axis Y are button bar and this cover the some logs
+		// And in Axis X if we didn't substract the scroll is not visible
+		winSize = ImGui::GetWindowSize();
+		winSize.y -= 63;
+		winSize.x -= 16;
 
-		
-			if (ImGui::BeginChild("##outPutConsole", winSize))
+		if (ImGui::BeginChild("##outPutConsole", winSize))
+		{
+			charLog = nullptr;
+			ImVec4 labelColor(0.f, 0.f, 0.f, 0.f);
+
+			for (unsigned int i = 0; i < logs.size(); ++i)
 			{
-				charLog = nullptr;
-				ImVec4 labelColor(0.f, 0.f, 0.f, 0.f);
+				charLog = &logs[i];
+				// Get message type by know if this is Normal, Warning or Error
+				char labelLevel = GetMsgType(charLog->logType, labelColor);
 
-				for (unsigned int i = 0; i < logs.size(); ++i)
+				ImGui::TextColored(labelColor, "[%c]", labelLevel);
+
+				ImGui::SameLine();
+				ImGui::TextWrapped(charLog->msg.c_str());
+				// Print all logs
+				if (logs[i].prints > 1)
 				{
-					charLog = &logs[i];
-
-					//ImGui::TextWrapped("[%c]", GetMsgType(charLog->logType));
-					char labelLevel = GetMsgType(charLog->logType, labelColor);
-
-					ImGui::TextColored(labelColor, "[%c]", labelLevel);
-
 					ImGui::SameLine();
-					ImGui::TextWrapped(charLog->msg.c_str());
-
-					if (logs[i].prints > 1)
-					{
-						ImGui::SameLine();
-						ImGui::SetCursorPosX(ImGui::GetWindowContentRegionMax().x - ImGui::CalcTextSize(std::to_string(charLog->prints).c_str()).x);
-						ImGui::Text("%i", charLog->prints);
-					}
-				}
-
-				if (bottom && !ImGui::IsWindowFocused())
-				{
-					ImGui::SetScrollHereY(1.0f);
-					bottom = false;
+					ImGui::SetCursorPosX(ImGui::GetWindowContentRegionMax().x - ImGui::CalcTextSize(std::to_string(charLog->prints).c_str()).x);
+					ImGui::Text("%i", charLog->prints);
 				}
 			}
-			ImGui::EndChild();
-
-		}ImGui::End();
-		
+		}
+		ImGui::EndChild();
 	}
 	ImGui::End();
 }
-
+// Get message type and according this the text will be one color or another
 char ConsoleTab::GetMsgType(LogType type, ImVec4& lColor)
 {
-	char ret = 'I';
+	char ret = 'N';
 
 	switch (type)
 	{
 	case LogType::L_NORMAL:
-		ret = 'I';
+		ret = 'N';
 		lColor = ImVec4(1.f, 1.f, 1.f, 1.f);
 		break;
 
@@ -114,5 +105,4 @@ void ConsoleTab::AddLog(const char* s_msg, LogType _type)
 	}
 
 	logs.push_back(LogMsg(s_msg, _type));
-	bottom = true;
 }

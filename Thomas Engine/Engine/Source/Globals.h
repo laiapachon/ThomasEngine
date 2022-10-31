@@ -79,4 +79,4 @@ enum update_status
 #define WIN_FULLSCREEN_DESKTOP false
 #define VSYNC true
 #define TITLE "Thomas Engine"
-#define ORGANIZATION_NAME "CITM"
+#define ORGANIZATION_NAME "UPC CITM"

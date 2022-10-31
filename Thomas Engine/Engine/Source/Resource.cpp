@@ -1,7 +1,7 @@
 #include "Resource.h"
 #include"Globals.h"
 
-Resource::Resource(int _uid, Resource::Type _type) : uid(_uid), assetsFile(""), libraryFile(""), type(_type), referenceCount(0)
+Resource::Resource(int uid, ResourceType type) : uid(uid), assetsFile(""), libraryFile(""), type(type), referenceCount(0)
 {
 
 }
@@ -11,7 +11,7 @@ Resource::~Resource()
 	uid = 0;
 	assetsFile.clear();
 	libraryFile.clear();
-	type = Type::UNKNOWN;
+	type = ResourceType::UNKNOWN;
 
 	if (referenceCount != 0)
 		LOG(LogType::L_NORMAL, "DELETING RESOURCE WITH MULTIPLE REFERENCE COUNTS");

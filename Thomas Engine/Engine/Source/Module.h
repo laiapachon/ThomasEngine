@@ -1,8 +1,7 @@
 #pragma once
-
 #include "JsonParser.h"
-class Application;
 
+class Application;
 
 class Module
 {

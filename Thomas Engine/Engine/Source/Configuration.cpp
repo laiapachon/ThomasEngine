@@ -1,9 +1,11 @@
+#include "Application.h"
 #include "Configuration.h"
 #include "mmgr/mmgr.h"
 
 Configuration::Configuration() : Tab()
 {
 	name = "Configuration";
+
 	// Reserve 100 positions
 	fpsLog.reserve(FPS_MS_LOG_MAXLENGHT);
 	msLog.reserve(FPS_MS_LOG_MAXLENGHT);
@@ -20,8 +22,8 @@ Configuration::~Configuration()
 void Configuration::Update()
 {
 	update_status ret = UPDATE_CONTINUE;
-	// Get framerate
-	float currentFPS = floorf(app->GetFrameRate())/*ImGui::GetIO().Framerate*/;
+	// Get framerate and calculate the cycle time
+	float currentFPS = floorf(app->GetFrameRate());
 	float currentMS = (1000.f * app->GetDt());
 
 	PushBackLog(&fpsLog, currentFPS);
@@ -30,16 +32,16 @@ void Configuration::Update()
 
 void Configuration::Draw()
 {
-	if (ImGui::Begin("Configuration"))
+	Update();
+
+	if (ImGui::Begin(name.c_str()))
 	{
 		// CollapsingHeader is to create new Header
-		if (ImGui::CollapsingHeader("Editor Config"))
+		if (ImGui::CollapsingHeader("Config Saver"))
 		{
 			if (ImGui::Button("Save"))app->SaveConfigRequest();
 			ImGui::SameLine();
 			if (ImGui::Button("Load"))app->LoadConfigRequest();
-			
-			//ImGui::TreePop();
 		}
 		if (ImGui::CollapsingHeader("Application", ImGuiTreeNodeFlags_DefaultOpen))
 		{

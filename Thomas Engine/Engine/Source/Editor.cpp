@@ -1,21 +1,30 @@
 #include "Application.h"
-#include "Globals.h"
 #include "Editor.h"
 
+#include "GameObject.h"
 
+// Tabs
+#include "Tab.h"
 #include "Configuration.h"
 #include "ConsoleTab.h"
+#include "AboutTab.h"
+#include "Inspector.h"
+#include "SceneTab.h"
 
-Editor::Editor(Application * app, bool start_enabled) : Module(app, start_enabled)
-{
+Editor::Editor(Application* app, bool start_enabled): Module(app, start_enabled)
+{	
 	name = "Editor";
 
 	// Define size of the vector
 	tabs = std::vector<Tab*>(static_cast<unsigned int>(TabType::MAX), nullptr);
 
 	// Fill the array with the types of tabs 
-	tabs[static_cast<unsigned int>(TabType::CONFIGURATION)] = new Configuration();
+	// The first must be AboutTab
+	tabs[static_cast<unsigned int>(TabType::ABOUT)] = new AboutTab();
 	tabs[static_cast<unsigned int>(TabType::CONSOLE)] = new ConsoleTab();
+	tabs[static_cast<unsigned int>(TabType::CONFIGURATION)] = new Configuration();
+	tabs[static_cast<unsigned int>(TabType::INSPECTOR)] = new Inspector();
+	tabs[static_cast<unsigned int>(TabType::SCENE)] = new SceneTab();
 
 	// Assign a shortcut to each tab
 	for (int i = 0; i < tabs.size(); i++)
@@ -30,8 +39,6 @@ Editor::~Editor()
 
 bool Editor::Init()
 {
-
-
 	// Setup Dear ImGui context
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
@@ -51,7 +58,7 @@ bool Editor::Init()
 	ImGuiStyle& style = ImGui::GetStyle();
 	if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
 	{
-		style.WindowRounding = 12.0f;
+		style.WindowRounding = 0.0f;
 		style.Colors[ImGuiCol_WindowBg].w = 1.0f;
 	}
 
@@ -59,23 +66,36 @@ bool Editor::Init()
 	ImGui_ImplSDL2_InitForOpenGL(App->window->window, App->window->gl_context);
 	ImGui_ImplOpenGL3_Init();
 
-	return true;
+    return true;
 }
 
 bool Editor::Start()
 {
-	return true;
+    return true;
+}
+void Editor::LogToConsole(const char* msg, LogType _type)
+{
+	ConsoleTab* consoleWindow = dynamic_cast<ConsoleTab*>(GetTab(TabType::CONSOLE));
+
+	if (consoleWindow != nullptr)
+		consoleWindow->AddLog(msg, _type);
 }
 
-update_status Editor::PreUpdate(float dt)
+void Editor::CreateDockSpace()
 {
-	return UPDATE_CONTINUE;
+	ImGuiViewport* viewport = ImGui::GetMainViewport();
+
+	ImVec2 dockPos(viewport->WorkPos);
+	ImGui::SetNextWindowPos(dockPos);
+
+	ImVec2 dockSize(viewport->WorkSize);
+	ImGui::SetNextWindowSize(dockSize);
+
+	dockId = DockSpaceOverViewportCustom(viewport, ImGuiDockNodeFlags_PassthruCentralNode, dockPos, dockSize, nullptr);
 }
 
-update_status Editor::Update(float dt)
+void Editor::StartFrame()
 {
-
-	update_status ret = UPDATE_CONTINUE;
 	// Start the Dear ImGui frame
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplSDL2_NewFrame();
@@ -89,24 +109,16 @@ update_status Editor::Update(float dt)
 			tabs[i]->active = !tabs[i]->active;
 		}
 	}
-
-	// Call Updates of tabs
-	for (int i = 0; i < tabs.size(); i++)
-	{
-		if (tabs[i]->active)
-		{
-			tabs[i]->Update();
-		}
-	}
-
-	return ret;
 }
 
-update_status Editor::PostUpdate(float dt)
-{
-	update_status ret = UPDATE_CONTINUE;
+update_status Editor::Draw()
+{	
+	StartFrame();
+
 	// Rendering the tabs
-	ret = ImGuiMenu();
+	update_status ret = ImGuiMenuBar();
+	CreateDockSpace();
+
 	if (showCase)
 	{
 		//ImGui::PushStyleColor(ImGuiCol_::ImGuiCol_MenuBarBg, ImVec4(0.f, 0.f, 0.f, 1.f));
@@ -135,15 +147,14 @@ update_status Editor::PostUpdate(float dt)
 		ImGui::RenderPlatformWindowsDefault();
 		SDL_GL_MakeCurrent(backup_current_window, backup_current_context);
 	}
-	SDL_GL_SwapWindow(App->window->window);
-
 	return ret;
 }
 
-update_status Editor::ImGuiMenu()
+update_status Editor::ImGuiMenuBar()
 {
 	// Create a MenuBar
 	update_status ret = update_status::UPDATE_CONTINUE;
+
 	if (ImGui::BeginMainMenuBar())
 	{
 		if (ImGui::BeginMenu("File"))
@@ -156,9 +167,9 @@ update_status Editor::ImGuiMenu()
 		{
 			for (int i = 0; i < tabs.size(); i++)
 			{
-				if (ImGui::MenuItem(tabs[i]->name.c_str(), std::to_string(i + 1).c_str(), tabs[i]->active, &tabs[i]->active))
-					tabs[i]->active = !tabs[i]->active;
-			}
+				if (ImGui::MenuItem(tabs[i]->name.c_str(), std::to_string(i+1).c_str(), tabs[i]->active, &tabs[i]->active))
+					tabs[i]->active =! tabs[i]->active;
+			}			
 			ImGui::EndMenu();
 		}
 		if (ImGui::BeginMenu("Help"))
@@ -180,45 +191,10 @@ update_status Editor::ImGuiMenu()
 			{
 				ShellExecute(0, 0, "https://github.com/laiapachon/ThomasEngine/issues", 0, 0, SW_SHOW);
 			}
-			if (ImGui::BeginMenu("About"))
+			if (ImGui::MenuItem("About"))
 			{
-				ImGui::Text("Thomas Engine");
-				ImGui::Text("This is a university project focused");
-				ImGui::Text("on the development of a video game engine");
-
-				ImGui::NewLine();
-				ImGui::Text("Developed by: ");
-				if (ImGui::MenuItem("Enric Morales"))
-				{
-					ShellExecute(0, 0, "https://github.com/enricmc19", 0, 0, SW_SHOW);
-				}
-				if (ImGui::MenuItem("Laia Pachon"))
-				{
-					ShellExecute(0, 0, "https://github.com/laiapachon/ThomasEngine", 0, 0, SW_SHOW);
-				}
-
-				ImGui::NewLine();
-				ImGui::Separator();
-
-				char SDLVersion[25];
-				SDL_version version;
-				SDL_GetVersion(&version);
-				sprintf_s(SDLVersion, 25, "%i.%i.%i", version.major, version.minor, version.patch);
-
-				ImGui::Text("3rd Party Libraries used:");
-				IMGUI_PRINT("SDL Version: ", SDLVersion);
-				IMGUI_PRINT("OpenGL Version: ", "%s", glGetString(GL_VERSION));
-				IMGUI_PRINT("Glew Version: ", "%s", glewGetString(GLEW_VERSION));
-				IMGUI_PRINT("MathGeoLib Version: ", "1.5");
-				IMGUI_PRINT("ImGui Version: ", "1.84.2");
-
-				ImGui::NewLine();
-				ImGui::Separator();
-
-				PrintLicense();
-
-				ImGui::EndMenu();
-			}
+				tabs[0]->active = !tabs[0]->active;
+			}			
 			ImGui::EndMenu();
 		}
 		ImGui::EndMainMenuBar();
@@ -228,7 +204,8 @@ update_status Editor::ImGuiMenu()
 
 bool Editor::CleanUp()
 {
-	bool ret = true;
+	bool ret= true;
+	LOG(LogType::L_NORMAL, "Editor CleanUp");
 
 	// CleanUp all tabs
 	ImGui_ImplOpenGL3_Shutdown();
@@ -244,44 +221,48 @@ bool Editor::CleanUp()
 
 	return ret;
 }
-void Editor::LogToConsole(const char* msg, LogType _type)
-{
-	ConsoleTab* consoleWindow = dynamic_cast<ConsoleTab*>(GetTab(TabType::CONSOLE));
-
-	if (consoleWindow != nullptr)
-		consoleWindow->AddLog(msg, _type);
-}
 
 Tab* Editor::GetTab(TabType type)
 {
 	unsigned int vecPosition = static_cast<unsigned int>(type);
 
-	SDL_assert(vecPosition < tabs.size());
 	return (vecPosition < tabs.size()) ? tabs[vecPosition] : nullptr;
 }
 
-void Editor::PrintLicense()
+GameObject* Editor::GetGameObjectSelected()
 {
-	ImGui::Text("License:");
-	ImGui::Text("MIT License \nCopyright(c) 2022 Enric Morales Laia Pachon \n");
-	ImGui::NewLine();
-	ImGui::Text("Permission is hereby granted, free of charge, to any person obtaining a copy");
-	ImGui::Text("of this softwareand associated documentation files (the \"Software\"), to deal");
-	ImGui::Text("in the Software without restriction, including without limitation the rights");
-	ImGui::Text("to use, copy, modify, merge, publish, distribute, sublicense, and /or sell");
-	ImGui::Text("copies of the Software, and to permit persons to whom the Software is");
-	ImGui::Text("furnished to do so, subject to the following conditions:");
-	ImGui::NewLine();
-	ImGui::Text("The above copyright noticeand this permission notice shall be included in all");
-	ImGui::Text("copies or substantial portions of the Software.");
-	ImGui::NewLine();
-	ImGui::Text("THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR");
-	ImGui::Text("IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,");
-	ImGui::Text("FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.IN NO EVENT SHALL THE");
-	ImGui::Text("AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER");
-	ImGui::Text("LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,");
-	ImGui::Text("OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE");
-	ImGui::Text("SOFTWARE");
+	Inspector* inspector = dynamic_cast<Inspector*>(GetTab(TabType::INSPECTOR));
+	return inspector->gameObjectSelected;
 }
 
 
+ImGuiID Editor::DockSpaceOverViewportCustom(ImGuiViewport* viewport, ImGuiDockNodeFlags dockspaceFlags, ImVec2 position, ImVec2 size, const ImGuiWindowClass* windowClass)
+{
+	if (viewport == NULL)
+		viewport = ImGui::GetMainViewport();
+
+	ImGui::SetNextWindowPos(position);
+	ImGui::SetNextWindowSize(size);
+	ImGui::SetNextWindowViewport(viewport->ID);
+
+	ImGuiWindowFlags host_window_flags = 0;
+	host_window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoDocking;
+	host_window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+	if (dockspaceFlags & ImGuiDockNodeFlags_PassthruCentralNode)
+		host_window_flags |= ImGuiWindowFlags_NoBackground;
+
+	char label[32];
+	ImFormatString(label, IM_ARRAYSIZE(label), "DockSpaceViewport_%08X", viewport->ID);
+
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+	ImGui::Begin(label, NULL, host_window_flags);
+	ImGui::PopStyleVar(3);
+
+	ImGuiID dockspaceId = ImGui::GetID("DockSpace");
+	ImGui::DockSpace(dockspaceId, ImVec2(0.0f, 0.0f), dockspaceFlags, windowClass);
+	ImGui::End();
+
+	return dockspaceId;
+}

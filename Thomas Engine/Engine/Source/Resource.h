@@ -1,29 +1,27 @@
 #pragma once
-
 #include<string>
+
+enum class ResourceType {
+	TEXTURE,
+	MODEL,
+	MESH,
+	SCENE,
+	SCRIPT,
+	SHADER,
+	MATERIAL,
+	UNKNOWN
+};
 
 class Resource
 {
+public:
+	
 
 public:
-
-	//REMEBER: To update all the switch methods on Resource Manager module when adding a new type
-	enum class Type {
-		TEXTURE,
-		MODEL,
-		MESH,
-		SCENE,
-		SCRIPT,
-		SHADER,
-		MATERIAL,
-		UNKNOWN
-	};
-
-public:
-	Resource(int _uid, Resource::Type _type);
+	Resource(int uid, ResourceType type);
 	virtual ~Resource();
 
-	inline Resource::Type GetType() const { return type; }
+	inline ResourceType GetType() const { return type; }
 	inline int GetUID() const { return uid; }
 	inline const char* GetAssetPath() const { return assetsFile.c_str(); }
 	inline const char* GetLibraryPath() const { return libraryFile.c_str(); }
@@ -46,6 +44,6 @@ public:
 	int uid;
 	std::string assetsFile;
 	std::string libraryFile;
-	Type type = Type::UNKNOWN;
+	ResourceType type = ResourceType::UNKNOWN;
 	unsigned int referenceCount;
 };

@@ -1,14 +1,14 @@
-#include "Globals.h"
 #include "Application.h"
 #include "Renderer3D.h"
+#include "Globals.h"
 
 #include <gl/GL.h>
 #include <gl/GLU.h>
 
 #include "GPUDetected/DeviceId.h"
 
-//#include "ResourceManager.h"
 #include "ResourceTexture.h"
+#include "MeshRenderer.h"
 
 #pragma comment (lib, "glu32.lib")    /* link OpenGL Utility lib     */
 #pragma comment (lib, "opengl32.lib") /* link Microsoft OpenGL lib   */
@@ -21,10 +21,10 @@ Renderer3D::Renderer3D(Application* app, bool start_enabled) : Module(app, start
 
 	SDL_version version;
 	SDL_GetVersion(&version);
-	sprintf_s(hardware.SDLVersion, 25, "%i.%i.%i", version.major, version.minor, version.patch);
+	hardware.SDLVersion = std::to_string(version.major) + '.' + std::to_string(version.minor) + '.' + std::to_string(version.patch);
 	hardware.CPUCount = SDL_GetCPUCount();
 	hardware.CPUCache = SDL_GetCPUCacheLineSize();
-	hardware.systemRAM = SDL_GetSystemRAM() / 1024.f;
+	hardware.systemRAM = SDL_GetSystemRAM() / 1024.f;	
 
 	uint vendor, deviceId;
 	std::wstring brand;
@@ -54,29 +54,39 @@ bool Renderer3D::Init()
 {
 	LOG(LogType::L_NORMAL, "Creating 3D Renderer context");
 	bool ret = true;
-
+	
 	//Create context
 	context = SDL_GL_CreateContext(App->window->window);
-	if (context == NULL)
+	if(context == NULL)
 	{
 		LOG(LogType::L_ERROR, "OpenGL context could not be created! SDL_Error: %s\n", SDL_GetError());
 		ret = false;
 	}
 
-	if (ret == true)
+	GLenum error = glewInit();
+	if (error != GL_NO_ERROR)
+	{
+		LOG(LogType::L_ERROR, "Error initializing glew library! %s", SDL_GetError());
+		ret = false;
+	}
+	else
+	{
+		LOG(LogType::L_NORMAL, "Init: Glew %s", glewGetString(GLEW_VERSION));
+	}
+	
+	if(ret == true)
 	{
 		//Use Vsync
-		if (VSYNC && SDL_GL_SetSwapInterval(static_cast<int>(vsync)) < 0)
+		if(VSYNC && SDL_GL_SetSwapInterval(static_cast<int>(vsync)) < 0)
 			LOG(LogType::L_ERROR, "Warning: Unable to set VSync! SDL Error: %s\n", SDL_GetError());
 
 		//Initialize Projection Matrix
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
 
-		GLenum error = glewInit();
 		//Check for error
-		error = glGetError();
-		if (error != GL_NO_ERROR)
+		GLenum error = glGetError();
+		if(error != GL_NO_ERROR)
 		{
 			LOG(LogType::L_ERROR, "Error initializing OpenGL! %s\n", gluErrorString(error));
 			ret = false;
@@ -88,43 +98,47 @@ bool Renderer3D::Init()
 
 		//Check for error
 		error = glGetError();
-		if (error != GL_NO_ERROR)
+		if(error != GL_NO_ERROR)
 		{
 			LOG(LogType::L_ERROR, "Error initializing OpenGL! %s\n", gluErrorString(error));
 			ret = false;
 		}
-
+		
 		glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 		glClearDepth(1.0f);
-
+		
 		//Initialize clear color
 		glClearColor(0.f, 0.f, 0.f, 1.f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		//Check for error
 		error = glGetError();
-		if (error != GL_NO_ERROR)
+		if(error != GL_NO_ERROR)
 		{
 			LOG(LogType::L_ERROR, "Error initializing OpenGL! %s\n", gluErrorString(error));
 			ret = false;
 		}
 
+		// Blend for transparency
+		glEnable(GL_BLEND);
+		glBlendEquation(GL_FUNC_ADD);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-		GLfloat LightModelAmbient[] = { 0.0f, 0.0f, 0.0f, 1.0f };
+		GLfloat LightModelAmbient[] = {0.0f, 0.0f, 0.0f, 1.0f};
 		glLightModelfv(GL_LIGHT_MODEL_AMBIENT, LightModelAmbient);
-
+		
 		lights[0].ref = GL_LIGHT0;
 		lights[0].ambient.Set(0.25f, 0.25f, 0.25f, 1.0f);
 		lights[0].diffuse.Set(0.75f, 0.75f, 0.75f, 1.0f);
 		lights[0].SetPos(0.0f, 0.0f, 2.5f);
 		lights[0].Init();
-
-		GLfloat MaterialAmbient[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+		
+		GLfloat MaterialAmbient[] = {1.0f, 1.0f, 1.0f, 1.0f};
 		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, MaterialAmbient);
 
-		GLfloat MaterialDiffuse[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+		GLfloat MaterialDiffuse[] = {1.0f, 1.0f, 1.0f, 1.0f};
 		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, MaterialDiffuse);
-
+		
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_CULL_FACE);
@@ -134,25 +148,48 @@ bool Renderer3D::Init()
 		glEnable(GL_TEXTURE_2D);
 	}
 
+	//Generate texture
+	for (int i = 0; i < SQUARE_TEXTURE_W; i++) {
+		for (int j = 0; j < SQUARE_TEXTURE_H; j++) {
+			int c = ((((i & 0x8) == 0) ^ (((j & 0x8)) == 0))) * 255;
+			checkerImage[i][j][0] = (GLubyte)c;
+			checkerImage[i][j][1] = (GLubyte)c;
+			checkerImage[i][j][2] = (GLubyte)c;
+			checkerImage[i][j][3] = (GLubyte)255;
+		}
+	}
+
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	glGenTextures(1, &checkersTexture);
+	glBindTexture(GL_TEXTURE_2D, checkersTexture);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, SQUARE_TEXTURE_W, SQUARE_TEXTURE_H, 0, GL_RGBA, GL_UNSIGNED_BYTE, checkerImage);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
 	App->camera->Move(vec3(1.0f, 1.0f, 0.0f));
 	App->camera->LookAt(vec3(0, 0, 0));
 
+	//Generate scene buffers
+	ReGenerateFrameBuffer(app->window->GetWindowWidth(), app->window->GetWindowHeight());
+
 	// Projection matrix for
 	OnResize(SCREEN_WIDTH, SCREEN_HEIGHT);
-
-	// LADO FRONTAL: lado multicolor
-
+	
+	// Load Primitives Test
 	cube.InnerMesh();
-	cube.LoadToMemory();
+	cube.LoadToMemory();	
 
-	sphere.InnerMesh();
-	sphere.LoadToMemory();
+	//sphere.InnerMesh();
+	//sphere.LoadToMemory();
+	
+	//cylinder.InnerMesh();
+	//cylinder.LoadToMemory();
 
-	/*cylinder.InnerMesh();
-	cylinder.LoadToMemory();
-
-	pyramid.InnerMesh();
-	pyramid.LoadToMemory();*/
+	//pyramid.InnerMesh();
+	//pyramid.LoadToMemory();
 
 	return ret;
 }
@@ -160,8 +197,11 @@ bool Renderer3D::Init()
 // PreUpdate: clear buffer
 update_status Renderer3D::PreUpdate(float dt)
 {
+	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+
 	glClearColor(0.f, 0.f, 0.f, 1.f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 	glLoadIdentity();
 
 	glMatrixMode(GL_MODELVIEW);
@@ -170,7 +210,7 @@ update_status Renderer3D::PreUpdate(float dt)
 	// light 0 on cam pos
 	lights[0].SetPos(App->camera->Position.x, App->camera->Position.y, App->camera->Position.z);
 
-	for (uint i = 0; i < MAX_LIGHTS; ++i)
+	for(uint i = 0; i < MAX_LIGHTS; ++i)
 		lights[i].Render();
 
 	return UPDATE_CONTINUE;
@@ -179,28 +219,41 @@ update_status Renderer3D::PreUpdate(float dt)
 // PostUpdate present buffer to screen
 update_status Renderer3D::PostUpdate(float dt)
 {
-	update_status ret;
+	update_status ret = UPDATE_CONTINUE;
 	//glClearColor(0.f, 0.f, 0.f, 1.f);
 	//glClear(GL_COLOR_BUFFER_BIT);
 	// Axis and grid
-
+	
 	PrimitivePlane p(0, 1, 0, 0);
 	p.axis = true;
 	p.Render();
 
+
+	// Comprobe wireframe mode
 	(wireframe) ? glPolygonMode(GL_FRONT_AND_BACK, GL_LINE) : glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	(wireframe) ? glColor3f(Yellow.r, Yellow.g, Yellow.b) : glColor3f(White.r, White.g, White.b);
+	
+	// Draw all meshes
+	if (!renderQueue.empty())
+	{
+		for (size_t i = 0; i < renderQueue.size(); i++)
+		{
+			renderQueue[i]->RenderMesh();
+		}
+		renderQueue.clear();
+	}
+	cube.RenderMesh();
 
-	cube.RenderMesh(0);
-	sphere.RenderMesh(0);
-	//cylinder.RenderMesh();
-	//pyramid.RenderMesh();
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-	glEnd();
+	// Draw all tabs
+	ret = app->editor->Draw();
+
+	SDL_GL_SwapWindow(app->window->window);
 
 	(wireframe) ? glPolygonMode(GL_FRONT_AND_BACK, GL_FILL) : glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-	return UPDATE_CONTINUE;
+	return ret;
 }
 
 // Called before quitting
@@ -208,6 +261,10 @@ bool Renderer3D::CleanUp()
 {
 	LOG(LogType::L_NO_PRINTABLE, "Destroying 3D Renderer");
 
+	glDeleteFramebuffers(1, &framebuffer);
+	glDeleteTextures(1, &texColorBuffer);
+	glDeleteRenderbuffers(1, &rbo);
+		
 	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_CULL_FACE);
 	glDisable(GL_LIGHTING);
@@ -250,6 +307,43 @@ void Renderer3D::GetCaps(std::string& caps)
 	caps += (SDL_Has3DNow()) ? "3DNow, " : "";
 }
 
+void Renderer3D::ReGenerateFrameBuffer(int w, int h)
+{
+	if (framebuffer > 0)
+		glDeleteFramebuffers(1, &framebuffer);
+
+	if (texColorBuffer > 0)
+		glDeleteTextures(1, &texColorBuffer);
+
+	if (rbo > 0)
+		glDeleteRenderbuffers(1, &rbo);
+
+
+	glGenFramebuffers(1, &framebuffer);
+	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+
+	glGenTextures(1, &texColorBuffer);
+	glBindTexture(GL_TEXTURE_2D, texColorBuffer);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	// attach it to currently bound framebuffer object
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texColorBuffer, 0);
+
+	glGenRenderbuffers(1, &rbo);
+	glBindRenderbuffer(GL_RENDERBUFFER, rbo);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, w, h);
+	glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
+
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+		LOG(LogType::L_ERROR, "ERROR::FRAMEBUFFER:: Framebuffer is not complete!");
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
 void Renderer3D::OnResize(int width, int height)
 {
 	glViewport(0, 0, width, height);
@@ -267,7 +361,7 @@ void Renderer3D::OnGUI()
 {
 	if (ImGui::CollapsingHeader("Hardware"))
 	{
-		IMGUI_PRINT("SDL Version: ", hardware.SDLVersion);
+		IMGUI_PRINT("SDL Version: ", "%s", hardware.SDLVersion.c_str());
 		IMGUI_PRINT("OpenGL Version: ", "%s", glGetString(GL_VERSION));
 		IMGUI_PRINT("Glew Version: ", "%s", glewGetString(GLEW_VERSION));
 
@@ -294,7 +388,7 @@ void Renderer3D::OnGUI()
 	if (ImGui::CollapsingHeader("Debug"))
 	{
 		if (ImGui::Checkbox("GL_DEPTH_TEST", &depthTest)) {
-			if (depthTest) glEnable(GL_DEPTH_TEST);
+			if(depthTest) glEnable(GL_DEPTH_TEST);
 			else glDisable(GL_DEPTH_TEST);
 		}
 
@@ -337,7 +431,7 @@ void Renderer3D::OnGUI()
 		}
 
 		if (ImGui::IsItemHovered())
-			ImGui::SetTooltip("Enable/Disable GL_LIGHTING");
+			ImGui::SetTooltip("Enable/Disable GL_LIGHTING");		
 
 	}
 }

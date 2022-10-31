@@ -1,15 +1,13 @@
 #ifndef __FileSystem_H__
 #define __FileSystem_H__
 
+#include "PhysFS/include/physfs.h"
+
 #include <vector>
 #include <string>
 
-#include "JsonParser.h"
-#include "PhysFS/include/physfs.h"
-
-
 struct SDL_RWops;
-int close_sdl_rwops(SDL_RWops* rw);
+int close_sdl_rwops(SDL_RWops *rw);
 
 enum class ImportType {
 	NOTYPE = -1,
@@ -23,7 +21,7 @@ namespace StringLogic {
 	std::string GlobalToLocalPath(const char* _globalPath);
 }
 
-namespace FileSystem
+namespace FileSystem 
 {
 	ImportType GetTypeFromPath(const char* path);
 
@@ -53,7 +51,6 @@ namespace FileSystem
 	inline const char* GetBasePath() { return PHYSFS_getBaseDir(); }
 	inline const char* GetWritePath() { return PHYSFS_getWriteDir(); }
 	const char* GetReadPaths();
-
 };
 
 #endif // __FileSystem_H__

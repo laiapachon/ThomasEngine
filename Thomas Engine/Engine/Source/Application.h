@@ -10,8 +10,8 @@
 #include "Window.h"
 #include "Input.h"
 #include "Camera3D.h"
-#include "Physics3D.h"
 #include "Editor.h"
+#include "Scene.h"
 
 #include "JsonParser.h"
 
@@ -26,7 +26,7 @@ public:
 	Camera3D* camera;
 	Input* input;
 	Renderer3D* renderer3D;
-	Physics3D* physics;
+	Scene* scene;
 	Editor* editor;
 
 	std::vector<Module*> listModules;
