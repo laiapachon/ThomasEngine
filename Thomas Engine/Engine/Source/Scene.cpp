@@ -2,12 +2,18 @@
 #include "Scene.h"
 #include "Globals.h"
 
-#include "GameObject.h"
-#include "ResourceManager.h"
-
+//Components
+#include "Component.h"
+#include "Transform.h"
+//Modules
 #include "Input.h"
 #include "Editor.h"
+#include "ResourceManager.h"
+
+#include "GameObject.h"
 #include "Inspector.h"
+
+#include"MathGeoLib/include/Math/Quat.h"
 
 Scene::Scene(Application* app, bool start_enabled) : Module(app, start_enabled), root(nullptr)
 {
@@ -28,6 +34,16 @@ bool Scene::Init()
 bool Scene::Start()
 {
 	app->resourceManager->ImportFile("BakerHouse.fbx");
+	Transform* transformChimney = root->children[0]->children[0]->transform;
+	Transform* transformBakerhouse = root->children[0]->children[1]->transform;
+	Transform* parentTransform = root->children[0]->transform;
+
+	float3 size(1, 1, 1);
+	Quat rotationQuat(0, 0, 0, 1);
+
+	transformChimney->SetTransformMatrix(transformChimney->position, rotationQuat, size, parentTransform);
+	transformBakerhouse->SetTransformMatrix(transformBakerhouse->position, rotationQuat, size, parentTransform);
+
 	return true;
 }
 

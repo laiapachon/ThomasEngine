@@ -1,6 +1,10 @@
 #include "Application.h"
 #include "Camera3D.h"
 #include "Globals.h"
+#include "Editor.h"
+#include "GameObject.h"
+#include "Transform.h"
+
 
 #include "Math/float4x4.h"
 #include "Math/float3.h"
@@ -74,23 +78,22 @@ void Camera3D::CheckInputs()
 
 void Camera3D::OrbitRotation()
 {
-	vec3 pivot = vec3(0,0,0);
+	vec3 pivot = vec3(0, 0, 0);
+	GameObject* gameObject = App->editor->GetGameObjectSelected();
+
+	float3 posGO = { 0, 0, 0 };
+
+	if (gameObject != nullptr)posGO = gameObject->transform->position;
+
 	if (App->input->GetMouseButton(SDL_BUTTON_RIGHT) == KEY_REPEAT)
 	{
 		int dx = -App->input->GetMouseXMotion();
 		int dy = -App->input->GetMouseYMotion();
-
 		float Sensitivity = 0.25f;
+		app->editor->GetGameObjectSelected();
+		(App->input->GetKey(SDL_SCANCODE_LALT) == KEY_REPEAT && gameObject != nullptr) ? pivot = vec3(posGO.x, posGO.y, posGO.z) : pivot = Reference;
 
-		if (App->input->GetKey(SDL_SCANCODE_LALT) == KEY_REPEAT)
-		{
-			//Position -= Object;
-
-		}
-		else {
-
-			Position -= Reference;
-		}
+		Position -= pivot;
 
 		if (dx != 0)
 		{
@@ -114,13 +117,13 @@ void Camera3D::OrbitRotation()
 				Y = cross(Z, X);
 			}
 		}
-		Position = Reference + Z * length(Position);
+		Position = pivot + Z * length(Position);
 
 	}
 }
 
 // -----------------------------------------------------------------
-void Camera3D::Look(const vec3 &Position, const vec3 &Reference, bool RotateAroundReference)
+void Camera3D::Look(const vec3& Position, const vec3& Reference, bool RotateAroundReference)
 {
 	this->Position = Position;
 	this->Reference = Reference;
@@ -129,7 +132,7 @@ void Camera3D::Look(const vec3 &Position, const vec3 &Reference, bool RotateArou
 	X = normalize(cross(vec3(0.0f, 1.0f, 0.0f), Z));
 	Y = cross(Z, X);
 
-	if(!RotateAroundReference)
+	if (!RotateAroundReference)
 	{
 		this->Reference = this->Position;
 		this->Position += Z * 0.05f;
@@ -149,7 +152,7 @@ void Camera3D::Look()
 }
 
 // -----------------------------------------------------------------
-void Camera3D::LookAt( const vec3 &Spot)
+void Camera3D::LookAt(const vec3& Spot)
 {
 	Reference = Spot;
 
@@ -162,7 +165,7 @@ void Camera3D::LookAt( const vec3 &Spot)
 
 
 // -----------------------------------------------------------------
-void Camera3D::Move(const vec3 &Movement)
+void Camera3D::Move(const vec3& Movement)
 {
 	Position += Movement;
 	Reference += Movement;
@@ -209,19 +212,19 @@ bool Camera3D::SaveConfig(JsonParser& node) const
 
 bool Camera3D::LoadConfig(JsonParser& node)
 {
-	
+
 	X.x = (float)node.JsonValToNumber("X.x");
 	X.y = (float)node.JsonValToNumber("X.y");
 	X.z = (float)node.JsonValToNumber("X.z");
-	
+
 	Y.x = (float)node.JsonValToNumber("Y.x");
 	Y.y = (float)node.JsonValToNumber("Y.y");
 	Y.z = (float)node.JsonValToNumber("Y.z");
-	
+
 	Z.x = (float)node.JsonValToNumber("Z.x");
 	Z.y = (float)node.JsonValToNumber("Z.y");
 	Z.z = (float)node.JsonValToNumber("Z.z");
-	
+
 	Position.x = (float)node.JsonValToNumber("Position.x");
 	Position.y = (float)node.JsonValToNumber("Position.y");
 	Position.z = (float)node.JsonValToNumber("Position.z");

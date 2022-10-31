@@ -46,13 +46,13 @@ Mesh* MeshLoader::LoadMesh(aiMesh* importedMesh, uint oldUID)
 
 	// copy vertices
 	mesh->numVertex = importedMesh->mNumVertices;
-	mesh->vertices.resize(mesh->numVertex * sizeof(float) * 3);
+	//mesh->vertices.resize(mesh->numVertex * sizeof(float) * 3);
 
 	mesh->numTexCoords = importedMesh->mNumVertices;
-	mesh->texCoords.resize(mesh->numTexCoords * sizeof(float) * 2);
+	//mesh->texCoords.resize(mesh->numTexCoords * sizeof(float) * 2);
 
 	mesh->numNormals = importedMesh->mNumVertices;
-	mesh->normals.resize(mesh->numNormals * sizeof(float) * 3);
+	//mesh->normals.resize(mesh->numNormals * sizeof(float) * 3);
 
 	for (size_t i = 0; i < mesh->numVertex; i++)
 	{

@@ -24,10 +24,7 @@ Mesh::~Mesh()
 		glDeleteBuffers(1, &normalBufferId);
 
 	//Clear buffers
-	indices.clear();
-	vertices.clear();
-	texCoords.clear();
-	normals.clear();
+	UnloadFromMemory();
 }
 
 bool Mesh::LoadToMemory()
@@ -60,7 +57,8 @@ bool Mesh::LoadToMemory()
 	}
 
 	// TexCoords Buffer GL_ARRAY_BUFFER
-	if (numTexCoords != 0) {
+	if (numTexCoords != 0)
+	{
 		glGenBuffers(1, (GLuint*)&(textureBufferId));
 		glBindBuffer(GL_ARRAY_BUFFER, textureBufferId);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * numTexCoords * 2, &texCoords[0], GL_STATIC_DRAW);
@@ -75,6 +73,8 @@ bool Mesh::UnloadFromMemory()
 	//Clear buffers
 	indices.clear();
 	vertices.clear();
+	normals.clear();
+	texCoords.clear();
 
 	return true;
 }
@@ -131,13 +131,11 @@ void Mesh::RenderMesh(GLuint textureID)
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferId);
 
 	//-- Draw --//
-	//glPushMatrix();
 	glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_INT, NULL);
-	//glPopMatrix();
 
 	//-- UnBind Buffers--//
 	if (textureID != -1)
-		glBindTexture(GL_TEXTURE_2D, textureID);
+		glBindTexture(GL_TEXTURE_2D, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 

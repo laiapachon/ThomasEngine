@@ -25,20 +25,21 @@ void MeshRenderer::Update()
 
 void MeshRenderer::RenderMesh()
 {
-	Transform* transform = GetOwner()->transform;
+	Transform* transform = owner->transform;
 	if (transform != nullptr)
 	{
 		glPushMatrix();
 		glMultMatrixf(transform->GetGlobalTransposed());
 	}
 
-	Material* material = dynamic_cast<Material*>(GetOwner()->GetComponent(ComponentType::MATERIAL));
+	Material* material = dynamic_cast<Material*>(owner->GetComponent(ComponentType::MATERIAL));
 	GLuint id = -1;
 
 	if (material != nullptr)
 		id = material->GetTextureID();
 
 	mesh->RenderMesh(id);
+
 
 	// If vertexNormals or faceNormals are true draw the Normals
 	if (vertexNormals || faceNormals)

@@ -23,8 +23,7 @@ public:
 
 	ComponentType GetType() { return type; };
 	void SetType(ComponentType type) { this->type = type; };
-
-	GameObject* GetOwner() { return owner; };
+	
 	GameObject* owner;
 private:
 	ComponentType type = ComponentType::UNKNOW;

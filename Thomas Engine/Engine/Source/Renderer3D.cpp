@@ -234,6 +234,7 @@ update_status Renderer3D::PostUpdate(float dt)
 	(wireframe) ? glPolygonMode(GL_FRONT_AND_BACK, GL_LINE) : glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	(wireframe) ? glColor3f(Yellow.r, Yellow.g, Yellow.b) : glColor3f(White.r, White.g, White.b);
 
+
 	// Draw all meshes
 	if (!renderQueue.empty())
 	{
@@ -243,7 +244,7 @@ update_status Renderer3D::PostUpdate(float dt)
 		}
 		renderQueue.clear();
 	}
-	//cube.RenderMesh();
+	
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glDisable(GL_DEPTH_TEST);
