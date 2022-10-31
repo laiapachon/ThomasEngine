@@ -7,6 +7,7 @@ extern Application* app = nullptr;
 Application::Application() : maxFPS(60)
 {
 	app = this;
+	resourceManager = new ResourceManager(this);
 	window = new Window(this);
 	input = new Input(this);
 	renderer3D = new Renderer3D(this);
@@ -20,10 +21,11 @@ Application::Application() : maxFPS(60)
 
 	// Main Modules
 	AddModule(window);
+	AddModule(resourceManager);
 	AddModule(camera);
-	AddModule(input);	
-	AddModule(scene);	
-	
+	AddModule(input);
+	AddModule(scene);
+
 	// Renderer last!
 	AddModule(editor);
 	AddModule(renderer3D);
@@ -34,7 +36,7 @@ Application::Application() : maxFPS(60)
 
 Application::~Application()
 {
-	
+
 	for (int i = listModules.size() - 1; i >= 0; --i)
 	{
 		delete listModules[i];
@@ -55,7 +57,7 @@ bool Application::Init()
 
 		if (jsonFile.GetRootValue() == NULL)
 		{
-			LOG(LogType::L_NORMAL,"Couldn't load %s", FILE_CONFIG);
+			LOG(LogType::L_NORMAL, "Couldn't load %s", FILE_CONFIG);
 			ret = false;
 		}
 
@@ -114,7 +116,7 @@ void Application::FinishUpdate()
 update_status Application::Update()
 {
 	update_status ret = UPDATE_CONTINUE;
-	PrepareUpdate();	
+	PrepareUpdate();
 
 
 	for (unsigned int i = 0; i < listModules.size() && ret == UPDATE_CONTINUE; i++)
@@ -156,7 +158,7 @@ void Application::AddModule(Module* mod)
 }
 void Application::SaveConfig()
 {
-	LOG(LogType::L_NORMAL,"Saving configuration");
+	LOG(LogType::L_NORMAL, "Saving configuration");
 
 	JSON_Value* root = jsonFile.GetRootValue();
 
@@ -180,7 +182,7 @@ void Application::SaveConfig()
 
 void Application::LoadConfig()
 {
-	LOG(LogType::L_NORMAL,"Loading configurations");
+	LOG(LogType::L_NORMAL, "Loading configurations");
 
 	JSON_Value* root = jsonFile.GetRootValue();
 
@@ -188,7 +190,7 @@ void Application::LoadConfig()
 
 	maxFPS = application.JsonValToNumber("FPS");
 
-	
+
 	std::vector<Module*>::iterator item;
 
 	for (item = listModules.begin(); item != listModules.end(); ++item)

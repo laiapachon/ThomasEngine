@@ -1,6 +1,6 @@
 #include "Application.h"
 #include "MeshLoader.h"
- 
+
 // Importers
 #include "FileSystem.h"
 #include "TextureLoader.h"
@@ -82,8 +82,8 @@ Mesh* MeshLoader::LoadMesh(aiMesh* importedMesh, uint oldUID)
 	if (importedMesh->HasFaces())
 	{
 		mesh->numIndices = importedMesh->mNumFaces * 3;
-		mesh->indices.resize(mesh->numVertex);
-		
+		mesh->indices.resize(mesh->numIndices);
+
 		for (uint j = 0; j < importedMesh->mNumFaces; ++j)
 		{
 			if (importedMesh->mFaces[j].mNumIndices != 3)

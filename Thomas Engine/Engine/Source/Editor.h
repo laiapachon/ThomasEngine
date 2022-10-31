@@ -19,21 +19,21 @@ enum class TabType {
 	CONFIGURATION,
 	INSPECTOR,
 	SCENE,
+	HIERARCHY,
 
 	MAX
 };
 
-class Editor:public Module
+class Editor : public Module
 {
 public:
 	Editor(Application* app, bool start_enabled = true);
-
 	~Editor();
-	bool Init();
 
+	bool Init();
 	bool Start();
 	void LogToConsole(const char* msg, LogType _type);
-	
+
 	void StartFrame();
 	update_status Draw();
 

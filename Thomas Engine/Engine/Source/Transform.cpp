@@ -79,11 +79,11 @@ Transform* Transform::GetRecursiveTransforms(Transform* node, std::vector<Transf
 {
 	transforms.push_back(node);
 
-	if (!node->GetOwner()->GetChildrens().empty())
+	if (!node->GetOwner()->children.empty())
 	{
-		for (size_t i = 0; i < node->GetOwner()->GetChildrens().size(); i++)
+		for (size_t i = 0; i < node->GetOwner()->children.size(); i++)
 		{
-			Transform* parentTrans = node->GetOwner()->GetChildrens()[i]->transform;
+			Transform* parentTrans = node->GetOwner()->children[i]->transform;
 			GetRecursiveTransforms(parentTrans, transforms);
 		}
 	}

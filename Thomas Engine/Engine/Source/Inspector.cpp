@@ -37,7 +37,7 @@ void Inspector::Draw()
 
 			// Change to dynamic array by can add new tags
 			ImGui::Text("Tag"); ImGui::SameLine();
-			const char* tags[] = { "Untagged", "Respawn", "Finish", "EditorOnly", "MainCamara", "Player", "GameController"};
+			const char* tags[] = { "Untagged", "Respawn", "Finish", "EditorOnly", "MainCamara", "Player", "GameController" };
 			static const char* current_item = NULL;
 
 			// Draw the popUp tab of a list and selectedable 
@@ -64,7 +64,7 @@ void Inspector::Draw()
 			ImGui::SameLine();
 			// Change to dynamic array by can add new layers
 			ImGui::Text("Layer"); ImGui::SameLine();
-			const char* layers[] = { "0: Default", "1: TransparentFX", "2: Ignore Raycast", "3: Water", "4: UI", "5: Player"};
+			const char* layers[] = { "0: Default", "1: TransparentFX", "2: Ignore Raycast", "3: Water", "4: UI", "5: Player" };
 
 			style = ImGui::GetStyle();
 			w = ImGui::CalcItemWidth();
@@ -92,9 +92,9 @@ void Inspector::Draw()
 
 			ImGui::Separator();
 			// Draw all OnEditors componets
-			for (size_t i = 0; i < gameObjectSelected->GetComponents().size(); i++)
+			for (size_t i = 0; i < gameObjectSelected->components.size(); i++)
 			{
-				gameObjectSelected->GetComponents()[i]->OnEditor();
+				gameObjectSelected->components[i]->OnEditor();
 			}
 		}
 	}

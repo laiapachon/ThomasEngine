@@ -6,6 +6,7 @@
 #include "Globals.h"
 #include "Timer.h"
 #include "Module.h"
+#include "ResourceManager.h"
 #include "Renderer3D.h"
 #include "Window.h"
 #include "Input.h"
@@ -22,6 +23,7 @@
 class Application
 {
 public:
+	ResourceManager* resourceManager;
 	Window* window;
 	Camera3D* camera;
 	Input* input;
