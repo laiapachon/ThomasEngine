@@ -5,6 +5,8 @@
 //Components
 #include "Component.h"
 #include "Transform.h"
+#include "MeshRenderer.h"
+
 //Modules
 #include "Input.h"
 #include "Editor.h"
@@ -12,6 +14,7 @@
 
 #include "GameObject.h"
 #include "Inspector.h"
+#include "ResourceMesh.h"
 
 #include"MathGeoLib/include/Math/Quat.h"
 
@@ -26,6 +29,7 @@ Scene::~Scene()
 
 bool Scene::Init()
 {
+	LOG(LogType::L_NORMAL, "Loading Scene");
 	root = CreateGameObject("Root", nullptr);
 
 	return true;
@@ -34,15 +38,15 @@ bool Scene::Init()
 bool Scene::Start()
 {
 	app->resourceManager->ImportFile("BakerHouse.fbx");
-	Transform* transformChimney = root->children[0]->children[0]->transform;
-	Transform* transformBakerhouse = root->children[0]->children[1]->transform;
-	Transform* parentTransform = root->children[0]->transform;
+	Transform* transformChimney = root->GetChildren()[0]->GetChildren()[0]->transform;
+	Transform* transformBakerhouse = root->GetChildren()[0]->GetChildren()[1]->transform;
+	Transform* parentTransform = root->GetChildren()[0]->transform;
 
 	float3 size(1, 1, 1);
 	Quat rotationQuat(0, 0, 0, 1);
 
-	transformChimney->SetTransformMatrix(transformChimney->position, rotationQuat, size, parentTransform);
-	transformBakerhouse->SetTransformMatrix(transformBakerhouse->position, rotationQuat, size, parentTransform);
+	transformChimney->SetTransformMatrix(transformChimney->GetPosition(), rotationQuat, size, parentTransform);
+	transformBakerhouse->SetTransformMatrix(transformBakerhouse->GetPosition(), rotationQuat, size, parentTransform);
 
 	return true;
 }
@@ -71,6 +75,7 @@ update_status Scene::Update(float dt)
 
 bool Scene::CleanUp()
 {
+	LOG(LogType::L_NORMAL, "Freeing Level Manager");
 	//Delete all gameObjects
 	delete root;
 
@@ -82,20 +87,34 @@ GameObject* Scene::CreateGameObject(const char* name, GameObject* parent)
 	GameObject* obj = new GameObject(name);
 
 	if (parent != nullptr)
-		parent->children.push_back(obj);
+		parent->AddChildren(obj);
 
 	return obj;
+}
+
+GameObject* Scene::CreatePrimitive(const char* name, Mesh* mesh)
+{
+	GameObject* primitive = new GameObject(name);
+	primitive->SetParent(root);
+
+	MeshRenderer* meshRenderer;
+	meshRenderer = dynamic_cast<MeshRenderer*>(primitive->AddComponent(ComponentType::MESHRENDERER));
+	meshRenderer->mesh = mesh;
+
+	root->AddChildren(primitive);
+
+	return nullptr;
 }
 
 void Scene::Destroy(GameObject* obj)
 {
 	dynamic_cast<Inspector*>(app->editor->GetTab(TabType::INSPECTOR))->gameObjectSelected = nullptr;
 
-	for (std::vector<GameObject*>::iterator i = obj->parent->children.begin(); i != obj->parent->children.end(); ++i)
+	for (std::vector<GameObject*>::iterator i = obj->GetParent()->GetChildren().begin(); i != obj->GetParent()->GetChildren().end(); ++i)
 	{
 		if (*i._Ptr == obj)
 		{
-			obj->parent->children.erase(i);
+			obj->GetParent()->GetChildren().erase(i);
 			break;
 		}
 	}
@@ -111,19 +130,19 @@ void Scene::UpdateGameObjects()
 
 void Scene::RecursiveUpdate(GameObject* parent)
 {
-	if (parent->GetToDelete())
+	if (parent->GetPendingToDelete())
 	{
 		destroyList.push_back(parent);
 		return;
 	}
 
-	if (parent->isActive())
+	if (parent->active)
 	{
 		parent->Update();
 
-		for (size_t i = 0; i < parent->children.size(); i++)
+		for (size_t i = 0; i < parent->GetChildren().size(); i++)
 		{
-			RecursiveUpdate(parent->children[i]);
+			RecursiveUpdate(parent->GetChildren()[i]);
 		}
 	}
 }

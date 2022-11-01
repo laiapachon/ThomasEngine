@@ -113,7 +113,7 @@ void ModelImporter::NodeToGameObject(aiMesh** meshArray, std::vector<Texture*>& 
 		Mesh* meshPointer = sceneMeshes[node->mMeshes[i]];
 
 		GameObject* gmNode = new GameObject(node->mName.C_Str());
-		gmNode->parent = objParent;
+		gmNode->SetParent(objParent);
 
 		//Load mesh to GameObject
 		MeshRenderer* gmMeshRenderer = dynamic_cast<MeshRenderer*>(gmNode->AddComponent(ComponentType::MESHRENDERER));
@@ -128,7 +128,7 @@ void ModelImporter::NodeToGameObject(aiMesh** meshArray, std::vector<Texture*>& 
 		}
 
 		PopulateTransform(gmNode, node);
-		objParent->children.push_back(gmNode);
+		objParent->AddChildren(gmNode);
 	}
 
 	if (node->mNumChildren > 0)
@@ -143,9 +143,9 @@ void ModelImporter::NodeToGameObject(aiMesh** meshArray, std::vector<Texture*>& 
 		else
 		{
 			rootGO = new GameObject(holderName);
-			rootGO->parent = objParent;
+			rootGO->SetParent(objParent);
 			PopulateTransform(rootGO, node);
-			objParent->children.push_back(rootGO);
+			objParent->AddChildren(rootGO);
 		}
 
 
@@ -158,17 +158,14 @@ void ModelImporter::NodeToGameObject(aiMesh** meshArray, std::vector<Texture*>& 
 
 void ModelImporter::PopulateTransform(GameObject* child, aiNode* node)
 {
-	Transform* transform = child->transform;
-	Transform* parentTransform = child->parent->transform;
+	aiVector3D translation, scaling;
+	aiQuaternion rotation;
 
-	aiVector3D transformD;
-	aiVector3D scaleD;
-	aiQuaternion rotationD;
-	node->mTransformation.Decompose(scaleD, rotationD, transformD);
+	node->mTransformation.Decompose(scaling, rotation, translation);
 
-	float3 position(transformD.x, transformD.y, transformD.z);
-	float3 size(scaleD.x, scaleD.y, scaleD.z);
-	Quat rotationQuat(rotationD.x, rotationD.y, rotationD.z, rotationD.w);
+	float3 pos(translation.x, translation.y, translation.z);
+	float3 scale(scaling.x, scaling.y, scaling.z);
+	Quat rot(rotation.x, rotation.y, rotation.z, rotation.w);
 
-	transform->SetTransformMatrix(position, rotationQuat, size, parentTransform);
+	child->transform->SetTransformMatrix(pos, rot, scale, child->GetParent()->transform);
 }

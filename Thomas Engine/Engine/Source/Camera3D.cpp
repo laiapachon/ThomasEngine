@@ -28,7 +28,6 @@ Camera3D::~Camera3D()
 
 bool Camera3D::Start()
 {
-	LOG(LogType::L_NORMAL, "Setting up the camera");
 	bool ret = true;
 
 	return ret;
@@ -85,7 +84,7 @@ void Camera3D::OrbitRotation()
 
 	float3 posGO = { 0, 0, 0 };
 
-	if (gameObject != nullptr)posGO = gameObject->transform->position;
+	if (gameObject != nullptr)posGO = gameObject->transform->GetPosition();
 
 	if (App->input->GetMouseButton(SDL_BUTTON_RIGHT) == KEY_REPEAT)
 	{
@@ -120,6 +119,7 @@ void Camera3D::OrbitRotation()
 			}
 		}
 		Position = pivot + Z * length(Position);
+		Reference = pivot;
 
 	}
 }
@@ -135,11 +135,13 @@ void Camera3D::FrontView()
 
 	if (gameObject != nullptr)
 	{
-		posGO = gameObject->transform->position;
+		posGO = gameObject->transform->GetPosition();
 
 		nwPos = vec3(posGO.x, posGO.y, posGO.z);
-
-		Position = nwPos + vec3(0, 0, 10);
+		// First param: Right, 
+		// Second param: UP			//With the inverted of the axes the opposite position is obtained
+		// Third param: From
+		Position = nwPos + vec3(0, 0, -10);
 		LookAt(nwPos);
 	}
 }
@@ -234,6 +236,7 @@ bool Camera3D::SaveConfig(JsonParser& node) const
 
 bool Camera3D::LoadConfig(JsonParser& node)
 {
+	LOG(LogType::L_NORMAL, "Setting up the camera");
 
 	X.x = (float)node.JsonValToNumber("X.x");
 	X.y = (float)node.JsonValToNumber("X.y");

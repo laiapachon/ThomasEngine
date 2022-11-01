@@ -179,8 +179,8 @@ bool Renderer3D::Init()
 	OnResize(app->window->GetWindowWidth(), app->window->GetWindowHeight());
 
 	// Load Primitives Test
-	cube.InnerMesh();
-	cube.mesh->LoadToMemory();
+	/*cube.InnerMesh();
+	cube.mesh->LoadToMemory();*/
 
 	//sphere.InnerMesh();
 	//sphere.LoadToMemory();
@@ -243,7 +243,7 @@ update_status Renderer3D::PostUpdate(float dt)
 		}
 		renderQueue.clear();
 	}
-	cube.mesh->RenderMesh();
+	//cube.mesh->RenderMesh();
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glDisable(GL_DEPTH_TEST);

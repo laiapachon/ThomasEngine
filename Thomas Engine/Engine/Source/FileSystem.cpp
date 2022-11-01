@@ -58,7 +58,7 @@ std::string StringLogic::FileNameFromPath(const char* _path)
 	return fileName;
 }
 // Convert global path to local path, example:
-// C:\Users\Enric\OneDrive\Escritorio\Universidad\3r Carrera\Motores\Fire-Engine\Fire_Engine\Output\Assests\BakerHouse.fbx
+// C:\Users\Enric\OneDrive\Escritorio\Universidad\3r Carrera\Motores\ThomasEngine\ThomasEngine\Output\Assests\BakerHouse.fbx
 // to: Assests\BakerHouse.fbx
 std::string StringLogic::GlobalToLocalPath(const char* _globalPath)
 {
