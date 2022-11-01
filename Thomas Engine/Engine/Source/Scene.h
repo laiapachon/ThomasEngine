@@ -4,6 +4,7 @@
 #include<vector>
 
 class GameObject;
+class Mesh;
 
 class Scene : public Module
 {
@@ -20,6 +21,7 @@ public:
 	bool CleanUp() override;
 
 	GameObject* CreateGameObject(const char* name, GameObject* parent);
+	GameObject* CreatePrimitive(const char* name, Mesh* mesh);
 
 	GameObject* root;
 

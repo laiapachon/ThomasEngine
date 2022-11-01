@@ -14,25 +14,38 @@ public:
 	virtual ~GameObject();
 
 	void Update();
+
 	Component* AddComponent(ComponentType type);
 	Component* GetComponent(ComponentType type);
 
-	bool isActive() { return active; };
 	void Enable();
 	void Disable() { active = false; };
 
+	bool GetShowChildrens() { return showChildrens; };
+	void SetShowChildrens(bool active) { showChildrens = active; };
+
+	std::vector<GameObject*> GetChildren() { return childrens; };
+	void AddChildren(GameObject* child) { childrens.push_back(child); };
+
+	GameObject* GetParent() { return parent; };
+	void SetParent(GameObject* obj) { parent = obj; };
+	std::vector<Component*> GetComponents() { return components; };
+
 	bool IsRoot() { return (parent == nullptr) ? true : false; };
-	void Destroy() { toDelete = true; };
-	bool GetToDelete() { return toDelete; };
+	void Destroy() { pendingToDelete = true; };
+	bool GetPendingToDelete() { return pendingToDelete; };
 
-	GameObject* parent;
 	Transform* transform;
-	bool active = true;
-	std::string name;
-	bool isStatic = false;
-	bool showChildren = false;
-	bool toDelete = false;
 
-	std::vector<GameObject*> children;
+	bool active = true;
+	bool isStatic = false;
+	std::string name;
+
+private:
+	GameObject* parent;
+	std::vector<GameObject*> childrens;
 	std::vector<Component*> components;
+
+	bool showChildrens = false;
+	bool pendingToDelete = false;
 };

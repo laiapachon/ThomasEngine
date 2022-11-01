@@ -25,14 +25,14 @@ void MeshRenderer::Update()
 
 void MeshRenderer::RenderMesh()
 {
-	Transform* transform = owner->transform;
+	Transform* transform = GetOwner()->transform;
 	if (transform != nullptr)
 	{
 		glPushMatrix();
-		glMultMatrixf(transform->GetGlobalTransposed());
+		glMultMatrixf(transform->GetGlobalTransformT());
 	}
 
-	Material* material = dynamic_cast<Material*>(owner->GetComponent(ComponentType::MATERIAL));
+	Material* material = dynamic_cast<Material*>(GetOwner()->GetComponent(ComponentType::MATERIAL));
 	GLuint id = -1;
 
 	if (material != nullptr)

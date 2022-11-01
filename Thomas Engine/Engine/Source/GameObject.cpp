@@ -7,11 +7,13 @@
 
 GameObject::GameObject(const char* name) : parent(nullptr), name(name)
 {
+	// Each GameObject must have a transform component, that's why we add it when creating it
 	transform = dynamic_cast<Transform*>(AddComponent(ComponentType::TRANSFORM));
 }
 
 GameObject::~GameObject()
 {
+	// Delete all components
 	for (size_t i = 0; i < components.size(); i++)
 	{
 		delete components[i];
@@ -19,18 +21,21 @@ GameObject::~GameObject()
 	}
 	components.clear();
 
-	for (size_t i = 0; i < children.size(); i++)
+	// Delete all childrens
+	for (size_t i = 0; i < childrens.size(); i++)
 	{
-		delete children[i];
-		children[i] = nullptr;
+		delete childrens[i];
+		childrens[i] = nullptr;
 	}
-	children.clear();
+	childrens.clear();
 }
 
 void GameObject::Enable()
 {
 	active = true;
 
+	// Recursive function, call all fathers
+	// Because for the children to be active the father must also be 
 	if (parent != nullptr)
 		parent->Enable();
 }
@@ -46,29 +51,30 @@ void GameObject::Update()
 // Add component by Type
 Component* GameObject::AddComponent(ComponentType type)
 {
-	assert(type != ComponentType::UNKNOW, "Can't create a UNKNOW component");
-	Component* ret = nullptr;
+	// Can't add a component without type
+	assert(type != ComponentType::UNKNOWN, "Can't create a UNKNOW component");
+	Component* newComponent = nullptr;
 
 	switch (type)
 	{
 	case ComponentType::TRANSFORM:
-		ret = new Transform(this);
+		newComponent = new Transform(this);
 		break;
 	case ComponentType::MESHRENDERER:
-		ret = new MeshRenderer(this);
+		newComponent = new MeshRenderer(this);
 		break;
 	case ComponentType::MATERIAL:
-		ret = new Material(this);
+		newComponent = new Material(this);
 		break;
 	}
 
-	if (ret != nullptr)
+	if (newComponent != nullptr)
 	{
-		ret->SetType(type);
-		components.push_back(ret);
+		newComponent->SetType(type);
+		components.push_back(newComponent);
 	}
 
-	return ret;
+	return newComponent;
 }
 // Get component by Type, because an object can only have 1 component of 1 type
 Component* GameObject::GetComponent(ComponentType type)

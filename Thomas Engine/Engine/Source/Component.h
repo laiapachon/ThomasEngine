@@ -3,10 +3,10 @@
 #include "GameObject.h"
 enum class ComponentType
 {
-	UNKNOW,
+	UNKNOWN,
 	TRANSFORM,
 	MESHRENDERER,
-	MATERIAL
+	MATERIAL,
 };
 
 class Component
@@ -15,8 +15,8 @@ public:
 	Component(GameObject* obj) { owner = obj; };
 	virtual ~Component() {};
 
-	virtual void Enable() {};
-	virtual void Disable() {};
+	void Enable() { active = true; };
+	void Disable() { active = false; };
 
 	virtual void Update() {};
 	virtual void OnEditor() {};
@@ -24,9 +24,11 @@ public:
 	ComponentType GetType() { return type; };
 	void SetType(ComponentType type) { this->type = type; };
 	
-	GameObject* owner;
+	GameObject* GetOwner() { return owner; };
 private:
-	ComponentType type = ComponentType::UNKNOW;
 	bool active = true;
+
+	ComponentType type = ComponentType::UNKNOWN;
+	GameObject* owner;
 
 };

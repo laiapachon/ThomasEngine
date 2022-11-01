@@ -10,6 +10,9 @@
 Inspector::Inspector() : Tab(), gameObjectSelected(nullptr)
 {
 	name = "Inspector";
+
+	tags = { "Untagged", "Respawn", "Finish", "EditorOnly", "MainCamara", "Player", "GameController" };
+	layers = { "0: Default", "1: TransparentFX", "2: Ignore Raycast", "3: Water", "4: UI", "5: Player" };
 }
 
 Inspector::~Inspector()
@@ -37,7 +40,6 @@ void Inspector::Draw()
 
 			// Change to dynamic array by can add new tags
 			ImGui::Text("Tag"); ImGui::SameLine();
-			const char* tags[] = { "Untagged", "Respawn", "Finish", "EditorOnly", "MainCamara", "Player", "GameController" };
 			static const char* current_item = NULL;
 
 			// Draw the popUp tab of a list and selectedable 
@@ -49,11 +51,11 @@ void Inspector::Draw()
 
 			if (ImGui::BeginCombo("##custom combo", current_item))
 			{
-				for (int n = 0; n < IM_ARRAYSIZE(tags); n++)
+				for (int n = 0; n < tags.size(); n++)
 				{
-					bool is_selected = (current_item == tags[n]);
-					if (ImGui::Selectable(tags[n], is_selected))
-						current_item = tags[n];
+					bool is_selected = (current_item == tags.at(n).c_str());
+					if (ImGui::Selectable(tags.at(n).c_str(), is_selected))
+						current_item = tags.at(n).c_str();
 					if (is_selected)
 						ImGui::SetItemDefaultFocus();
 				}
@@ -64,7 +66,6 @@ void Inspector::Draw()
 			ImGui::SameLine();
 			// Change to dynamic array by can add new layers
 			ImGui::Text("Layer"); ImGui::SameLine();
-			const char* layers[] = { "0: Default", "1: TransparentFX", "2: Ignore Raycast", "3: Water", "4: UI", "5: Player" };
 
 			style = ImGui::GetStyle();
 			w = ImGui::CalcItemWidth();
@@ -74,11 +75,11 @@ void Inspector::Draw()
 
 			if (ImGui::BeginCombo("##custom combo 2", current_item))
 			{
-				for (int n = 0; n < IM_ARRAYSIZE(layers); n++)
+				for (int n = 0; n < layers.size(); n++)
 				{
-					bool is_selected = (current_item == layers[n]);
-					if (ImGui::Selectable(layers[n], is_selected))
-						current_item = layers[n];
+					bool is_selected = (current_item == layers.at(n).c_str());
+					if (ImGui::Selectable(layers.at(n).c_str(), is_selected))
+						current_item = layers.at(n).c_str();
 					if (is_selected)
 						ImGui::SetItemDefaultFocus();
 				}
@@ -92,9 +93,9 @@ void Inspector::Draw()
 
 			ImGui::Separator();
 			// Draw all OnEditors componets
-			for (size_t i = 0; i < gameObjectSelected->components.size(); i++)
+			for (size_t i = 0; i < gameObjectSelected->GetComponents().size(); i++)
 			{
-				gameObjectSelected->components[i]->OnEditor();
+				gameObjectSelected->GetComponents()[i]->OnEditor();
 			}
 		}
 	}

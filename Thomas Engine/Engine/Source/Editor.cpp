@@ -2,6 +2,7 @@
 #include "Editor.h"
 
 #include "GameObject.h"
+#include "MeshRenderer.h"
 
 // Tabs
 #include "Tab.h"
@@ -11,6 +12,8 @@
 #include "Inspector.h"
 #include "SceneTab.h"
 #include "Hierarchy.h"
+
+#include "Primitive.h"
 
 Editor::Editor(Application* app, bool start_enabled): Module(app, start_enabled)
 {	
@@ -172,6 +175,44 @@ update_status Editor::ImGuiMenuBar()
 				if (ImGui::MenuItem(tabs[i]->name.c_str(), std::to_string(i+1).c_str(), tabs[i]->active, &tabs[i]->active))
 					tabs[i]->active =! tabs[i]->active;
 			}			
+			ImGui::EndMenu();
+		}
+		// Game Object menu
+		if (ImGui::BeginMenu("Game Objects"))
+		{
+			if (ImGui::MenuItem("Cube", nullptr))
+			{
+				PrimitiveCube cubePrim = PrimitiveCube();
+				cubePrim.InnerMesh();
+				cubePrim.mesh->LoadToMemory();
+
+				app->scene->CreatePrimitive("Cube", cubePrim.mesh);
+			}
+			if (ImGui::MenuItem("Sphere", nullptr))
+			{
+				PrimitiveSphere spherePrim = PrimitiveSphere();
+				spherePrim.InnerMesh();
+				spherePrim.mesh->LoadToMemory();
+
+				app->scene->CreatePrimitive("Sphere", spherePrim.mesh);
+			}
+			if (ImGui::MenuItem("Cylinder", nullptr))
+			{
+				PrimitiveCylinder cylinderPrim = PrimitiveCylinder();
+				cylinderPrim.InnerMesh();
+				cylinderPrim.mesh->LoadToMemory();
+
+				app->scene->CreatePrimitive("Cylinder", cylinderPrim.mesh);
+			}
+			if (ImGui::MenuItem("Pyramid", nullptr))
+			{
+				PrimitivePyramid pyramidPrim = PrimitivePyramid();
+				pyramidPrim.InnerMesh();
+				pyramidPrim.mesh->LoadToMemory();
+
+				app->scene->CreatePrimitive("Pyramid", pyramidPrim.mesh);
+			}
+
 			ImGui::EndMenu();
 		}
 		if (ImGui::BeginMenu("Help"))
