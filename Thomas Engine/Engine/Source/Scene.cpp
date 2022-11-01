@@ -38,11 +38,11 @@ bool Scene::Init()
 bool Scene::Start()
 {
 	app->resourceManager->ImportFile("BakerHouse.fbx");
-	app->resourceManager->ImportFile("warrior.fbx");
+
 	Transform* transformChimney = root->GetChildren()[0]->GetChildren()[0]->transform;
 	Transform* transformBakerhouse = root->GetChildren()[0]->GetChildren()[1]->transform;
 	Transform* parentTransform = root->GetChildren()[0]->transform;
-	Transform* warriorTransform = root->GetChildren()[1]->transform;
+	
 
 	float3 size(1, 1, 1);
 	Quat rotationQuat(0, 0, 0, 1);
