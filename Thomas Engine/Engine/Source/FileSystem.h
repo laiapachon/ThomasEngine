@@ -51,6 +51,8 @@ namespace FileSystem
 	inline const char* GetBasePath() { return PHYSFS_getBaseDir(); }
 	inline const char* GetWritePath() { return PHYSFS_getWriteDir(); }
 	const char* GetReadPaths();
+
+	void OnGui();
 };
 
 #endif // __FileSystem_H__

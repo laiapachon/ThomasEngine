@@ -393,3 +393,13 @@ void FileSystem::GetFileName(const char* file, std::string& fileName, bool exten
 			fileName = fileName.substr(0, found);
 	}
 }
+
+void FileSystem::OnGui()
+{
+	if (ImGui::CollapsingHeader("FileSystem"))
+	{
+		IMGUI_PRINT("Base Path: ", GetBasePath());
+		IMGUI_PRINT("Read Paths: ", GetReadPaths());
+		IMGUI_PRINT("Write Path: ", GetWritePath());
+	}
+}

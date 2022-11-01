@@ -54,8 +54,10 @@ void Camera3D::CheckInputs()
 	if (App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT)
 		speed = 8.0f * app->GetDt();
 
-	if (App->input->GetKey(SDL_SCANCODE_R) == KEY_REPEAT) newPos.y += speed;
-	if (App->input->GetKey(SDL_SCANCODE_F) == KEY_REPEAT) newPos.y -= speed;
+	if (App->input->GetKey(SDL_SCANCODE_T) == KEY_REPEAT) newPos.y += speed;
+	if (App->input->GetKey(SDL_SCANCODE_G) == KEY_REPEAT) newPos.y -= speed;
+
+	if (App->input->GetKey(SDL_SCANCODE_F) == KEY_DOWN) FrontView();
 
 	if (App->input->GetKey(SDL_SCANCODE_W) == KEY_REPEAT) newPos -= Z * speed;
 	if (App->input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT) newPos += Z * speed;
@@ -119,6 +121,26 @@ void Camera3D::OrbitRotation()
 		}
 		Position = pivot + Z * length(Position);
 
+	}
+}
+
+void Camera3D::FrontView()
+{
+	GameObject* gameObject = App->editor->GetGameObjectSelected();
+	float3 posGO = { 0, 0, 0 };
+	vec3 nwPos;
+
+	//float dist = gameObject->components.a;
+
+
+	if (gameObject != nullptr)
+	{
+		posGO = gameObject->transform->position;
+
+		nwPos = vec3(posGO.x, posGO.y, posGO.z);
+
+		Position = nwPos + vec3(0, 0, 10);
+		LookAt(nwPos);
 	}
 }
 

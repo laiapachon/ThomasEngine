@@ -8,18 +8,18 @@
 
 bool Rect::Contains(Rect b)
 {
-    if ((b.x + b.w) <= (x + w)
-        && (b.x) >= (x)
-        && (b.y) >= (y)
-        && (b.y + b.h) <= (y + h)
-        )
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
+	if ((b.x + b.w) <= (x + w)
+		&& (b.x) >= (x)
+		&& (b.y) >= (y)
+		&& (b.y + b.h) <= (y + h)
+		)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
 
 Texture::Texture(unsigned int textureID) : Resource(textureID, ResourceType::TEXTURE), texWidth(0), texHeight(0)
@@ -27,8 +27,9 @@ Texture::Texture(unsigned int textureID) : Resource(textureID, ResourceType::TEX
 	color = White;
 }
 
-Texture::Texture(GLuint textureID, int texWidth, int texHeight, const char* name, const char* path) : 
-	Resource(textureID, ResourceType::TEXTURE), textureID(textureID), texWidth(texWidth), texHeight(texHeight), name(name), path(path)
+Texture::Texture(GLuint textureID, int texWidth, int texHeight, const char* name, const char* path) :
+	Resource(textureID, ResourceType::TEXTURE),
+	textureID(textureID), texWidth(texWidth), texHeight(texHeight), name(name), path(path)
 {
 }
 

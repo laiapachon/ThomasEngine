@@ -3,9 +3,9 @@
 #include "Globals.h"
 
 #include "Parson/parson.h"
+#include "ResourceTexture.h"
 
-
-Window::Window(Application* app, bool startEnabled) : Module(app, startEnabled)
+Window::Window(Application * app, bool startEnabled) : Module(app, startEnabled)
 {
 	name = "Window";
 
@@ -58,22 +58,22 @@ bool Window::Init()
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
 
-		if(WIN_FULLSCREEN == true)
+		if (WIN_FULLSCREEN == true)
 		{
 			flags |= SDL_WINDOW_FULLSCREEN;
 		}
 
-		if(WIN_RESIZABLE == true)
+		if (WIN_RESIZABLE == true)
 		{
 			flags |= SDL_WINDOW_RESIZABLE;
 		}
 
-		if(WIN_BORDERLESS == true)
+		if (WIN_BORDERLESS == true)
 		{
 			flags |= SDL_WINDOW_BORDERLESS;
 		}
 
-		if(WIN_FULLSCREEN_DESKTOP == true)
+		if (WIN_FULLSCREEN_DESKTOP == true)
 		{
 			flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
 		}
@@ -83,11 +83,11 @@ bool Window::Init()
 		// Setup window
 		SDL_WindowFlags window_flags = (SDL_WindowFlags)(SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
 
-		window = SDL_CreateWindow("Thomas Engine", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, window_flags);
+		window = SDL_CreateWindow("Fire Engine", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, window_flags);
 		gl_context = SDL_GL_CreateContext(window);
 		SDL_GL_MakeCurrent(window, gl_context);
 
-		if(window == NULL)
+		if (window == NULL)
 		{
 			LOG(LogType::L_ERROR, "Window could not be created! SDL_Error: %s\n", SDL_GetError());
 			ret = false;
@@ -103,7 +103,7 @@ bool Window::Init()
 
 	width = SCREEN_WIDTH;
 	height = SCREEN_HEIGHT;
-	
+
 	return ret;
 }
 
@@ -115,7 +115,7 @@ bool Window::CleanUp()
 	SDL_GL_DeleteContext(gl_context);
 
 	//Destroy window
-	if(window != NULL)
+	if (window != NULL)
 	{
 		SDL_DestroyWindow(window);
 	}
@@ -137,7 +137,7 @@ void Window::SetBrightness(float bright)
 	SDL_SetWindowBrightness(window, bright);
 }
 
-void Window::SetBrightness( )
+void Window::SetBrightness()
 {
 	SDL_SetWindowBrightness(window, brightness);
 }
@@ -217,7 +217,8 @@ void Window::OnGUI()
 	if (ImGui::CollapsingHeader("Window"))
 	{
 		// TODO: Cambiar el *default* por le nombre del archivo del icono del motor
-		ImGui::TextWrapped("Icon: *default* ");
+		ImGui::TextWrapped("Icon: ");
+		ImGui::Image((ImTextureID)app->resourceManager->logo->textureID, ImVec2(32, 32));
 
 		if (ImGui::SliderFloat("Brightness", &brightness, 0.f, 1.f))
 		{
@@ -238,27 +239,20 @@ void Window::OnGUI()
 			SetFullscreen(fullScreen);
 
 			SDL_GetWindowSize(window, &width, &height);
-			OnResize(width, height);			
+			OnResize(width, height);
 		}
 		if (ImGui::IsItemHovered())
 			ImGui::SetTooltip("Change fullscreen mode");
 
 		ImGui::SameLine();
 
-		if (ImGui::Checkbox("Resizable", &isResizable)){
+		if (ImGui::Checkbox("Resizable", &isResizable)) {
 			if (!fullScreen && !fullScreenDesktop) SetResizable(isResizable);
 			else isResizable = !isResizable;
 		}
 
 		if (ImGui::IsItemHovered())
 			ImGui::SetTooltip("Change resizable mode, only on Off FullScreen mode");
-
-		ImGui::SameLine();
-
-		if (ImGui::Checkbox("Wireframe", &app->renderer3D->wireframe)) {}
-
-		if (ImGui::IsItemHovered())
-			ImGui::SetTooltip("Change render mode");
 
 		if (ImGui::Checkbox("Borderless", &borderless)) {
 			if (!fullScreen && !fullScreenDesktop) SetBorderless(borderless);
@@ -277,17 +271,21 @@ void Window::OnGUI()
 		if (ImGui::IsItemHovered())
 			ImGui::SetTooltip("Enable/Disable VSync");
 
+		if (ImGui::Checkbox("Wireframe ", &app->renderer3D->wireframe)) {}
+
+		if (ImGui::IsItemHovered())
+			ImGui::SetTooltip("Change render mode");
+
 		ImGui::SameLine();
 
 		if (ImGui::Checkbox("Fullscreen Desktop", &fullScreenDesktop)) {
 			SetFullscreenDesktop(fullScreenDesktop);
 
 			SDL_GetWindowSize(window, &width, &height);
-			OnResize(width, height);			
+			OnResize(width, height);
 		}
 		if (ImGui::IsItemHovered())
 			ImGui::SetTooltip("Change fullscreen desktop mode");
-
 
 		ImGui::NewLine();
 	}

@@ -6,6 +6,7 @@
 #include<map>
 
 class Application;
+class Texture;
 
 class ResourceManager :public Module
 {
@@ -18,4 +19,6 @@ public:
 	bool CleanUp();
 
 	void ImportFile(const char* assetsFile);
+
+	Texture* logo;
 };

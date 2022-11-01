@@ -21,6 +21,7 @@ public:
 	float* GetViewMatrix();
 	void OrbitRotation();
 
+	void FrontView();
 private:
 
 	void CalculateViewMatrix();

@@ -1,4 +1,3 @@
-
 #pragma once
 #include "glmath.h"
 #include "Color.h"
@@ -15,7 +14,7 @@ enum PrimitiveTypes
 	Primitive_Cylinder
 };
 
-class Primitive : public Mesh
+class Primitive
 {
 public:
 
@@ -24,15 +23,22 @@ public:
 	virtual void	Render() const;
 	virtual void	InnerRender() const;
 	void			SetPos(float x, float y, float z);
-	void			SetRotation(float angle, const vec3 &u);
+	void			SetRotation(float angle, const vec3& u);
 	void			Scale(float x, float y, float z);
+
+	void SetVertices(float vertices[], int size);
+	void SetTexCoords(float texCoords[], int size);
+	void SetIndices(int indices[], int size);
+
 	PrimitiveTypes	GetType() const;
 
 public:
-	
+
 	Color color;
 	mat4x4 transform;
-	bool axis,wire;
+	bool axis, wire;
+
+	Mesh* mesh;
 
 protected:
 	PrimitiveTypes type;
@@ -41,7 +47,7 @@ protected:
 // ============================================
 class PrimitiveCube : public Primitive
 {
-public :
+public:
 	PrimitiveCube();
 	PrimitiveCube(vec3 _size, vec3 pos);
 	void InnerMesh();
