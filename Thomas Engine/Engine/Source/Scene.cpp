@@ -38,6 +38,8 @@ bool Scene::Init()
 bool Scene::Start()
 {
 	app->resourceManager->ImportFile("BakerHouse.fbx");
+	app->resourceManager->ImportFile("Dragon.fbx");
+	app->resourceManager->ImportFile("Spider.fbx");
 
 	Transform* transformChimney = root->GetChildren()[0]->GetChildren()[0]->transform;
 	Transform* transformBakerhouse = root->GetChildren()[0]->GetChildren()[1]->transform;
