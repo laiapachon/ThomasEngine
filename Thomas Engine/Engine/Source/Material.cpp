@@ -16,7 +16,7 @@ Material::~Material()
 
 void Material::OnEditor()
 {
-	if (ImGui::CollapsingHeader("Material", ImGuiTreeNodeFlags_DefaultOpen))
+	if (ImGui::CollapsingHeader("Texture", ImGuiTreeNodeFlags_DefaultOpen))
 	{
 		if (matTexture->textureID != -1) 
 		{

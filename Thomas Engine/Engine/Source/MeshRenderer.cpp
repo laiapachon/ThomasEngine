@@ -51,7 +51,7 @@ void MeshRenderer::RenderMesh()
 
 void MeshRenderer::OnEditor()
 {
-	if (ImGui::CollapsingHeader("Mesh Renderer", ImGuiTreeNodeFlags_DefaultOpen))
+	if (ImGui::CollapsingHeader("Mesh Info", ImGuiTreeNodeFlags_DefaultOpen))
 	{
 		// Print mesh information
 		IMGUI_PRINT("Vertices: ", "%i", mesh->numVertex);
