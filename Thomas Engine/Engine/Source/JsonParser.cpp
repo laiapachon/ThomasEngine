@@ -7,10 +7,6 @@ JsonParser::JsonParser()
 	rootValue = nullptr;
 }
 
-JsonParser::~JsonParser()
-{
-}
-
 JSON_Value* JsonParser::InitJsonObject()
 {
 	JSON_Value* object = json_value_init_object();
@@ -70,7 +66,7 @@ JsonParser JsonParser::GetChild(JSON_Value* parent, const char* name)
 
 	return child;
 }
-JSON_Status JsonParser::SerializeFile(JSON_Value* value, const char* fileName) const
+JSON_Status JsonParser::FileSerialization(JSON_Value* value, const char* fileName) const
 {
 	return json_serialize_to_file_pretty(value, fileName);
 }
@@ -79,24 +75,24 @@ JSON_Value* JsonParser::GetRootValue() const
 	return rootValue;
 }
 
-JSON_Object* JsonParser::SetNewJsonNode(JSON_Object* parent, const char* nodeName) const
+JSON_Object* JsonParser::SetJNode(JSON_Object* parent, const char* nodeName) const
 {
 	json_object_set_value(parent, nodeName, json_value_init_object());;
 
 	return json_object_get_object(ValueToObject(rootValue), nodeName);
 }
 
-JSON_Status JsonParser::SetNewJsonString(JSON_Object* node, const char* name, const char* string) const
+JSON_Status JsonParser::SetJString(JSON_Object* node, const char* name, const char* string) const
 {
 	return json_object_set_string(node, name, string);
 }
 
-JSON_Status JsonParser::SetNewJsonNumber(JSON_Object* node, const char* name, double number) const
+JSON_Status JsonParser::SetJNumber(JSON_Object* node, const char* name, double number) const
 {
 	return json_object_set_number(node, name, number);
 }
 
-JSON_Status JsonParser::SetNewJsonBool(JSON_Object* node, const char* name, bool boolean) const
+JSON_Status JsonParser::SetJBool(JSON_Object* node, const char* name, bool boolean) const
 {
 	return json_object_set_boolean(node, name, boolean);
 }

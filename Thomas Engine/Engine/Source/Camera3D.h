@@ -1,40 +1,55 @@
 #pragma once
 #include "Module.h"
-#include "glmath.h"
 
+#include "Math/float3.h"
+#include "Math/float4x4.h"
+#include "Geometry/Frustum.h"
 
 class Camera3D : public Module
 {
 public:
 	Camera3D(Application* app, bool start_enabled = true);
-	~Camera3D();
+	~Camera3D() {};
 
-	bool Start();
-	update_status Update(float dt);
+	void ReStartCamera();
+	bool Start() override;
+
+	update_status Update(float dt) override;
+	void OnGUI() override;
+
 	void CheckInputs();
-	bool CleanUp();
+	bool CleanUp() override;
 
-	void Look(const vec3 &Position, const vec3 &Reference, bool RotateAroundReference = false);
-	void Look();
-	void LookAt(const vec3 &Spot);
-	void Move(const vec3 &Movement);
-	float* GetViewMatrix();
+	void LookAt(const float3&Spot);
+	void Move(const float3&Movement);
+
+	float4x4 GetViewMatrix() { return viewMatrix; };
+
 	void OrbitRotation();
-
-	void FrontView();
-private:
-
 	void CalculateViewMatrix();
+	void RecalculateProjection();
 
-	bool SaveConfig(JsonParser& node) const;
+private:
+	void Focus();
+	void FrontView();
 
-	bool LoadConfig(JsonParser& node);
+	bool SaveConfig(JsonParser& node)const override;
+	bool LoadConfig(JsonParser& node) override;
 
 public:
 	
-	vec3 X, Y, Z, Position, Reference;
+	float3 right, up, front, position, reference;
 
-private:
+	bool projectionIsDirty = false;
 
-	mat4x4 ViewMatrix, ViewMatrixInverse;
+	Frustum cameraFrustum;
+	float4x4 viewMatrix;
+
+	float cameraSpeed = 5.0f;
+	float cameraSensitivity = 0.15f;
+
+	float aspectRatio = 1.f;
+	float verticalFOV = 90.f;
+	float nearPlaneDistance = 0.1f;
+	float farPlaneDistance = 5000.f;
 };

@@ -67,6 +67,12 @@
     <Filter Include="Sources\GameObjects\Components">
       <UniqueIdentifier>{9aba92e1-cfd4-404a-9086-73bf56b39ec2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\3rd Party\DevIL">
+      <UniqueIdentifier>{16fa7215-eca5-4d16-a750-4c8ca57a3b85}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\3rd Party\Guizmo">
+      <UniqueIdentifier>{ef71acce-4b06-47da-b639-cfec6d0f5e3b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Application.h">
@@ -630,6 +636,30 @@
     <ClInclude Include="Source\Hierarchy.h">
       <Filter>Sources\Modules\Editor\TabsEditor</Filter>
     </ClInclude>
+    <ClInclude Include="Source\External\DevIL\include\ilut.h">
+      <Filter>Sources\3rd Party\DevIL</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\Guizmo\GraphEditor.h">
+      <Filter>Sources\3rd Party\Guizmo</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\Guizmo\ImCurveEdit.h">
+      <Filter>Sources\3rd Party\Guizmo</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\Guizmo\ImGradient.h">
+      <Filter>Sources\3rd Party\Guizmo</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\Guizmo\ImGuizmo.h">
+      <Filter>Sources\3rd Party\Guizmo</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\Guizmo\ImSequencer.h">
+      <Filter>Sources\3rd Party\Guizmo</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\Guizmo\ImZoomSlider.h">
+      <Filter>Sources\3rd Party\Guizmo</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ComponentCamera.h">
+      <Filter>Sources\GameObjects\Components</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Main.cpp">
@@ -691,9 +721,6 @@
     </ClCompile>
     <ClCompile Include="Source\Editor.cpp">
       <Filter>Sources\Modules\Editor</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Tab.cpp">
-      <Filter>Sources\Modules\Editor\TabsEditor</Filter>
     </ClCompile>
     <ClCompile Include="Source\ConsoleTab.cpp">
       <Filter>Sources\Modules\Editor\TabsEditor</Filter>
@@ -862,6 +889,24 @@
     </ClCompile>
     <ClCompile Include="Source\Hierarchy.cpp">
       <Filter>Sources\Modules\Editor\TabsEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\External\Guizmo\GraphEditor.cpp">
+      <Filter>Sources\3rd Party\Guizmo</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\External\Guizmo\ImCurveEdit.cpp">
+      <Filter>Sources\3rd Party\Guizmo</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\External\Guizmo\ImGradient.cpp">
+      <Filter>Sources\3rd Party\Guizmo</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\External\Guizmo\ImGuizmo.cpp">
+      <Filter>Sources\3rd Party\Guizmo</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\External\Guizmo\ImSequencer.cpp">
+      <Filter>Sources\3rd Party\Guizmo</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ComponentCamera.cpp">
+      <Filter>Sources\GameObjects\Components</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

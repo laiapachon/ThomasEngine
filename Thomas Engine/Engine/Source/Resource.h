@@ -18,11 +18,10 @@ public:
 	
 
 public:
-	Resource(int uid, ResourceType type);
+	Resource(ResourceType type);
 	virtual ~Resource();
 
 	inline ResourceType GetType() const { return type; }
-	inline int GetUID() const { return uid; }
 	inline const char* GetAssetPath() const { return assetsFile.c_str(); }
 	inline const char* GetLibraryPath() const { return libraryFile.c_str(); }
 
@@ -39,9 +38,7 @@ public:
 	virtual bool LoadToMemory() { return false; }
 	virtual bool UnloadFromMemory() { return false; }
 
-public:
-
-	int uid;
+private:
 	std::string assetsFile;
 	std::string libraryFile;
 	ResourceType type = ResourceType::UNKNOWN;

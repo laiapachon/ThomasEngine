@@ -1,14 +1,13 @@
 #include "Resource.h"
 #include"Globals.h"
 
-Resource::Resource(int uid, ResourceType type) : uid(uid), assetsFile(""), libraryFile(""), type(type), referenceCount(0)
+Resource::Resource(ResourceType type) : assetsFile(""), libraryFile(""), type(type), referenceCount(0)
 {
 
 }
 
 Resource::~Resource()
 {
-	uid = 0;
 	assetsFile.clear();
 	libraryFile.clear();
 	type = ResourceType::UNKNOWN;

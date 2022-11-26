@@ -2,12 +2,11 @@
 #include "Tab.h"
 #include <vector>
 
-#define FPS_MS_LOG_MAXLENGHT 100
-
+#define LOG_MAX_CAPACITY 1000
 
 struct LogMsg
 {
-	LogMsg(std::string _msg, LogType _type) : msg(_msg), prints(1), logType(_type) {};
+	LogMsg(std::string msg, LogType type) : msg(msg), logType(type), prints(1) {};
 
 	std::string msg;
 	LogType logType;
@@ -23,22 +22,23 @@ class ConsoleTab : public Tab
 {
 public:
 	ConsoleTab();
-
-	~ConsoleTab();
+	~ConsoleTab() { logs.clear(); };
 
 	void Draw() override;
 
-	void AddLog(const char*, LogType);
-	char GetMsgType(LogType, ImVec4&);
+	void DrawAppBarConsole();
 
-public:
-
-	bool collapsed = true;
-	ImVec2 winSize = { 200,400 };
-	LogMsg* charLog;
-	std::vector<LogMsg> logs;
+	void AddLog(const char* msg, LogType type);
+	void PushBackLog(const char* msg, LogType type);
+	char GetMsgType(LogType type, ImVec4& logColor);
 
 private:
-	float offset;
+	ImVec2 winSize = {};
+	std::vector<LogMsg> logs;
+	float offset = 0.f;
+
+	int normalLog = 0;
+	int warningLog = 0;
+	int errorLog = 0;
 };
 

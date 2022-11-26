@@ -10,5 +10,5 @@ namespace MeshLoader
 	void DisableDebugMode();
 	void LogCallback(const char* message, char* user);
 
-	Mesh* LoadMesh(aiMesh* importedMesh, uint oldUID = 0);
+	Mesh* LoadMesh(aiMesh* importedMesh);
 }

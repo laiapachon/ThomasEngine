@@ -5,14 +5,11 @@
 #include "DevIL\include\ilu.h"
 #include "DevIL\include\ilut.h"
 #include "MeshLoader.h"
-
-// This pragma comment shouldn't be necessary because it is already included in additional directories but if not give fail 
-//#pragma comment( lib, "DevIL/libx86/ILUT.lib" )
+#include "Editor.h"
 
 // File System Init
 void FileSystem::FSInit()
 {
-	// In future this should be move to ResourceManager (the CleanUp, also)
 	// Devil init
 	LOG(LogType::L_NORMAL, "DevIL Init");
 	ilInit();
@@ -23,46 +20,53 @@ void FileSystem::FSInit()
 
 	// PHYSFS_init
 	// Needs to be created before Init so other modules can use it
-	char* base_path = SDL_GetBasePath();
-	PHYSFS_init(base_path);
-	SDL_free(base_path);
+	LOG(LogType::L_NORMAL, "PHYSFS Init");
+	char* basePath = SDL_GetBasePath();
+	PHYSFS_init(basePath);
+	SDL_free(basePath);
 
 	//Setting the working directory as the writing directory
 	if (PHYSFS_setWriteDir(".") == 0)
 		LOG(LogType::L_NORMAL, "File System error while creating write dir: %s\n", PHYSFS_getLastError());
 
-	// Adding ProjectFolder (working directory)
-	FileSystem::AddPath(".");
-	// Adding AssestsFolder
+	// Adding a path to search archives (LocalDisk)
+	// This way you can import files from any path
 	std::string assetPath = GetBasePath();
-	assetPath += ASSETS_FOLDER;
+	assetPath = ExtractLocalDiskBackward(assetPath.c_str());
+	FileSystem::AddPath(assetPath.c_str());
+
+	// Adding ProjectFolder (working directory + AssestsFolder)
+	assetPath = GetBasePath();
 	assetPath = NormalizePath(assetPath.c_str());
+	assetPath += ASSETS_FOLDER;
 	FileSystem::AddPath(assetPath.c_str());
 
 	// Dump list of paths
-	LOG(LogType::L_NORMAL, "FileSystem Operations base is [%s] plus:", GetBasePath());
+	LOG(LogType::L_NORMAL, "Get Base Path: ");
+	LOG(LogType::L_NORMAL, GetBasePath());
+	LOG(LogType::L_NORMAL, "Get Read Path: ");
 	LOG(LogType::L_NORMAL, GetReadPaths());
+	LOG(LogType::L_NORMAL, "Get Write Path: ");
+	LOG(LogType::L_NORMAL, GetWritePath());
 
 	FileSystem::CreateLibraryDirectories();
 }
 
-
 // Extract file name, from last "/" until the "."
-std::string StringLogic::FileNameFromPath(const char* _path)
+std::string StringLogic::FileNameFromPath(const char* path)
 {
-	std::string fileName(_path);
+	std::string fileName(path);
 
 	fileName = fileName.substr(fileName.find_last_of("/\\") + 1);
 	fileName = fileName.substr(0, fileName.find_last_of('.'));
 
 	return fileName;
 }
-// Convert global path to local path, example:
-// C:\Users\Enric\OneDrive\Escritorio\Universidad\3r Carrera\Motores\ThomasEngine\ThomasEngine\Output\Assests\BakerHouse.fbx
+// Convert global path to local path
 // to: Assests\BakerHouse.fbx
-std::string StringLogic::GlobalToLocalPath(const char* _globalPath)
+std::string StringLogic::GlobalToLocalPath(const char* globalPath)
 {
-	std::string localPath = FileSystem::NormalizePath(_globalPath);
+	std::string localPath = FileSystem::NormalizePath(globalPath);
 
 	size_t pos = 0;
 	pos = localPath.find(ASSETS_FOLDER);
@@ -87,19 +91,12 @@ ImportType FileSystem::GetTypeFromPath(const char* path)
 		ext[i] = std::tolower(ext[i]);
 	}
 
-	if (ext == "fbx" || ext == "dae")
+	if (ext == "fbx" || ext == "obj" || ext == "stl" || ext == "skp" || ext == "gltf" || ext == "glb" || ext == "usd")
 		return ImportType::MESH;
-	if (ext == "tga" || ext == "png" || ext == "jpg" || ext == "dds")
+	if (ext == "png" || ext == "jpg" || ext == "jpeg" || ext == "dds" || ext == "bmp")
 		return ImportType::TEXTURE;
 
 	return ImportType::NOTYPE;
-}
-
-int close_sdl_rwops(SDL_RWops* rw)
-{
-	RELEASE_ARRAY(rw->hidden.mem.base);
-	SDL_FreeRW(rw);
-	return 0;
 }
 
 void FileSystem::FSDeInit()
@@ -166,9 +163,9 @@ bool FileSystem::IsDirectory(const char* file)
 	return PHYSFS_isDirectory(file) != 0;
 }
 // Substitute "\\" to "/"
-std::string FileSystem::NormalizePath(const char* full_path)
+std::string FileSystem::NormalizePath(const char* fullPath)
 {
-	std::string newPath(full_path);
+	std::string newPath(fullPath);
 	for (int i = 0; i < newPath.size(); ++i)
 	{
 		if (newPath[i] == '\\')
@@ -176,9 +173,9 @@ std::string FileSystem::NormalizePath(const char* full_path)
 	}
 	return newPath;
 }
-std::string FileSystem::UnNormalizePath(const char* full_path)
+std::string FileSystem::UnNormalizePath(const char* fullPath)
 {
-	std::string newPath(full_path);
+	std::string newPath(fullPath);
 	for (int i = 0; i < newPath.size(); ++i)
 	{
 		if (newPath[i] == '/')
@@ -186,46 +183,21 @@ std::string FileSystem::UnNormalizePath(const char* full_path)
 	}
 	return newPath;
 }
-// Split file path
-void FileSystem::SplitFilePath(const char* full_path, std::string* path, std::string* file, std::string* extension)
+// Example: C:\Users\aleja\OneDrive\Escritorio\BakerHouse.fbx
+// return C:\ 
+std::string FileSystem::ExtractLocalDiskBackward(const char* fullPath)
 {
-	if (full_path != nullptr)
-	{
-		std::string full(full_path);
-		size_t pos_separator = full.find_last_of("\\/");
-		size_t pos_dot = full.find_last_of(".");
-
-		if (path != nullptr)
-		{
-			if (pos_separator < full.length())
-				*path = full.substr(0, pos_separator + 1);
-			else
-				path->clear();
-		}
-
-		if (file != nullptr)
-		{
-			if (pos_separator < full.length())
-				*file = full.substr(pos_separator + 1, pos_dot - pos_separator - 1);
-			else
-				*file = full.substr(0, pos_dot);
-		}
-
-		if (extension != nullptr)
-		{
-			if (pos_dot < full.length())
-				*extension = full.substr(pos_dot + 1);
-			else
-				extension->clear();
-		}
-	}
+	std::string path = NormalizePath(fullPath);
+	path = path.substr(0, path.find_first_of('/') + 1);
+	return path;
 }
-
-unsigned int FileSystem::Load(const char* path, const char* file, char** buffer)
+// Example: C:\Users\aleja\OneDrive\Escritorio\BakerHouse.fbx
+// return Users\aleja\OneDrive\Escritorio\BakerHouse.fbx
+std::string FileSystem::ExtractLocalDiskForward(const char* fullPath)
 {
-	std::string full_path(path);
-	full_path += file;
-	return LoadToBuffer(full_path.c_str(), buffer);
+	std::string path = NormalizePath(fullPath);
+	path = path.substr(path.find_first_of("/\\") + 1);
+	return path;
 }
 
 // Read a whole file and put it in a new buffer
@@ -238,7 +210,6 @@ uint FileSystem::LoadToBuffer(const char* file, char** buffer)
 	if (fs_file != nullptr)
 	{
 		PHYSFS_sint64 size = PHYSFS_fileLength(fs_file);
-		//LOG(LogType::L_ERROR, "[%s]", PHYSFS_getLastError())
 
 		if (size > 0)
 		{
@@ -264,96 +235,6 @@ uint FileSystem::LoadToBuffer(const char* file, char** buffer)
 		LOG(LogType::L_ERROR, "File System error while opening file %s: %s\n", file, PHYSFS_getLastError());
 
 	return ret;
-}
-
-// Duplicate a file to a local PhysFS valid path
-unsigned int FileSystem::Copy(const char* file, const char* dir, std::string& outputFile)
-{
-	uint size = 0;
-
-	if (file == nullptr || dir == nullptr)
-		return size;
-
-	std::FILE* filehandle;
-	fopen_s(&filehandle, file, "rb");
-
-	if (filehandle != nullptr)
-	{
-		fseek(filehandle, 0, SEEK_END);
-		size = ftell(filehandle);
-		rewind(filehandle);
-
-		char* buffer = new char[size];
-		size = fread(buffer, 1, size, filehandle);
-		if (size > 0)
-		{
-			GetFileName(file, outputFile, true);
-			outputFile.insert(0, "/");
-			outputFile.insert(0, dir);
-
-			size = Save(outputFile.data(), buffer, size, false);
-			if (size > 0)
-			{
-				LOG(LogType::L_NORMAL, "FILE SYSTEM: Successfully copied file '%s' in dir '%s'", file, dir);
-			}
-			else
-				LOG(LogType::L_ERROR, "FILE SYSTEM: Could not copy file '%s' in dir '%s'", file, dir);
-		}
-		else
-			LOG(LogType::L_ERROR, "FILE SYSTEM: Could not read from file '%s'", file);
-
-		RELEASE_ARRAY(buffer);
-		fclose(filehandle);
-	}
-	else
-		LOG(LogType::L_ERROR, "FILE SYSTEM: Could not open file '%s' to read", file);
-
-	return size;
-}
-
-unsigned int FileSystem::Save(const char* file, char* buffer, unsigned int size, bool append)
-{
-	uint objCount = 0;
-
-	std::string fileName;
-	GetFileName(file, fileName, true);
-
-	bool exists = Exists(file);
-
-	PHYSFS_file* filehandle = nullptr;
-	if (append)
-		filehandle = PHYSFS_openAppend(file);
-	else
-		filehandle = PHYSFS_openWrite(file);
-
-	if (filehandle != nullptr)
-	{
-		objCount = PHYSFS_writeBytes(filehandle, (const void*)buffer, size);
-
-		if (objCount == size)
-		{
-			if (exists)
-			{
-				if (append)
-				{
-					LOG(LogType::L_NORMAL, "FILE SYSTEM: Append %u bytes to file '%s'", objCount, fileName.data());
-				}
-				else
-					LOG(LogType::L_NORMAL, "FILE SYSTEM: File '%s' overwritten with %u bytes", fileName.data(), objCount);
-			}
-			else
-				LOG(LogType::L_NORMAL, "FILE SYSTEM: New file '%s' created with %u bytes", fileName.data(), objCount);
-		}
-		else
-			LOG(LogType::L_ERROR, "FILE SYSTEM: Could not write to file '%s'. ERROR: %s", fileName.data(), PHYSFS_getLastError());
-
-		if (PHYSFS_close(filehandle) == 0)
-			LOG(LogType::L_ERROR, "FILE SYSTEM: Could not close file '%s'. ERROR: %s", fileName.data(), PHYSFS_getLastError());
-	}
-	else
-		LOG(LogType::L_ERROR, "FILE SYSTEM: Could not open file '%s' to write. ERROR: %s", fileName.data(), PHYSFS_getLastError());
-
-	return objCount;
 }
 
 bool FileSystem::Remove(const char* file)
@@ -393,7 +274,6 @@ void FileSystem::GetFileName(const char* file, std::string& fileName, bool exten
 			fileName = fileName.substr(0, found);
 	}
 }
-
 void FileSystem::OnGui()
 {
 	if (ImGui::CollapsingHeader("FileSystem"))
@@ -401,5 +281,5 @@ void FileSystem::OnGui()
 		IMGUI_PRINT("Base Path: ", GetBasePath());
 		IMGUI_PRINT("Read Paths: ", GetReadPaths());
 		IMGUI_PRINT("Write Path: ", GetWritePath());
-	}
+	}	
 }

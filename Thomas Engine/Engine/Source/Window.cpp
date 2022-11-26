@@ -2,20 +2,22 @@
 #include "Window.h"
 #include "Globals.h"
 
+// Modules
+#include "Renderer3D.h"
+#include "Editor.h"
+#include "Input.h"
+
 #include "Parson/parson.h"
 #include "ResourceTexture.h"
+#include "ResourceManager.h"
 
-Window::Window(Application * app, bool startEnabled) : Module(app, startEnabled)
+
+Window::Window(Application* app, bool startEnabled) : Module(app, startEnabled)
 {
 	name = "Window";
 
 	window = NULL;
 	screenSurface = NULL;
-}
-
-// Destructor
-Window::~Window()
-{
 }
 
 // Called before render is available
@@ -58,22 +60,22 @@ bool Window::Init()
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
 
-		if (WIN_FULLSCREEN == true)
+		if(WIN_FULLSCREEN == true)
 		{
 			flags |= SDL_WINDOW_FULLSCREEN;
 		}
 
-		if (WIN_RESIZABLE == true)
+		if(WIN_RESIZABLE == true)
 		{
 			flags |= SDL_WINDOW_RESIZABLE;
 		}
 
-		if (WIN_BORDERLESS == true)
+		if(WIN_BORDERLESS == true)
 		{
 			flags |= SDL_WINDOW_BORDERLESS;
 		}
 
-		if (WIN_FULLSCREEN_DESKTOP == true)
+		if(WIN_FULLSCREEN_DESKTOP == true)
 		{
 			flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
 		}
@@ -83,11 +85,12 @@ bool Window::Init()
 		// Setup window
 		SDL_WindowFlags window_flags = (SDL_WindowFlags)(SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
 
+		LOG(LogType::L_NORMAL, "SDL CreateWindow");
 		window = SDL_CreateWindow("Thomas Engine", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, window_flags);
 		gl_context = SDL_GL_CreateContext(window);
 		SDL_GL_MakeCurrent(window, gl_context);
 
-		if (window == NULL)
+		if(window == NULL)
 		{
 			LOG(LogType::L_ERROR, "Window could not be created! SDL_Error: %s\n", SDL_GetError());
 			ret = false;
@@ -103,7 +106,7 @@ bool Window::Init()
 
 	width = SCREEN_WIDTH;
 	height = SCREEN_HEIGHT;
-
+	
 	return ret;
 }
 
@@ -115,7 +118,7 @@ bool Window::CleanUp()
 	SDL_GL_DeleteContext(gl_context);
 
 	//Destroy window
-	if (window != NULL)
+	if(window != NULL)
 	{
 		SDL_DestroyWindow(window);
 	}
@@ -137,7 +140,7 @@ void Window::SetBrightness(float bright)
 	SDL_SetWindowBrightness(window, bright);
 }
 
-void Window::SetBrightness()
+void Window::SetBrightness( )
 {
 	SDL_SetWindowBrightness(window, brightness);
 }
@@ -147,6 +150,7 @@ void Window::SetSize(uint w, uint h)
 	height = h;
 	width = w;
 	SDL_SetWindowSize(window, w, h);
+
 }
 void Window::SetSize()
 {
@@ -212,6 +216,18 @@ void Window::OnResize(int width, int height)
 	this->height = height;
 }
 
+update_status Window::ManageEvent(SDL_Event* e)
+{
+	if (e->window.event == SDL_WINDOWEVENT_RESIZED)
+	{
+		App->renderer3D->OnResize(e->window.data1, e->window.data2);
+		width = e->window.data1;
+		height = e->window.data2;
+	}
+	return UPDATE_CONTINUE;
+}
+
+
 void Window::OnGUI()
 {
 	if (ImGui::CollapsingHeader("Window"))
@@ -220,18 +236,12 @@ void Window::OnGUI()
 		ImGui::TextWrapped("Icon: ");
 		ImGui::Image((ImTextureID)app->resourceManager->logo->textureID, ImVec2(32, 32));
 
-		if (ImGui::SliderFloat("Brightness", &brightness, 0.f, 1.f))
-		{
-			SetBrightness(brightness);
-		}
-		if (ImGui::SliderInt("Width", &width, 640, current.w))
-		{
-			SetSize(width, height);
-		}
-		if (ImGui::SliderInt("Height", &height, 480, current.h))
-		{
-			SetSize(width, height);
-		}
+		if (ImGui::SliderFloat("Brightness", &brightness, 0.f, 1.f)) SetBrightness(brightness);
+
+		ImGui::SliderInt("Width", &tmpW, 640, current.w);
+		if (App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_UP) app->renderer3D->OnResize(tmpW, height);
+
+		if (ImGui::SliderInt("Height", &height, 480, current.h)) app->renderer3D->OnResize(width, height);
 
 		IMGUI_PRINT("Refresh rate: ", "%d", current.refresh_rate);
 
@@ -289,18 +299,19 @@ void Window::OnGUI()
 
 		ImGui::NewLine();
 	}
+	
 }
 
 bool Window::SaveConfig(JsonParser& node) const
 {
-	node.SetNewJsonNumber(node.ValueToObject(node.GetRootValue()), "width", width);
-	node.SetNewJsonNumber(node.ValueToObject(node.GetRootValue()), "height", height);
-	node.SetNewJsonNumber(node.ValueToObject(node.GetRootValue()), "brightness", brightness);
+	node.SetJNumber(node.ValueToObject(node.GetRootValue()), "width", width);
+	node.SetJNumber(node.ValueToObject(node.GetRootValue()), "height", height);
+	node.SetJNumber(node.ValueToObject(node.GetRootValue()), "brightness", brightness);
 
-	node.SetNewJsonBool(node.ValueToObject(node.GetRootValue()), "fullscreen", fullScreen);
-	node.SetNewJsonBool(node.ValueToObject(node.GetRootValue()), "fullscreen desktop", fullScreenDesktop);
-	node.SetNewJsonBool(node.ValueToObject(node.GetRootValue()), "borderless", borderless);
-	node.SetNewJsonBool(node.ValueToObject(node.GetRootValue()), "resizable", isResizable);
+	node.SetJBool(node.ValueToObject(node.GetRootValue()), "fullscreen", fullScreen);
+	node.SetJBool(node.ValueToObject(node.GetRootValue()), "fullscreen desktop", fullScreenDesktop);
+	node.SetJBool(node.ValueToObject(node.GetRootValue()), "borderless", borderless);
+	node.SetJBool(node.ValueToObject(node.GetRootValue()), "resizable", isResizable);
 
 	return true;
 }

@@ -1,7 +1,15 @@
 #include "Application.h"
+
+//Modules
 #include "Input.h"
+#include "Window.h"
+#include "Editor.h"
+
 #include "Globals.h"
+
 #include "FileSystem.h"
+#include "ResourceManager.h"
+#include "Renderer3D.h"
 
 #define MAX_KEYS 300
 
@@ -11,12 +19,6 @@ Input::Input(Application* app, bool start_enabled) : Module(app, start_enabled)
 
 	keyboard = new KEY_STATE[MAX_KEYS];
 	memset(keyboard, KEY_IDLE, sizeof(KEY_STATE) * MAX_KEYS);
-}
-
-// Destructor
-Input::~Input()
-{
-	delete[] keyboard;
 }
 
 // Called before render is available
@@ -39,7 +41,6 @@ bool Input::Init()
 update_status Input::PreUpdate(float dt)
 {
 	SDL_PumpEvents();
-
 	const Uint8* keys = SDL_GetKeyboardState(NULL);
 	
 	for(int i = 0; i < MAX_KEYS; ++i)
@@ -90,22 +91,18 @@ update_status Input::PreUpdate(float dt)
 		}
 		else
 		{
-			if (mouse_buttons[i] == KEY_REPEAT || mouse_buttons[i] == KEY_DOWN)
-			{
-				mouse_buttons[i] = KEY_UP;
-				LogInputEvent(1000 + i, KEY_UP);
-			}
-			else
-				mouse_buttons[i] = KEY_IDLE;
+			(mouse_buttons[i] == KEY_REPEAT || mouse_buttons[i] == KEY_DOWN) ? 
+				mouse_buttons[i] = KEY_UP,LogInputEvent(1000 + i, KEY_UP) : mouse_buttons[i] = KEY_IDLE;
 		}
 	}
 
 	mouse_x_motion = mouse_y_motion = 0;
 
-	bool quit = false;
+	update_status ret = UPDATE_CONTINUE;
 	SDL_Event e;
 	while(SDL_PollEvent(&e))
 	{
+		ImGui_ImplSDL2_ProcessEvent(&e);
 		switch(e.type)
 		{
 			case SDL_MOUSEWHEEL:
@@ -121,30 +118,25 @@ update_status Input::PreUpdate(float dt)
 			break;
 
 			case (SDL_DROPFILE):
-				app->resourceManager->ImportFile(StringLogic::GlobalToLocalPath(e.drop.file).c_str());
-				SDL_free(e.drop.file);
-				break;
-
+			app->resourceManager->ImportFile(FileSystem::ExtractLocalDiskForward(e.drop.file).c_str());
+			SDL_free(e.drop.file);  
+			break;
+			
 			case SDL_QUIT:
-			quit = true;
+				quit = true;
 			break;
 
 			case SDL_WINDOWEVENT:
-			{
-				if (e.window.event == SDL_WINDOWEVENT_RESIZED)
-				{
-					App->renderer3D->OnResize(e.window.data1, e.window.data2);
-					if(!App->window->IsFullscreen() && !App->window->IsFullscreenDesktop()) App->window->SetSize(e.window.data1, e.window.data2);
-				}
-			}
+				App->window->ManageEvent(&e);
+				break;
 			break;
 		}
 	}
 
-	if(quit == true || keyboard[SDL_SCANCODE_ESCAPE] == KEY_UP)
-		return UPDATE_STOP;
+	if(keyboard[SDL_SCANCODE_ESCAPE] == KEY_UP)
+		ret = UPDATE_STOP;
 
-	return UPDATE_CONTINUE;
+	return ret;
 }
 
 // Called before quitting

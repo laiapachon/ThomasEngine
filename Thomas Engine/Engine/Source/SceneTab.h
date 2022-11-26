@@ -4,10 +4,10 @@
 
 class SceneTab : public Tab
 {
-
 public:
 	SceneTab();
-	virtual ~SceneTab();
+	virtual ~SceneTab() {};
 
 	void Draw() override;
+	ImVec2 lastViewportSize;
 };

@@ -8,19 +8,16 @@
 #include "Inspector.h"
 #include "Input.h"
 
+#include <stack>
+
 Hierarchy::Hierarchy(Scene* scene) : Tab(), sceneReference(scene)
 {
 	name = "Hierarchy";
 }
 
-Hierarchy::~Hierarchy()
-{
-	sceneReference = nullptr;
-}
-
 void Hierarchy::Draw()
 {
-	if (ImGui::Begin(name.c_str()))
+	if (ImGui::Begin(name.c_str(), &active))
 	{
 		// If exist some scene and this have root draw all game object tree
 		if (sceneReference != nullptr && sceneReference->root != nullptr)
@@ -31,49 +28,114 @@ void Hierarchy::Draw()
 	ImGui::End();
 }
 
-void Hierarchy::SetCurrentScene(Scene* scene)
-{
-	sceneReference = scene;
-}
-
 void Hierarchy::DrawGameObjectsTree(GameObject* node, bool drawAsDisabled)
 {
-	// If this game object is active false draw on mode disabled
-	if (drawAsDisabled == false)
-		drawAsDisabled = !node->active;
+	std::stack<GameObject*> S;
+	std::stack<uint> indents;
+	S.push(app->scene->root);
+	indents.push(0);
 
-	ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_DefaultOpen;
-
-	if (node->GetChildren().size() == 0)
-		flags |= ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
-
-	if (node == app->editor->GetGameObjectSelected())
-		flags |= ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_Selected;
-
-	if (drawAsDisabled)
-		ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyle().Colors[ImGuiCol_TextDisabled]);
-
-	bool nodeOpen = ImGui::TreeNodeEx(node, flags, node->name.c_str());
-
-	if (drawAsDisabled)
-		ImGui::PopStyleColor();
-
-
-
-	if (ImGui::IsItemClicked() && !node->IsRoot())
+	// No recursive :)
+	while (!S.empty())
 	{
-		dynamic_cast<Inspector*>(app->editor->GetTab(TabType::INSPECTOR))->gameObjectSelected = node;
-	}
+		GameObject* go = S.top();
+		ImGuiTreeNodeFlags nodeFlags = SetFlags(go);
+		uint indentsAmount = indents.top();
+		S.pop();
+		indents.pop();
 
-	node->SetShowChildrens((node->GetChildren().size() == 0) ? false : nodeOpen);
-
-	if (node->GetShowChildrens() == true)
-	{
-		// Call function recursive mode
-		for (unsigned int i = 0; i < node->GetChildren().size(); i++)
+		for (uint i = 0; i < indentsAmount; ++i)
 		{
-			DrawGameObjectsTree(node->GetChildren()[i], drawAsDisabled);
+			ImGui::Indent();
 		}
-		ImGui::TreePop();
+
+		if (ImGui::TreeNodeEx(go, nodeFlags, go->name.c_str()))
+		{
+			DragHierarchyObj(go);
+			if (ImGui::IsItemClicked() && !go->IsRoot())
+			{
+				GameObject* &objSelected = static_cast<Inspector*>(app->editor->GetTab(TabType::INSPECTOR))->gameObjectSelected;
+				objSelected ? objSelected->isSelected = !objSelected->isSelected : 0;
+				objSelected = go;
+				objSelected->isSelected = !objSelected->isSelected;
+			}
+			for (GameObject* child : go->GetChildrens())
+			{
+				S.push(child);
+				indents.push(indentsAmount + 1);
+			}
+			for (uint i = 0; i < indentsAmount; ++i)
+			{
+				ImGui::Unindent();
+			}
+			ImGui::TreePop();
+		}
 	}
+}
+
+void Hierarchy::DragHierarchyObj(GameObject*& go)
+{
+	// Root can't be draged
+	if (!go->IsRoot())
+	{
+		if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
+		{
+			ImGui::SetDragDropPayload("DragDropHierarchy", &go, sizeof(GameObject*), ImGuiCond_Once);
+			ImGui::Text("%s", go->name.c_str());
+			ImGui::EndDragDropSource();
+		}
+	}	
+
+	if (ImGui::BeginDragDropTarget())
+	{
+		if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DragDropHierarchy"))
+		{
+			IM_ASSERT(payload->DataSize == sizeof(GameObject*));
+			GameObject* droppedGo = (GameObject*)*(const int*)payload->Data;
+			// droppedGo != go->GetParent() ---> Don't can DragDrop father into his child
+			if (droppedGo && droppedGo != go->GetParent())
+			{
+				bool ret = true;
+				GameObject* aux = go;
+				GameObject* child = go;
+				ret = AreYouMyDescendent(child, droppedGo);
+				go = aux;
+
+				if(ret)
+				{
+					// Erase of child list of his father
+					droppedGo->GetParent()->EraseChildren(droppedGo->GetParent()->FindChildren(droppedGo));
+					// Attach as new child 
+					go->AttachChild(droppedGo);
+				}				
+			}
+		}
+		ImGui::EndDragDropTarget();
+	}
+}
+
+bool Hierarchy::AreYouMyDescendent(GameObject* child, GameObject* droppedGo)
+{
+	while (child != nullptr)
+	{
+		if (child->GetParent() == droppedGo) return false;
+		child = child->GetParent();
+	}
+	return true;
+}
+
+ImGuiTreeNodeFlags Hierarchy::SetFlags(GameObject* node)
+{
+	// This flags allow to open the tree if you click on arrow or doubleClick on object, by default the tree is open  
+	ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_DefaultOpen;
+
+	// If GameObject doesn't childrens = no collapsing and no arrow
+	if (node->GetChildrens().size() == 0)
+		flags |= ImGuiTreeNodeFlags_Leaf;
+
+	// If GameObject is selected = activeModeSelected
+	if (node == app->editor->GetGameObjectSelected())
+		flags |= ImGuiTreeNodeFlags_Selected;
+
+	return flags;
 }

@@ -1,13 +1,8 @@
-#ifndef __FileSystem_H__
-#define __FileSystem_H__
-
+#pragma once
 #include "PhysFS/include/physfs.h"
 
 #include <vector>
 #include <string>
-
-struct SDL_RWops;
-int close_sdl_rwops(SDL_RWops *rw);
 
 enum class ImportType {
 	NOTYPE = -1,
@@ -17,8 +12,8 @@ enum class ImportType {
 
 namespace StringLogic {
 
-	std::string FileNameFromPath(const char* _path);
-	std::string GlobalToLocalPath(const char* _globalPath);
+	std::string FileNameFromPath(const char* path);
+	std::string GlobalToLocalPath(const char* globalPath);
 }
 
 namespace FileSystem 
@@ -35,16 +30,15 @@ namespace FileSystem
 	bool CreateDir(const char* dir);
 	bool IsDirectory(const char* file);
 
-	std::string NormalizePath(const char* path);
-	std::string UnNormalizePath(const char* full_path);
-	void SplitFilePath(const char* full_path, std::string* path, std::string* file = nullptr, std::string* extension = nullptr);
+	std::string NormalizePath(const char* fullPath);
+	std::string UnNormalizePath(const char* fullPath);
+
+	std::string ExtractLocalDiskBackward(const char* fullPath);
+	std::string ExtractLocalDiskForward(const char* fullPath);
 
 	// Open for Read/Write
 	unsigned int LoadToBuffer(const char* file, char** buffer);
-	unsigned int Load(const char* path, const char* file, char** buffer);
 
-	unsigned int Copy(const char* file, const char* dir, std::string& outputFile);
-	unsigned int Save(const char* file, char* buffer, unsigned int size, bool append);
 	bool Remove(const char* file);
 	void GetFileName(const char* file, std::string& fileName, bool extension);
 
@@ -54,5 +48,3 @@ namespace FileSystem
 
 	void OnGui();
 };
-
-#endif // __FileSystem_H__

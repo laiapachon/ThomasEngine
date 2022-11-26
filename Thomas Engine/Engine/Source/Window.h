@@ -1,5 +1,4 @@
-#ifndef __Window_H__
-#define __Window_H__
+#pragma once
 
 #include "Module.h"
 #include "SDL/include/SDL.h"
@@ -11,12 +10,10 @@ class Window : public Module
 public:
 
 	Window(Application* app, bool start_enabled = true);
+	virtual ~Window() {};
 
-	// Destructor
-	virtual ~Window();
-
-	bool Init();
-	bool CleanUp();
+	bool Init()override;
+	bool CleanUp()override;
 
 	void SetTitle(const char* title);
 
@@ -42,11 +39,13 @@ public:
 
 	void OnResize(int width, int height);
 
+	update_status ManageEvent(SDL_Event* e);
+
 	void OnGUI() override;
 
-	bool SaveConfig(JsonParser& node) const;
+	bool SaveConfig(JsonParser& node) const override;
 
-	bool LoadConfig(JsonParser& node);
+	bool LoadConfig(JsonParser& node) override;
 
 	int GetWindowWidth() { return width; };
 	int GetWindowHeight() { return height; };
@@ -63,6 +62,7 @@ private:
 	SDL_DisplayMode current;
 
 	int width;
+	int tmpW=SCREEN_WIDTH;
 	int height;
 	float brightness = 1;
 
@@ -71,5 +71,3 @@ private:
 	bool isResizable = false;
 	bool fullScreenDesktop = false;
 };
-
-#endif // __Window_H__

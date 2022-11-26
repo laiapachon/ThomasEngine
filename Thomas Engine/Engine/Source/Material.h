@@ -2,6 +2,8 @@
 #include "Component.h"
 
 class Texture;
+class GameObject;
+typedef unsigned int GLuint;
 
 class Material : public Component
 {
@@ -12,7 +14,9 @@ public:
 	void OnEditor() override;
 	int GetTextureID();
 
-	Texture* matTexture;
+	bool CompareTextureId(GameObject* node, GameObject* owner, GLuint id);
 
-	bool viewWithCheckers;
+	Texture* texture = nullptr;
+private:
+	bool viewWithCheckers = false;
 };

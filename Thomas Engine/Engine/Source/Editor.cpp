@@ -1,8 +1,12 @@
 #include "Application.h"
 #include "Editor.h"
 
+// Modules
+#include "Scene.h"
 #include "GameObject.h"
-#include "MeshRenderer.h"
+#include "Window.h"
+#include "Input.h"
+#include "Camera3D.h"
 
 // Tabs
 #include "Tab.h"
@@ -38,15 +42,20 @@ Editor::Editor(Application* app, bool start_enabled): Module(app, start_enabled)
 	}
 }
 
-Editor::~Editor()
-{
-}
-
 bool Editor::Init()
 {
+	LOG(LogType::L_NORMAL, "Init editor gui with imgui lib version %s", ImGui::GetVersion());
+
 	// Setup Dear ImGui context
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
+
+	ImGuiViewport* viewport = ImGui::GetMainViewport();
+	ImGui::SetNextWindowPos(viewport->Pos);
+	ImGui::SetNextWindowSize(viewport->Size);
+	ImGui::SetNextWindowViewport(viewport->ID);
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
 
 	ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
@@ -55,8 +64,9 @@ bool Editor::Init()
 	ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_DockingEnable;         // Enable Docking
 	ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;       // Enable Multi-Viewport / Platform Windows
 
+	
 	// Setup Dear ImGui style
-	//ImGui::StyleColorsDark();
+	/*ImGui::StyleColorsDark();*/
 	ImGui::StyleColorsClassic();
 
 	// When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular ones.
@@ -80,14 +90,14 @@ bool Editor::Start()
 }
 void Editor::LogToConsole(const char* msg, LogType _type)
 {
-	ConsoleTab* consoleWindow = dynamic_cast<ConsoleTab*>(GetTab(TabType::CONSOLE));
+	ConsoleTab* consoleWindow = static_cast<ConsoleTab*>(GetTab(TabType::CONSOLE));
 
 	if (consoleWindow != nullptr)
 		consoleWindow->AddLog(msg, _type);
 }
 
 void Editor::CreateDockSpace()
-{
+{	
 	ImGuiViewport* viewport = ImGui::GetMainViewport();
 
 	ImVec2 dockPos(viewport->WorkPos);
@@ -96,7 +106,7 @@ void Editor::CreateDockSpace()
 	ImVec2 dockSize(viewport->WorkSize);
 	ImGui::SetNextWindowSize(dockSize);
 
-	dockId = DockSpaceOverViewportCustom(viewport, ImGuiDockNodeFlags_PassthruCentralNode, dockPos, dockSize, nullptr);
+	DockSpaceOverViewportCustom(viewport, ImGuiDockNodeFlags_PassthruCentralNode, dockPos, dockSize, nullptr);
 }
 
 void Editor::StartFrame()
@@ -114,22 +124,20 @@ void Editor::StartFrame()
 			tabs[i]->active = !tabs[i]->active;
 		}
 	}
+	if (App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT && App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT && App->input->GetKey(SDL_SCANCODE_N) == KEY_UP)
+		app->scene->CreateGameObject("GameObject");
+	else if (App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT && App->input->GetKey(SDL_SCANCODE_N) == KEY_UP) warningTab = true;
 }
 
 update_status Editor::Draw()
 {	
-	StartFrame();
+	update_status ret = update_status::UPDATE_CONTINUE;
 
-	// Rendering the tabs
-	update_status ret = ImGuiMenuBar();
+	StartFrame();
+	ret = ImGuiMenuBar();
 	CreateDockSpace();
 
-	if (showCase)
-	{
-		//ImGui::PushStyleColor(ImGuiCol_::ImGuiCol_MenuBarBg, ImVec4(0.f, 0.f, 0.f, 1.f));
-		ImGui::ShowDemoWindow();
-		//ImGui::PopStyleColor();
-	}
+	// Rendering the tabs
 	for (unsigned int i = 0; i < tabs.size(); i++)
 	{
 		if (tabs[i]->active)
@@ -137,12 +145,15 @@ update_status Editor::Draw()
 			tabs[i]->Draw();
 		}
 	}
+	if (warningTab)
+		if (DrawWarningTab("New Scene")) NewScene();
+	if (app->input->GetQuit())
+		if (DrawWarningTab("Exit Engine")) ret = UPDATE_STOP;
 
+	ImGui::EndFrame();
 	ImGui::Render();
 	glViewport(0, 0, (int)ImGui::GetIO().DisplaySize.x, (int)ImGui::GetIO().DisplaySize.y);
-	//glUseProgram(0); // You may want this if using this code in an OpenGL 3+ context where shaders may be bound
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
 
 	if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
 	{
@@ -152,6 +163,41 @@ update_status Editor::Draw()
 		ImGui::RenderPlatformWindowsDefault();
 		SDL_GL_MakeCurrent(backup_current_window, backup_current_context);
 	}
+
+	return ret;
+}
+
+bool Editor::DrawWarningTab(std::string text)
+{
+	bool ret = false;
+	if (ImGui::Begin("Warning"))
+	{
+		float offset = ImGui::GetWindowContentRegionMax().x/2 - ImGui::CalcTextSize(text.c_str()).x/2;
+		ImGui::SetCursorPosX(offset);
+		ImGui::Text(text.c_str());
+
+		ImGui::NewLine();
+		ImGui::TextWrapped("Are you sure you want to %s?", text.c_str());
+		ImGui::TextWrapped("If you close the scene, your changes will be lost. Do you want continue anyway?");
+		ImGui::NewLine();
+
+		offset = ImGui::GetWindowContentRegionMax().x / 2 - ImGui::CalcTextSize("YES").x - 6;
+		ImGui::SetCursorPosX(offset);
+		if (ImGui::Button("YES"))
+		{
+			ret = true;
+			warningTab = false;
+		}
+		ImGui::SameLine();
+		offset = ImGui::GetWindowContentRegionMax().x / 2 + ImGui::CalcTextSize("NO").x - 6;
+		ImGui::SetCursorPosX(offset);
+		if (ImGui::Button("NO"))
+		{
+			warningTab = false;
+			app->input->SetQuit(false);
+		}
+	}
+	ImGui::End();
 	return ret;
 }
 
@@ -166,62 +212,38 @@ update_status Editor::ImGuiMenuBar()
 		{
 			if (ImGui::MenuItem("Quit", "ESC"))
 				ret = UPDATE_STOP;
+
+			if (ImGui::MenuItem("New Scene","Ctrl+N"))
+				warningTab = true;
+
 			ImGui::EndMenu();
 		}
 		if (ImGui::BeginMenu("View"))
 		{
 			for (int i = 0; i < tabs.size(); i++)
 			{
-				if (ImGui::MenuItem(tabs[i]->name.c_str(), std::to_string(i+1).c_str(), tabs[i]->active, &tabs[i]->active))
-					tabs[i]->active =! tabs[i]->active;
+				// Name  ShortCut  State
+				if (ImGui::MenuItem(tabs[i]->name.c_str(), std::to_string(tabs[i]->shortcut).c_str(), tabs[i]->active, &tabs[i]->active))
+					tabs[i]->active = !tabs[i]->active;
 			}			
 			ImGui::EndMenu();
 		}
-		// Game Object menu
+		// Menu of game objects
 		if (ImGui::BeginMenu("Game Objects"))
 		{
-			if (ImGui::MenuItem("Cube", nullptr))
+			if (ImGui::MenuItem("Create Empty", "Ctrl+Shift+N"))
 			{
-				PrimitiveCube cubePrim = PrimitiveCube();
-				cubePrim.InnerMesh();
-				cubePrim.mesh->LoadToMemory();
-
-				app->scene->CreatePrimitive("Cube", cubePrim.mesh);
+				app->scene->CreateGameObject("GameObject");
 			}
-			if (ImGui::MenuItem("Sphere", nullptr))
+			if (ImGui::BeginMenu("3D Object"))
 			{
-				PrimitiveSphere spherePrim = PrimitiveSphere();
-				spherePrim.InnerMesh();
-				spherePrim.mesh->LoadToMemory();
-
-				app->scene->CreatePrimitive("Sphere", spherePrim.mesh);
+				PrimitiveMenuItem();
+				ImGui::EndMenu();
 			}
-			if (ImGui::MenuItem("Cylinder", nullptr))
-			{
-				PrimitiveCylinder cylinderPrim = PrimitiveCylinder();
-				cylinderPrim.InnerMesh();
-				cylinderPrim.mesh->LoadToMemory();
-
-				app->scene->CreatePrimitive("Cylinder", cylinderPrim.mesh);
-			}
-			if (ImGui::MenuItem("Pyramid", nullptr))
-			{
-				PrimitivePyramid pyramidPrim = PrimitivePyramid();
-				pyramidPrim.InnerMesh();
-				pyramidPrim.mesh->LoadToMemory();
-
-				app->scene->CreatePrimitive("Pyramid", pyramidPrim.mesh);
-			}
-
 			ImGui::EndMenu();
 		}
 		if (ImGui::BeginMenu("Help"))
 		{
-
-			if (ImGui::MenuItem("ImGui Demo", nullptr, showCase))
-			{
-				showCase = !showCase;
-			}
 			if (ImGui::MenuItem("Documentation"))
 			{
 				ShellExecute(0, 0, "https://github.com/laiapachon/ThomasEngine/wiki", 0, 0, SW_SHOW);
@@ -237,12 +259,56 @@ update_status Editor::ImGuiMenuBar()
 			if (ImGui::MenuItem("About"))
 			{
 				tabs[0]->active = !tabs[0]->active;
-			}			
+			}
 			ImGui::EndMenu();
 		}
 		ImGui::EndMainMenuBar();
 	}
 	return ret;
+}
+
+void Editor::NewScene()
+{
+	static_cast<Inspector*>(app->editor->GetTab(TabType::INSPECTOR))->gameObjectSelected = nullptr;
+	app->scene->CleanUp(); //Clean GameObjects 
+	app->scene->Init();
+	app->camera->ReStartCamera();
+}
+
+void Editor::PrimitiveMenuItem()
+{
+	if (ImGui::MenuItem("Cube", nullptr))
+	{
+		PrimitiveCube cubePrim = PrimitiveCube();
+		cubePrim.InnerMesh();
+		cubePrim.mesh->LoadToMemory();
+
+		app->scene->CreatePrimitive("Cube", cubePrim.mesh);
+	}
+	if (ImGui::MenuItem("Sphere", nullptr))
+	{
+		PrimitiveSphere spherePrim = PrimitiveSphere();
+		spherePrim.InnerMesh();
+		spherePrim.mesh->LoadToMemory();
+
+		app->scene->CreatePrimitive("Sphere", spherePrim.mesh);
+	}
+	if (ImGui::MenuItem("Cylinder", nullptr))
+	{
+		PrimitiveCylinder cylinderPrim = PrimitiveCylinder();
+		cylinderPrim.InnerMesh();
+		cylinderPrim.mesh->LoadToMemory();
+
+		app->scene->CreatePrimitive("Cylinder", cylinderPrim.mesh);
+	}
+	if (ImGui::MenuItem("Pyramid", nullptr))
+	{
+		PrimitivePyramid pyramidPrim = PrimitivePyramid();
+		pyramidPrim.InnerMesh();
+		pyramidPrim.mesh->LoadToMemory();
+
+		app->scene->CreatePrimitive("Pyramid", pyramidPrim.mesh);
+	}
 }
 
 bool Editor::CleanUp()
@@ -255,11 +321,7 @@ bool Editor::CleanUp()
 	ImGui_ImplSDL2_Shutdown();
 	ImGui::DestroyContext();
 
-	for (unsigned int i = 0; i < tabs.size(); ++i)
-	{
-		delete tabs[i];
-		tabs[i] = nullptr;
-	}
+	RELEASE_VECTOR(tabs, tabs.size());
 	tabs.clear();
 
 	return ret;
@@ -269,43 +331,36 @@ Tab* Editor::GetTab(TabType type)
 {
 	unsigned int vecPosition = static_cast<unsigned int>(type);
 
-	return (vecPosition < tabs.size()) ? tabs[vecPosition] : nullptr;
+	return (vecPosition < tabs.size()) ? tabs[vecPosition] : tabs[vecPosition];
 }
 
 GameObject* Editor::GetGameObjectSelected()
 {
-	Inspector* inspector = dynamic_cast<Inspector*>(GetTab(TabType::INSPECTOR));
+	Inspector* inspector = static_cast<Inspector*>(GetTab(TabType::INSPECTOR));
 	return inspector->gameObjectSelected;
 }
 
 
-ImGuiID Editor::DockSpaceOverViewportCustom(ImGuiViewport* viewport, ImGuiDockNodeFlags dockspaceFlags, ImVec2 position, ImVec2 size, const ImGuiWindowClass* windowClass)
+void Editor::DockSpaceOverViewportCustom(ImGuiViewport* viewport, ImGuiDockNodeFlags dockspaceFlags, ImVec2 position, ImVec2 size, const ImGuiWindowClass* windowClass)
 {
-	if (viewport == NULL)
-		viewport = ImGui::GetMainViewport();
-
-	ImGui::SetNextWindowPos(position);
-	ImGui::SetNextWindowSize(size);
-	ImGui::SetNextWindowViewport(viewport->ID);
-
 	ImGuiWindowFlags host_window_flags = 0;
 	host_window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoDocking;
-	host_window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+	host_window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;// | ImGuiWindowFlags_MenuBar;
+
 	if (dockspaceFlags & ImGuiDockNodeFlags_PassthruCentralNode)
 		host_window_flags |= ImGuiWindowFlags_NoBackground;
 
 	char label[32];
 	ImFormatString(label, IM_ARRAYSIZE(label), "DockSpaceViewport_%08X", viewport->ID);
 
-	ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
-	ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-	ImGui::Begin(label, NULL, host_window_flags);
-	ImGui::PopStyleVar(3);
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 10.0f);
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 1.0f);
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.5f, 0.5f));
 
+	ImGui::Begin(label, NULL, host_window_flags);
+
+	ImGui::PopStyleVar(3);
 	ImGuiID dockspaceId = ImGui::GetID("DockSpace");
 	ImGui::DockSpace(dockspaceId, ImVec2(0.0f, 0.0f), dockspaceFlags, windowClass);
 	ImGui::End();
-
-	return dockspaceId;
 }

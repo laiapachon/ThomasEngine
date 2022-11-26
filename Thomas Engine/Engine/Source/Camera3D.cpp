@@ -1,34 +1,44 @@
 #include "Application.h"
+
+// Module 
 #include "Camera3D.h"
-#include "Globals.h"
 #include "Editor.h"
+#include "Input.h"
+
+#include "Globals.h" 
+
 #include "GameObject.h"
+#include "Inspector.h"
+
+// Components
 #include "Transform.h"
-
-
-#include "Math/float4x4.h"
-#include "Math/float3.h"
+#include "MeshRenderer.h"
 
 Camera3D::Camera3D(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
 	name = "Camera3D";
 
-	CalculateViewMatrix();
-
-	X = vec3(1.0f, 0.0f, 0.0f);
-	Y = vec3(0.0f, 1.0f, 0.0f);
-	Z = vec3(0.0f, 0.0f, 1.0f);
-
-	Position = vec3(0.0f, 0.0f, 5.0f);
-	Reference = vec3(0.0f, 0.0f, 0.0f);
+	ReStartCamera();
 }
 
-Camera3D::~Camera3D()
-{}
+void Camera3D::ReStartCamera()
+{
+	right = float3(1.0f, 0.0f, 0.0f);
+	up    =	float3(0.0f, 1.0f, 0.0f);
+	front = float3(0.0f, 0.0f, 1.0f);
+
+	position = float3(5.0f, 4.0f, 5.0f);
+	reference = float3(0.0f, 0.0f, 0.0f);
+
+	CalculateViewMatrix();
+}
 
 bool Camera3D::Start()
 {
+	LOG(LogType::L_NORMAL, "Setting up the camera");
 	bool ret = true;
+
+	LookAt(float3::zero);
 
 	return ret;
 }
@@ -42,194 +52,229 @@ bool Camera3D::CleanUp()
 
 update_status Camera3D::Update(float dt)
 {
-
 	return UPDATE_CONTINUE;
+}
+
+void Camera3D::OnGUI()
+{
+	if (ImGui::CollapsingHeader("Camera"))
+	{
+		ImGui::Text("Camera Position:");
+		if (ImGui::DragFloat3("##Position", &position[0], 0.1f, true)){}
+
+		ImGui::NewLine();
+		ImGui::PushItemWidth(150);
+
+		if (ImGui::SliderFloat("Vert FOV", &verticalFOV, 10,270))
+		{
+			projectionIsDirty = true;
+		}
+		if (ImGui::SliderFloat("Near plane", &nearPlaneDistance, 0.1f, 10))
+		{
+			projectionIsDirty = true;
+		}
+		if (ImGui::SliderFloat("Far plane", &farPlaneDistance, 11,5000))
+		{
+			projectionIsDirty = true;
+		}
+		if (ImGui::SliderFloat("Speed mov", &cameraSpeed, 1, 100))	{}
+		if (ImGui::SliderFloat("Sensitivity", &cameraSensitivity, 0.01f, 0.5)){}
+
+		ImGui::PopItemWidth();
+		ImGui::NewLine();
+	}
 }
 
 void Camera3D::CheckInputs()
 {
-	vec3 newPos(0, 0, 0);
-	float speed = 3.0f * app->GetDt();
+	float3 newPos(0, 0, 0);
+	float speed = cameraSpeed * app->GetDt();
 	if (App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT)
-		speed = 8.0f * app->GetDt();
+		speed *= 2;
 
-	if (App->input->GetKey(SDL_SCANCODE_T) == KEY_REPEAT) newPos.y += speed;
-	if (App->input->GetKey(SDL_SCANCODE_G) == KEY_REPEAT) newPos.y -= speed;
+	if (App->input->GetKey(SDL_SCANCODE_Q) == KEY_REPEAT) newPos.y += speed;
+	if (App->input->GetKey(SDL_SCANCODE_E) == KEY_REPEAT) newPos.y -= speed;
 
-	if (App->input->GetKey(SDL_SCANCODE_F) == KEY_DOWN) FrontView();
+	if (App->input->GetKey(SDL_SCANCODE_F) == KEY_DOWN) Focus();
 
-	if (App->input->GetKey(SDL_SCANCODE_W) == KEY_REPEAT) newPos -= Z * speed;
-	if (App->input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT) newPos += Z * speed;
+	if (App->input->GetKey(SDL_SCANCODE_W) == KEY_REPEAT) newPos += front * speed;
+	if (App->input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT) newPos -= front * speed;
 
 
-	if (App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT) newPos -= X * speed;
-	if (App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) newPos += X * speed;
+	if (App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT) newPos += right * speed;
+	if (App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) newPos -= right * speed;
 
-	newPos -= Z * App->input->GetWheel();
+	newPos += front * App->input->GetWheel();
 
-	Position += newPos;
-	Reference += newPos;
+	position += newPos;
+	reference += newPos;
 
 	// Mouse motion ----------------
-	OrbitRotation();
-
-	// Recalculate matrix -------------
-	CalculateViewMatrix();
+	if (App->input->GetMouseButton(SDL_BUTTON_RIGHT) == KEY_REPEAT) OrbitRotation();
 }
 
 void Camera3D::OrbitRotation()
-{
-	vec3 pivot = vec3(0, 0, 0);
-	GameObject* gameObject = App->editor->GetGameObjectSelected();
-
-	float3 posGO = { 0, 0, 0 };
-
-	if (gameObject != nullptr)posGO = gameObject->transform->GetPosition();
-
+{	
 	if (App->input->GetMouseButton(SDL_BUTTON_RIGHT) == KEY_REPEAT)
 	{
+		GameObject* gameObject = App->editor->GetGameObjectSelected();
+		float3 posGO = { 0, 0, 0 };
+
+		if (gameObject != nullptr)
+			posGO = gameObject->transform->GetPosition();
+
 		int dx = -App->input->GetMouseXMotion();
 		int dy = -App->input->GetMouseYMotion();
-		float Sensitivity = 0.25f;
-		app->editor->GetGameObjectSelected();
-		(App->input->GetKey(SDL_SCANCODE_LALT) == KEY_REPEAT && gameObject != nullptr) ? pivot = vec3(posGO.x, posGO.y, posGO.z) : pivot = Reference;
 
-		Position -= pivot;
-
-		if (dx != 0)
+		if (App->input->GetKey(SDL_SCANCODE_LALT) == KEY_REPEAT && gameObject != nullptr)
 		{
-			float DeltaX = (float)dx * Sensitivity;
+			const float newDeltaX = (float)dx * cameraSensitivity;
+			const float newDeltaY = (float)dy * cameraSensitivity;
 
-			X = rotate(X, DeltaX, vec3(0.0f, 1.0f, 0.0f));
-			Y = rotate(Y, DeltaX, vec3(0.0f, 1.0f, 0.0f));
-			Z = rotate(Z, DeltaX, vec3(0.0f, 1.0f, 0.0f));
+			reference = posGO;
+			Quat pivot = Quat::RotateY(up.y >= 0.f ? newDeltaX * .1f : -newDeltaX * .1f);
+
+			pivot = pivot * math::Quat::RotateAxisAngle(right, newDeltaY * .1f);
+
+			position = pivot * (position - reference) + reference;
+
+			CalculateViewMatrix();
+			LookAt(reference);
 		}
-
-		if (dy != 0)
+		else
 		{
-			float DeltaY = (float)dy * Sensitivity;
-
-			Y = rotate(Y, DeltaY, X);
-			Z = rotate(Z, DeltaY, X);
-
-			if (Y.y < 0.0f)
+			if (dx != 0)
 			{
-				Z = vec3(0.0f, Z.y > 0.0f ? 1.0f : -1.0f, 0.0f);
-				Y = cross(Z, X);
-			}
-		}
-		Position = pivot + Z * length(Position);
-		Reference = pivot;
+				float deltaX = (float)dx * cameraSensitivity;
 
+				Quat rotateY = Quat::RotateY(up.y >= 0.f ? deltaX * .1f : -deltaX * .1f);
+				up = rotateY * up;
+				front = rotateY * front;
+				CalculateViewMatrix();
+			}
+
+			if (dy != 0)
+			{
+				float deltaY = (float)dy * cameraSensitivity;
+
+				Quat rotateX = Quat::RotateAxisAngle(right, -deltaY * .1f);
+				up = rotateX * up;
+				front = rotateX * front;
+				CalculateViewMatrix();
+			}
+		}		
+	}
+}
+
+void Camera3D::Focus()
+{
+	//Focus
+	GameObject*& objSelected = static_cast<Inspector*>(app->editor->GetTab(TabType::INSPECTOR))->gameObjectSelected;
+
+	if (objSelected != nullptr)
+	{
+		if (MeshRenderer* mesh = static_cast<MeshRenderer*>(objSelected->GetComponent(ComponentType::MESHRENDERER)))
+		{
+			const float3 meshCenter = mesh->GetCenterPointInWorldCoords();
+			LookAt(meshCenter);
+			const float meshRadius = mesh->GetSphereRadius();
+			const float currentDistance = meshCenter.Distance(position);
+			position = meshCenter + ((position - meshCenter).Normalized() * meshRadius *2);
+		}
+		else
+		{
+			float3 pivot = objSelected->transform->GetPosition();
+			LookAt(pivot);
+		}
 	}
 }
 
 void Camera3D::FrontView()
 {
 	GameObject* gameObject = App->editor->GetGameObjectSelected();
-	float3 posGO = { 0, 0, 0 };
-	vec3 nwPos;
-
-	//float dist = gameObject->components.a;
-
 
 	if (gameObject != nullptr)
 	{
+		float3 posGO = { 0, 0, 0 };
+		float3 nwPos;
+
 		posGO = gameObject->transform->GetPosition();
 
-		nwPos = vec3(posGO.x, posGO.y, posGO.z);
-		// First param: Right, 
-		// Second param: UP			//With the inverted of the axes the opposite position is obtained
-		// Third param: From
-		Position = nwPos + vec3(0, 0, -10);
+		nwPos = posGO;
+		// First param: Right(X), Second param: UP(Y), Third param: From(Z)		
+		// With the inverted of the axes the opposite position is obtained
+		position = nwPos + float3(0, 0, -10);
 		LookAt(nwPos);
 	}
 }
 
 // -----------------------------------------------------------------
-void Camera3D::Look(const vec3& Position, const vec3& Reference, bool RotateAroundReference)
+void Camera3D::LookAt( const float3&Spot)
 {
-	this->Position = Position;
-	this->Reference = Reference;
+	reference = Spot;
 
-	Z = normalize(Position - Reference);
-	X = normalize(cross(vec3(0.0f, 1.0f, 0.0f), Z));
-	Y = cross(Z, X);
-
-	if (!RotateAroundReference)
-	{
-		this->Reference = this->Position;
-		this->Position += Z * 0.05f;
-	}
-
-	CalculateViewMatrix();
-}
-
-void Camera3D::Look()
-{
-
-	Z = normalize(Position - Reference);
-	X = normalize(cross(vec3(0.0f, 1.0f, 0.0f), Z));
-	Y = cross(Z, X);
+	front = (reference - position).Normalized();
+	right = float3(0.0f, 1.0f, 0.0f).Cross(front).Normalized();
+	up = front.Cross(right);
 
 	CalculateViewMatrix();
 }
 
 // -----------------------------------------------------------------
-void Camera3D::LookAt(const vec3& Spot)
+void Camera3D::Move(const float3&Movement)
 {
-	Reference = Spot;
-
-	Z = normalize(Position - Reference);
-	X = normalize(cross(vec3(0.0f, 1.0f, 0.0f), Z));
-	Y = cross(Z, X);
+	position += Movement;
+	reference += Movement;
 
 	CalculateViewMatrix();
-}
-
-
-// -----------------------------------------------------------------
-void Camera3D::Move(const vec3& Movement)
-{
-	Position += Movement;
-	Reference += Movement;
-
-	CalculateViewMatrix();
-}
-
-// -----------------------------------------------------------------
-float* Camera3D::GetViewMatrix()
-{
-	return &ViewMatrix;
 }
 
 // -----------------------------------------------------------------
 void Camera3D::CalculateViewMatrix()
 {
-	ViewMatrix = mat4x4(X.x, Y.x, Z.x, 0.0f, X.y, Y.y, Z.y, 0.0f, X.z, Y.z, Z.z, 0.0f, -dot(X, Position), -dot(Y, Position), -dot(Z, Position), 1.0f);
-	ViewMatrixInverse = inverse(ViewMatrix);
+	if (projectionIsDirty)
+		RecalculateProjection();
+
+	cameraFrustum.pos = position;
+	cameraFrustum.front = front.Normalized();
+	cameraFrustum.up = up.Normalized();
+	float3::Orthonormalize(cameraFrustum.front, cameraFrustum.up);
+	right = up.Cross(front);
+
+	viewMatrix = cameraFrustum.ViewMatrix();
 }
+
+void Camera3D::RecalculateProjection()
+{
+	cameraFrustum.type = FrustumType::PerspectiveFrustum;
+
+	cameraFrustum.nearPlaneDistance = nearPlaneDistance;
+	cameraFrustum.farPlaneDistance = farPlaneDistance;
+	cameraFrustum.verticalFov = (verticalFOV * PI / 2) / 180.f;
+	cameraFrustum.horizontalFov = 2.f * atanf(tanf(cameraFrustum.verticalFov * 0.5f) * aspectRatio);
+}
+
 bool Camera3D::SaveConfig(JsonParser& node) const
 {
-	node.SetNewJsonNumber(node.ValueToObject(node.GetRootValue()), "X.x", X.x);
-	node.SetNewJsonNumber(node.ValueToObject(node.GetRootValue()), "X.y", X.y);
-	node.SetNewJsonNumber(node.ValueToObject(node.GetRootValue()), "X.z", X.z);
+	node.SetJNumber(node.ValueToObject(node.GetRootValue()), "X.x", right.x);
+	node.SetJNumber(node.ValueToObject(node.GetRootValue()), "X.y", right.y);
+	node.SetJNumber(node.ValueToObject(node.GetRootValue()), "X.z", right.z);
 
-	node.SetNewJsonNumber(node.ValueToObject(node.GetRootValue()), "Y.x", Y.x);
-	node.SetNewJsonNumber(node.ValueToObject(node.GetRootValue()), "Y.y", Y.y);
-	node.SetNewJsonNumber(node.ValueToObject(node.GetRootValue()), "Y.z", Y.z);
+	node.SetJNumber(node.ValueToObject(node.GetRootValue()), "Y.x", up.x);
+	node.SetJNumber(node.ValueToObject(node.GetRootValue()), "Y.y", up.y);
+	node.SetJNumber(node.ValueToObject(node.GetRootValue()), "Y.z", up.z);
 
-	node.SetNewJsonNumber(node.ValueToObject(node.GetRootValue()), "Z.x", Z.x);
-	node.SetNewJsonNumber(node.ValueToObject(node.GetRootValue()), "Z.y", Z.y);
-	node.SetNewJsonNumber(node.ValueToObject(node.GetRootValue()), "Z.z", Z.z);
+	node.SetJNumber(node.ValueToObject(node.GetRootValue()), "Z.x", front.x);
+	node.SetJNumber(node.ValueToObject(node.GetRootValue()), "Z.y", front.y);
+	node.SetJNumber(node.ValueToObject(node.GetRootValue()), "Z.z", front.z);
 
-	node.SetNewJsonNumber(node.ValueToObject(node.GetRootValue()), "Reference.x", Reference.x);
-	node.SetNewJsonNumber(node.ValueToObject(node.GetRootValue()), "Reference.y", Reference.y);
-	node.SetNewJsonNumber(node.ValueToObject(node.GetRootValue()), "Reference.z", Reference.z);
+	node.SetJNumber(node.ValueToObject(node.GetRootValue()), "Reference.x", reference.x);
+	node.SetJNumber(node.ValueToObject(node.GetRootValue()), "Reference.y", reference.y);
+	node.SetJNumber(node.ValueToObject(node.GetRootValue()), "Reference.z", reference.z);
 
-	node.SetNewJsonNumber(node.ValueToObject(node.GetRootValue()), "Position.x", Position.x);
-	node.SetNewJsonNumber(node.ValueToObject(node.GetRootValue()), "Position.y", Position.y);
-	node.SetNewJsonNumber(node.ValueToObject(node.GetRootValue()), "Position.z", Position.z);
+	node.SetJNumber(node.ValueToObject(node.GetRootValue()), "Position.x", position.x);
+	node.SetJNumber(node.ValueToObject(node.GetRootValue()), "Position.y", position.y);
+	node.SetJNumber(node.ValueToObject(node.GetRootValue()), "Position.z", position.z);
 
 	return true;
 }
@@ -238,28 +283,28 @@ bool Camera3D::LoadConfig(JsonParser& node)
 {
 	LOG(LogType::L_NORMAL, "Setting up the camera");
 
-	X.x = (float)node.JsonValToNumber("X.x");
-	X.y = (float)node.JsonValToNumber("X.y");
-	X.z = (float)node.JsonValToNumber("X.z");
+	right.x = (float)node.JsonValToNumber("X.x");
+	right.y = (float)node.JsonValToNumber("X.y");
+	right.z = (float)node.JsonValToNumber("X.z");
+	
+	up.x = (float)node.JsonValToNumber("Y.x");
+	up.y = (float)node.JsonValToNumber("Y.y");
+	up.z = (float)node.JsonValToNumber("Y.z");
+	
+	front.x = (float)node.JsonValToNumber("Z.x");
+	front.y = (float)node.JsonValToNumber("Z.y");
+	front.z = (float)node.JsonValToNumber("Z.z");
+	
+	position.x = (float)node.JsonValToNumber("Position.x");
+	position.y = (float)node.JsonValToNumber("Position.y");
+	position.z = (float)node.JsonValToNumber("Position.z");
 
-	Y.x = (float)node.JsonValToNumber("Y.x");
-	Y.y = (float)node.JsonValToNumber("Y.y");
-	Y.z = (float)node.JsonValToNumber("Y.z");
+	reference.x = (float)node.JsonValToNumber("Reference.x");
+	reference.y = (float)node.JsonValToNumber("Reference.y");
+	reference.z = (float)node.JsonValToNumber("Reference.z");
 
-	Z.x = (float)node.JsonValToNumber("Z.x");
-	Z.y = (float)node.JsonValToNumber("Z.y");
-	Z.z = (float)node.JsonValToNumber("Z.z");
-
-	Position.x = (float)node.JsonValToNumber("Position.x");
-	Position.y = (float)node.JsonValToNumber("Position.y");
-	Position.z = (float)node.JsonValToNumber("Position.z");
-
-	Reference.x = (float)node.JsonValToNumber("Reference.x");
-	Reference.y = (float)node.JsonValToNumber("Reference.y");
-	Reference.z = (float)node.JsonValToNumber("Reference.z");
-
-	Look();
-	//CalculateViewMatrix();
+	LookAt(reference);
+	RecalculateProjection();
 
 	return true;
 }

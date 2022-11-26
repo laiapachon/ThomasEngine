@@ -1,5 +1,14 @@
 #include "Application.h"
 
+#include "Window.h"
+#include "Renderer3D.h"
+#include "ResourceManager.h"
+#include "Scene.h"
+#include "Module.h"
+#include "Input.h"
+#include "Camera3D.h"
+#include "Editor.h"
+
 
 using namespace std;
 
@@ -23,9 +32,9 @@ Application::Application() : maxFPS(60)
 	AddModule(window);
 	AddModule(resourceManager);
 	AddModule(camera);
-	AddModule(input);
-	AddModule(scene);
-
+	AddModule(input);	
+	AddModule(scene);	
+	
 	// Renderer last!
 	AddModule(editor);
 	AddModule(renderer3D);
@@ -36,7 +45,7 @@ Application::Application() : maxFPS(60)
 
 Application::~Application()
 {
-
+	
 	for (int i = listModules.size() - 1; i >= 0; --i)
 	{
 		delete listModules[i];
@@ -57,7 +66,7 @@ bool Application::Init()
 
 		if (jsonFile.GetRootValue() == NULL)
 		{
-			LOG(LogType::L_NORMAL, "Couldn't load %s", FILE_CONFIG);
+			LOG(LogType::L_NORMAL,"Couldn't load %s", FILE_CONFIG);
 			ret = false;
 		}
 
@@ -118,7 +127,6 @@ update_status Application::Update()
 	update_status ret = UPDATE_CONTINUE;
 	PrepareUpdate();
 
-
 	for (unsigned int i = 0; i < listModules.size() && ret == UPDATE_CONTINUE; i++)
 	{
 		ret = listModules[i]->PreUpdate(dt);
@@ -158,13 +166,13 @@ void Application::AddModule(Module* mod)
 }
 void Application::SaveConfig()
 {
-	LOG(LogType::L_NORMAL, "Saving configuration");
+	LOG(LogType::L_NORMAL,"Saving configuration");
 
 	JSON_Value* root = jsonFile.GetRootValue();
 
 	JsonParser application = jsonFile.SetChild(root, "App");
 
-	application.SetNewJsonNumber(application.ValueToObject(application.GetRootValue()), "FPS", maxFPS);
+	application.SetJNumber(application.ValueToObject(application.GetRootValue()), "FPS", maxFPS);
 
 
 	// Call SaveConfig() in all modules
@@ -175,14 +183,14 @@ void Application::SaveConfig()
 		(*item)->SaveConfig(jsonFile.SetChild(root, (*item)->name));
 	}
 
-	jsonFile.SerializeFile(root, FILE_CONFIG);
+	jsonFile.FileSerialization(root, FILE_CONFIG);
 	saveRequested = false;
 }
 
 
 void Application::LoadConfig()
 {
-	LOG(LogType::L_NORMAL, "Loading configurations");
+	LOG(LogType::L_NORMAL,"Loading configurations");
 
 	JSON_Value* root = jsonFile.GetRootValue();
 
@@ -190,7 +198,7 @@ void Application::LoadConfig()
 
 	maxFPS = application.JsonValToNumber("FPS");
 
-
+	
 	std::vector<Module*>::iterator item;
 
 	for (item = listModules.begin(); item != listModules.end(); ++item)

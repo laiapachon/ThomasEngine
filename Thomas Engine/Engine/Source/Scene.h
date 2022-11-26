@@ -5,12 +5,13 @@
 
 class GameObject;
 class Mesh;
+class ComponentCamera;
 
 class Scene : public Module
 {
 public:
 	Scene(Application* app, bool start_enabled = true);
-	virtual ~Scene();
+	virtual ~Scene() {};
 
 	bool Init() override;
 	bool Start() override;
@@ -20,10 +21,11 @@ public:
 
 	bool CleanUp() override;
 
-	GameObject* CreateGameObject(const char* name, GameObject* parent);
+	GameObject* CreateGameObject(const char* name, GameObject* parent = nullptr);
 	GameObject* CreatePrimitive(const char* name, Mesh* mesh);
 
 	GameObject* root;
+	ComponentCamera* mainCamera = nullptr;
 
 	std::vector<GameObject*> destroyList;
 

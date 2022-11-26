@@ -1,5 +1,8 @@
 #include "Application.h"
 #include "MeshLoader.h"
+ 
+
+#include "Editor.h"
 
 // Importers
 #include "FileSystem.h"
@@ -31,34 +34,22 @@ void MeshLoader::DisableDebugMode()
 	aiDetachAllLogStreams();
 }
 
-Mesh* MeshLoader::LoadMesh(aiMesh* importedMesh, uint oldUID)
+Mesh* MeshLoader::LoadMesh(aiMesh* importedMesh)
 {
-	uint UID = oldUID;
-	if (UID == 0)
-		UID = app->GetNewUID();
-
 	LOG(LogType::L_NORMAL, "%s", importedMesh->mName.C_Str());
-	std::string file = MESHES_FOLDER;
-	file += std::to_string(UID);
-	file += ".mmh";
 
-	Mesh* mesh = new Mesh(UID);
+	Mesh* mesh = new Mesh();
 
 	// copy vertices
 	mesh->numVertex = importedMesh->mNumVertices;
-	//mesh->vertices.resize(mesh->numVertex * sizeof(float) * 3);
-
 	mesh->numTexCoords = importedMesh->mNumVertices;
-	//mesh->texCoords.resize(mesh->numTexCoords * sizeof(float) * 2);
-
 	mesh->numNormals = importedMesh->mNumVertices;
-	//mesh->normals.resize(mesh->numNormals * sizeof(float) * 3);
 
 	for (size_t i = 0; i < mesh->numVertex; i++)
 	{
-		mesh->vertices.push_back(importedMesh->mVertices[i].x);
-		mesh->vertices.push_back(importedMesh->mVertices[i].y);
-		mesh->vertices.push_back(importedMesh->mVertices[i].z);
+		mesh->vertex.push_back(importedMesh->mVertices[i].x);
+		mesh->vertex.push_back(importedMesh->mVertices[i].y);
+		mesh->vertex.push_back(importedMesh->mVertices[i].z);
 
 		if (importedMesh->HasNormals())
 		{
@@ -73,17 +64,14 @@ Mesh* MeshLoader::LoadMesh(aiMesh* importedMesh, uint oldUID)
 		}
 	}
 
-	if (importedMesh->HasVertexColors(0))
-	{
-		LOG(LogType::L_ERROR, "ADD VERTEX COLORS");
-	}
+	importedMesh->HasVertexColors(0);
 
 	// Generate indices
 	if (importedMesh->HasFaces())
 	{
-		mesh->numIndices = importedMesh->mNumFaces * 3;
-		mesh->indices.resize(mesh->numIndices);
-
+		mesh->numIndexs = importedMesh->mNumFaces * 3;
+		mesh->indexs.resize(mesh->numIndexs);
+		
 		for (uint j = 0; j < importedMesh->mNumFaces; ++j)
 		{
 			if (importedMesh->mFaces[j].mNumIndices != 3)
@@ -92,12 +80,13 @@ Mesh* MeshLoader::LoadMesh(aiMesh* importedMesh, uint oldUID)
 			}
 			else
 			{
-				memcpy(&mesh->indices[j * 3], importedMesh->mFaces[j].mIndices, 3 * sizeof(uint));
+				memcpy(&mesh->indexs[j * 3], importedMesh->mFaces[j].mIndices, 3 * sizeof(uint));
 			}
 		}
 	}
 
 	mesh->LoadToMemory();
+	mesh->GenerateBounds();
 
 	LOG(LogType::L_NORMAL, "New mesh with %d vertices", mesh->numVertex);
 	LOG(LogType::L_NORMAL, "New mesh with %d normals", mesh->numNormals);

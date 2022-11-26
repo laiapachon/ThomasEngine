@@ -1,3 +1,4 @@
+
 #pragma once
 #include "glmath.h"
 #include "Color.h"
@@ -23,7 +24,7 @@ public:
 	virtual void	Render() const;
 	virtual void	InnerRender() const;
 	void			SetPos(float x, float y, float z);
-	void			SetRotation(float angle, const vec3& u);
+	void			SetRotation(float angle, const vec3 &u);
 	void			Scale(float x, float y, float z);
 
 	void SetVertices(float vertices[], int size);
@@ -33,10 +34,10 @@ public:
 	PrimitiveTypes	GetType() const;
 
 public:
-
+	
 	Color color;
 	mat4x4 transform;
-	bool axis, wire;
+	bool axis,wire;
 
 	Mesh* mesh;
 
@@ -47,7 +48,7 @@ protected:
 // ============================================
 class PrimitiveCube : public Primitive
 {
-public:
+public :
 	PrimitiveCube();
 	PrimitiveCube(vec3 _size, vec3 pos);
 	void InnerMesh();

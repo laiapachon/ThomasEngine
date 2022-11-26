@@ -12,7 +12,7 @@
 
 #define INVALID_OGL_VALUE 0xffffffff
 #define ASSIMP_LOAD_FLAGS (aiProcess_Triangulate | aiProcess_GenSmoothNormals |  aiProcess_JoinIdenticalVertices )
-
+#define NAME_ENGINE "Thomas Engine"
 enum class LogType
 {
 	L_NORMAL,
@@ -41,6 +41,26 @@ void log(const char file[], int line, LogType _type, const char* format, ...);
        }\
     }
 
+// Deletes an array of buffers
+#define RELEASE_ARRAY( x )\
+	{\
+       if( x != nullptr )\
+       {\
+           delete[] x;\
+	       x = nullptr;\
+	   }\
+	}
+
+// Deletes an std::vector
+#define RELEASE_VECTOR( x, s )\
+	{\
+		for (size_t i = 0; i < s; i++)\
+		{\
+			delete x[i];\
+			x[i] = nullptr;\
+		}\
+	}
+
 // Folders defines
 #define ASSETS_FOLDER "Assets/"
 #define SETTINGS_FOLDER "Settings/"
@@ -49,16 +69,6 @@ void log(const char file[], int line, LogType _type, const char* format, ...);
 #define MESHES_FOLDER "Library/Meshes/"
 #define TEXTURES_FOLDER "Library/Textures/"
 #define MATERIALS_FOLDER "Library/Materials/"
-
-// Deletes an array of buffers
-#define RELEASE_ARRAY( x )\
-	{\
-       if( x != nullptr )\
-       {\
-           delete[] x;\
-	       x = nullptr;\
-		 }\
-	 }
 
 typedef unsigned int uint;
 

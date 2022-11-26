@@ -6,7 +6,8 @@ class JsonParser
 {
 public:
 	JsonParser();
-	~JsonParser();
+	~JsonParser() {};
+
 	JSON_Value* InitJsonObject();
 
 	JSON_Value* FileToValue(const char* fileName);
@@ -21,17 +22,17 @@ public:
 
 	JsonParser GetChild(JSON_Value* parent, const char* name);
 
-	JSON_Status SerializeFile(JSON_Value* value, const char* fileName) const;
+	JSON_Status FileSerialization(JSON_Value* value, const char* fileName) const;
 
 	JSON_Value* GetRootValue() const;
 
-	JSON_Object* SetNewJsonNode(JSON_Object* parent, const char* nodeName) const;
+	JSON_Object* SetJNode(JSON_Object* parent, const char* nodeName) const;
 
-	JSON_Status SetNewJsonString(JSON_Object* node, const char* name, const char* string) const;
+	JSON_Status SetJString(JSON_Object* node, const char* name, const char* string) const;
 
-	JSON_Status SetNewJsonNumber(JSON_Object* node, const char* name, double number) const;
+	JSON_Status SetJNumber(JSON_Object* node, const char* name, double number) const;
 
-	JSON_Status SetNewJsonBool(JSON_Object* node, const char* name, bool boolean) const;
+	JSON_Status SetJBool(JSON_Object* node, const char* name, bool boolean) const;
 
 	JsonParser SetChild(JSON_Value* parent, const char* name);
 

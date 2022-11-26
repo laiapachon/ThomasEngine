@@ -1,5 +1,6 @@
 #pragma once
 #include "JsonParser.h"
+#include "Globals.h"
 
 class Application;
 

@@ -91,6 +91,7 @@
     <ClInclude Include="Source\Application.h" />
     <ClInclude Include="Source\Color.h" />
     <ClInclude Include="Source\Component.h" />
+    <ClInclude Include="Source\ComponentCamera.h" />
     <ClInclude Include="Source\Configuration.h" />
     <ClInclude Include="Source\ConsoleTab.h" />
     <ClInclude Include="Source\External\Assimp\include\aabb.h" />
@@ -170,8 +171,15 @@
     <ClInclude Include="Source\External\Assimp\include\Vertex.h" />
     <ClInclude Include="Source\External\Assimp\include\XMLTools.h" />
     <ClInclude Include="Source\External\Assimp\include\ZipArchiveIOSystem.h" />
+    <ClInclude Include="Source\External\DevIL\include\ilut.h" />
     <ClInclude Include="Source\External\GPUDetected\DeviceId.h" />
     <ClInclude Include="Source\External\GPUDetected\dxgi1_4.h" />
+    <ClInclude Include="Source\External\Guizmo\GraphEditor.h" />
+    <ClInclude Include="Source\External\Guizmo\ImCurveEdit.h" />
+    <ClInclude Include="Source\External\Guizmo\ImGradient.h" />
+    <ClInclude Include="Source\External\Guizmo\ImGuizmo.h" />
+    <ClInclude Include="Source\External\Guizmo\ImSequencer.h" />
+    <ClInclude Include="Source\External\Guizmo\ImZoomSlider.h" />
     <ClInclude Include="Source\External\imgui\imconfig.h" />
     <ClInclude Include="Source\External\imgui\imgui.h" />
     <ClInclude Include="Source\External\imgui\imgui_impl_opengl3.h" />
@@ -279,9 +287,15 @@
     <ClCompile Include="Source\AboutTab.cpp" />
     <ClCompile Include="Source\Application.cpp" />
     <ClCompile Include="Source\Color.cpp" />
+    <ClCompile Include="Source\ComponentCamera.cpp" />
     <ClCompile Include="Source\Configuration.cpp" />
     <ClCompile Include="Source\ConsoleTab.cpp" />
     <ClCompile Include="Source\External\GPUDetected\DeviceId.cpp" />
+    <ClCompile Include="Source\External\Guizmo\GraphEditor.cpp" />
+    <ClCompile Include="Source\External\Guizmo\ImCurveEdit.cpp" />
+    <ClCompile Include="Source\External\Guizmo\ImGradient.cpp" />
+    <ClCompile Include="Source\External\Guizmo\ImGuizmo.cpp" />
+    <ClCompile Include="Source\External\Guizmo\ImSequencer.cpp" />
     <ClCompile Include="Source\External\imgui\imgui.cpp" />
     <ClCompile Include="Source\External\imgui\imgui_demo.cpp" />
     <ClCompile Include="Source\External\imgui\imgui_draw.cpp" />
@@ -347,12 +361,14 @@
     <ClCompile Include="Source\ResourceMesh.cpp" />
     <ClCompile Include="Source\Renderer3D.cpp" />
     <ClCompile Include="Source\Resource.cpp" />
-    <ClCompile Include="Source\Tab.cpp" />
     <ClCompile Include="Source\ResourceTexture.cpp" />
     <ClCompile Include="Source\Transform.cpp" />
     <ClCompile Include="Source\Window.cpp" />
     <ClCompile Include="Source\Primitive.cpp" />
     <ClCompile Include="Source\Timer.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="ThomasEngine.rc" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Source\External\Assimp\include\color4.inl" />
@@ -363,9 +379,6 @@
     <None Include="Source\External\Assimp\include\SmoothingGroups.inl" />
     <None Include="Source\External\Assimp\include\vector2.inl" />
     <None Include="Source\External\Assimp\include\vector3.inl" />
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="ThomasEngine.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

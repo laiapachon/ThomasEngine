@@ -1,33 +1,34 @@
-#include "GameObject.h"
+// Not necesarry because #include "Component.h" already includes #include "GameObject.h"
+//#include "GameObject.h" 
 #include "Component.h"
+#include "Globals.h"
 
+// Components
 #include "Transform.h"
 #include "MeshRenderer.h"
 #include "Material.h"
+#include "ComponentCamera.h"
 
-GameObject::GameObject(const char* name) : parent(nullptr), name(name)
+GameObject::GameObject(const char* name) : name(name), tag("Untagged"), layer("0: Default")
 {
 	// Each GameObject must have a transform component, that's why we add it when creating it
-	transform = dynamic_cast<Transform*>(AddComponent(ComponentType::TRANSFORM));
+	transform = static_cast<Transform*>(AddComponent(ComponentType::TRANSFORM));
 }
 
 GameObject::~GameObject()
 {
+	// Delete all childrens
+	RELEASE_VECTOR(childrens, childrens.size());
+	childrens.clear();
+
 	// Delete all components
-	for (size_t i = 0; i < components.size(); i++)
-	{
-		delete components[i];
-		components[i] = nullptr;
-	}
+	RELEASE_VECTOR(components, components.size());
 	components.clear();
 
-	// Delete all childrens
-	for (size_t i = 0; i < childrens.size(); i++)
-	{
-		delete childrens[i];
-		childrens[i] = nullptr;
-	}
-	childrens.clear();
+	if (pendingToDelete) this->GetParent()->EraseChildren(indexList);
+
+	transform = nullptr;
+	parent = nullptr;
 }
 
 void GameObject::Enable()
@@ -38,6 +39,15 @@ void GameObject::Enable()
 	// Because for the children to be active the father must also be 
 	if (parent != nullptr)
 		parent->Enable();
+}
+
+void GameObject::AttachChild(GameObject* child)
+{
+
+	child->parent = this;
+	childrens.push_back(child);
+	child->transform->NewAttachment();
+	child->transform->UpdateTransform();
 }
 
 void GameObject::Update()
@@ -51,8 +61,6 @@ void GameObject::Update()
 // Add component by Type
 Component* GameObject::AddComponent(ComponentType type)
 {
-	// Can't add a component without type
-	assert(type != ComponentType::UNKNOWN, "Can't create a UNKNOW component");
 	Component* newComponent = nullptr;
 
 	switch (type)
@@ -66,13 +74,13 @@ Component* GameObject::AddComponent(ComponentType type)
 	case ComponentType::MATERIAL:
 		newComponent = new Material(this);
 		break;
+	case ComponentType::CAMERA:
+		newComponent = new ComponentCamera(this);
+		break;
 	}
 
-	if (newComponent != nullptr)
-	{
-		newComponent->SetType(type);
-		components.push_back(newComponent);
-	}
+	newComponent->SetType(type);
+	components.push_back(newComponent);
 
 	return newComponent;
 }
