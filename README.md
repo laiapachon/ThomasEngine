@@ -61,3 +61,16 @@ CONTROLS:
 	- D: Moving camera Right
 	- MOUSE WHEEL: Zoom In and Out
 	- Alt+Left click: orbit around the camera position
+
+
+Important issues found:
+
+Constant memory leak found still unsolved
+
+In case that on release mode the scene is in black, press F button, disable the wireframe button and enable the texture button and it will work.
+
+Wireframe also gets activated by default
+
+The default camera position does not point to any gameObject of the scene
+so the user has to select the object from hierarchy and push F with the cursor over the scene tab
+in order to make the camera look at the gameObject. Disabling wireframe will show the object's textures.

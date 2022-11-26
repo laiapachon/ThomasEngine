@@ -254,6 +254,7 @@
     <ClInclude Include="Source\External\Mmgr\nommgr.h" />
     <ClInclude Include="Source\External\Parson\parson.h" />
     <ClInclude Include="Source\GameObject.h" />
+    <ClInclude Include="Source\GameTab.h" />
     <ClInclude Include="Source\Hierarchy.h" />
     <ClInclude Include="Source\Inspector.h" />
     <ClInclude Include="Source\Material.h" />
@@ -339,6 +340,7 @@
     <ClCompile Include="Source\External\Mmgr\mmgr.cpp" />
     <ClCompile Include="Source\External\Parson\parson.c" />
     <ClCompile Include="Source\GameObject.cpp" />
+    <ClCompile Include="Source\GameTab.cpp" />
     <ClCompile Include="Source\Hierarchy.cpp" />
     <ClCompile Include="Source\Inspector.cpp" />
     <ClCompile Include="Source\Material.cpp" />

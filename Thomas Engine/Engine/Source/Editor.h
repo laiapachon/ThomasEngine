@@ -16,8 +16,9 @@ enum class TabType
 	CONSOLE,
 	CONFIGURATION,
 	INSPECTOR,
-	SCENE,
 	HIERARCHY,
+	SCENE,
+	//GAME,
 
 	MAX
 };

@@ -15,6 +15,7 @@ class Window;
 class Renderer3D;
 class ResourceManager;
 class Scene;
+class Game;
 class Module;
 class Input;
 class Camera3D;
@@ -29,6 +30,7 @@ public:
 	Input* input;
 	Renderer3D* renderer3D;
 	Scene* scene;
+	Game* game;
 	Editor* editor;
 
 	std::vector<Module*> listModules;

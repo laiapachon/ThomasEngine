@@ -16,6 +16,7 @@
 #include "Inspector.h"
 #include "SceneTab.h"
 #include "Hierarchy.h"
+#include "GameTab.h"
 
 #include "Primitive.h"
 
@@ -32,8 +33,9 @@ Editor::Editor(Application* app, bool start_enabled): Module(app, start_enabled)
 	tabs[static_cast<unsigned int>(TabType::CONSOLE)] = new ConsoleTab();
 	tabs[static_cast<unsigned int>(TabType::CONFIGURATION)] = new Configuration();
 	tabs[static_cast<unsigned int>(TabType::INSPECTOR)] = new Inspector();
-	tabs[static_cast<unsigned int>(TabType::SCENE)] = new SceneTab();
 	tabs[static_cast<unsigned int>(TabType::HIERARCHY)] = new Hierarchy(app->scene);
+	tabs[static_cast<unsigned int>(TabType::SCENE)] = new SceneTab();
+	//tabs[static_cast<unsigned int>(TabType::GAME)] = new GameTab();
 
 	// Assign a shortcut to each tab
 	for (int i = 0; i < tabs.size(); i++)

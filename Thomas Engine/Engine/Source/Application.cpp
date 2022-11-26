@@ -8,6 +8,7 @@
 #include "Input.h"
 #include "Camera3D.h"
 #include "Editor.h"
+#include "GameTab.h"
 
 
 using namespace std;
@@ -23,6 +24,7 @@ Application::Application() : maxFPS(60)
 	camera = new Camera3D(this);
 	scene = new Scene(this);
 	editor = new Editor(this);
+	//game = new Game();
 
 	// The order of calls is very important!
 	// Modules will Init() Start() and Update in this order
@@ -34,6 +36,7 @@ Application::Application() : maxFPS(60)
 	AddModule(camera);
 	AddModule(input);	
 	AddModule(scene);	
+	//AddModule(game);
 	
 	// Renderer last!
 	AddModule(editor);
