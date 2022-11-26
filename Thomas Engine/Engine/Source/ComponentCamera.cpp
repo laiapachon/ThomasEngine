@@ -3,7 +3,7 @@
 #include "Transform.h"
 #include "Globals.h"
 #include "Scene.h"
-
+#include"Camera3D.h"
 #include "ImGui/imgui.h"
 
 ComponentCamera::ComponentCamera(GameObject* obj) : Component(obj)
@@ -15,7 +15,7 @@ ComponentCamera::ComponentCamera(GameObject* obj) : Component(obj)
 	frustrum.up = obj->transform->GetUp();
 
 	frustrum.verticalFov = 60.0f * DEGTORAD;
-	frustrum.horizontalFov = 2.0f * atanf(tanf(frustrum.verticalFov / 2.0f) * 1.3f);
+	frustrum.horizontalFov = 2.0f * atanf(tanf(frustrum.verticalFov / 2.0f) * (16.f / 9.f));
 
 	frustrum.pos = obj->transform->GetPosition();
 }
@@ -24,9 +24,7 @@ void ComponentCamera::Update()
 {
 	if (updateCamera)
 	{
-		frustrum.pos = GetOwner()->transform->GetPosition();
-		frustrum.front = GetOwner()->transform->GetForward();
-		frustrum.up = GetOwner()->transform->GetUp();
+		CalculateViewMatrix();
 	}	
 
 	if (showFrustrum == true) {
@@ -72,7 +70,7 @@ void ComponentCamera::OnEditor()
 
 void ComponentCamera::CalculateViewMatrix()
 {
-	/*if (projectionIsDirty)
+	if (projectionIsDirty)
 		RecalculateProjection();
 
 	frustrum.pos = GetOwner()->transform->GetPosition();
@@ -80,7 +78,7 @@ void ComponentCamera::CalculateViewMatrix()
 	frustrum.up = frustrum.up.Normalized();
 	float3::Orthonormalize(frustrum.front, frustrum.up);
 
-	viewMatrix = cameraFrustum.ViewMatrix();*/
+	viewMatrix = frustrum.ViewMatrix();
 }
 
 void ComponentCamera::RecalculateProjection()
