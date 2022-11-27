@@ -3,12 +3,8 @@
 
 // Module 
 #include "Renderer3D.h"
-//#include "Editor.h"
 #include "Window.h"
 #include "Camera3D.h"
-
-
-//#include "OpenGL.h"
 
 SceneTab::SceneTab() : Tab()
 {
@@ -45,7 +41,7 @@ void SceneTab::Draw()
 		ImVec2 uv1 = ImVec2(endPoint.x / texOriginalSize.x, endPoint.y / texOriginalSize.y);
 
 		// Display the 100x200 section starting at (10,10)
-		ImGui::Image((ImTextureID)app->renderer3D->texColorBuffer, viewportSize, uv0, uv1);
+		ImGui::Image((ImTextureID)app->camera->cameraScene.texColorBuffer, viewportSize, uv0, uv1);
 	}
 	ImGui::End();
 }

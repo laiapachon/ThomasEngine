@@ -1,5 +1,4 @@
 #include"Application.h"
-#include"Globals.h"
 #include "GameTab.h"
 
 // Module 
@@ -7,46 +6,42 @@
 #include "Window.h"
 #include "Camera3D.h"
 
-Game::Game() : Tab()
+GameTab::GameTab() : Tab()
 {
 	name = "Game";
 }
 
-void Game::Draw() {
-
-	if (ImGui::Begin(name.c_str(), &active, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse)) {
-
-		//checking if any button is pressed while window is hovered
-		if (ImGui::IsWindowHovered()) {
-			
+void GameTab::Draw()
+{
+	if (ImGui::Begin(name.c_str(), &active, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse))
+	{
+		// Check if some key/mouseButton are pressed
+		if (ImGui::IsWindowHovered())
+		{
 			app->camera->CheckInputs();
-
 		}
 
-		//create window
-		ImVec2 OriginalSize = ImVec2(app->window->GetWindowWidth(), app->window->GetWindowHeight());
-		ImVec2 ViewtSize = ImGui::GetWindowSize();
+		// Calculate size of tab scene, get window width and hight and transform the viewport to image and render it 
+		ImVec2 texOriginalSize = ImVec2(app->window->GetWindowWidth(), app->window->GetWindowHeight());
+		ImVec2 viewportSize = ImGui::GetWindowSize();
 
-		//recalculate camera projection
-		if (ViewtSize.x != lastViewportSize.x || ViewtSize.y != lastViewportSize.y)
+		if (viewportSize.x != lastViewportSize.x || viewportSize.y != lastViewportSize.y)
 		{
-			app->camera->aspectRatio = ViewtSize.x / ViewtSize.y;
+			app->camera->aspectRatio = viewportSize.x / viewportSize.y;
 			app->camera->RecalculateProjection();
 		}
-		lastViewportSize = ViewtSize;
+		lastViewportSize = viewportSize;
 
-		//checking if the rendering size is the same
-		ImVec2 startPoint = ImVec2((OriginalSize.x / 2) - (ViewtSize.x / 2), (OriginalSize.y / 2) + (ViewtSize.y / 2));
-		ImVec2 endPoint = ImVec2((OriginalSize.x / 2) + (ViewtSize.x / 2), (OriginalSize.y / 2) - (ViewtSize.y / 2));
+		ImVec2 startPoint = ImVec2((texOriginalSize.x / 2) - (viewportSize.x / 2), (texOriginalSize.y / 2) + (viewportSize.y / 2));
+		ImVec2 endPoint = ImVec2((texOriginalSize.x / 2) + (viewportSize.x / 2), (texOriginalSize.y / 2) - (viewportSize.y / 2));
 
+		// Normalized coordinates of pixel (10,10) in a 256x256 texture.
+		ImVec2 uv0 = ImVec2(startPoint.x / texOriginalSize.x, startPoint.y / texOriginalSize.y);
+		// Normalized coordinates of pixel (110,210) in a 256x256 texture.
+		ImVec2 uv1 = ImVec2(endPoint.x / texOriginalSize.x, endPoint.y / texOriginalSize.y);
 
-		ImVec2 uv0 = ImVec2(startPoint.x / OriginalSize.x, startPoint.y / OriginalSize.y);
-		ImVec2 uv1 = ImVec2(endPoint.x / OriginalSize.x, endPoint.y / OriginalSize.y);
-
-
-
-		ImGui::Image((ImTextureID)app->renderer3D->texColorBuffer, ViewtSize, uv0, uv1);
+		// Display the 100x200 section starting at (10,10)
+		ImGui::Image((ImTextureID)app->camera->cameraScene.texColorBuffer, viewportSize, uv0, uv1);
 	}
 	ImGui::End();
-
 }

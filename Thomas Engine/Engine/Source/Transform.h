@@ -1,9 +1,9 @@
 #pragma once
 #include "Component.h"
 
-#include"MathGeoLib/include/Math/float4x4.h"
-#include"MathGeoLib/include/Math/float3.h"
-#include"MathGeoLib/include/Math/Quat.h"
+#include"Math/float4x4.h"
+#include"Math/float3.h"
+#include"Math/Quat.h"
 
 class Transform : public Component
 {
@@ -17,8 +17,8 @@ public:
 	float3 GetPosition() { return position; };
 
 	void SetTransformMatrix(float3 position, Quat rotation, float3 localScale, Transform* parent);
-	float4x4 GetGlobalTransform() {return globalTransform;};
-	float* GetGlobalTransformT() {return globalTransformTransposed.ptr();};
+	float4x4 GetGlobalTransform() { return globalTransform; };
+	float* GetGlobalTransformT() { return globalTransformTransposed.ptr(); };
 
 	void UpdateTransform();
 	void NewAttachment();

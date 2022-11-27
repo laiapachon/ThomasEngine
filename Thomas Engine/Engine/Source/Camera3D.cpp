@@ -1,11 +1,10 @@
 #include "Application.h"
+#include "Globals.h" 
 
 // Module 
 #include "Camera3D.h"
 #include "Editor.h"
 #include "Input.h"
-
-#include "Globals.h" 
 
 #include "GameObject.h"
 #include "Inspector.h"
@@ -24,7 +23,7 @@ Camera3D::Camera3D(Application* app, bool start_enabled) : Module(app, start_ena
 void Camera3D::ReStartCamera()
 {
 	right = float3(1.0f, 0.0f, 0.0f);
-	up    =	float3(0.0f, 1.0f, 0.0f);
+	up = float3(0.0f, 1.0f, 0.0f);
 	front = float3(0.0f, 0.0f, 1.0f);
 
 	position = float3(5.0f, 4.0f, 5.0f);
@@ -60,12 +59,12 @@ void Camera3D::OnGUI()
 	if (ImGui::CollapsingHeader("Camera"))
 	{
 		ImGui::Text("Camera Position:");
-		if (ImGui::DragFloat3("##Position", &position[0], 0.1f, true)){}
+		if (ImGui::DragFloat3("##Position", &position[0], 0.1f, true)) {}
 
 		ImGui::NewLine();
 		ImGui::PushItemWidth(150);
 
-		if (ImGui::SliderFloat("Vert FOV", &verticalFOV, 10,270))
+		if (ImGui::SliderFloat("Vert FOV", &verticalFOV, 10, 270))
 		{
 			projectionIsDirty = true;
 		}
@@ -73,12 +72,12 @@ void Camera3D::OnGUI()
 		{
 			projectionIsDirty = true;
 		}
-		if (ImGui::SliderFloat("Far plane", &farPlaneDistance, 11,5000))
+		if (ImGui::SliderFloat("Far plane", &farPlaneDistance, 11, 5000))
 		{
 			projectionIsDirty = true;
 		}
-		if (ImGui::SliderFloat("Speed mov", &cameraSpeed, 1, 100))	{}
-		if (ImGui::SliderFloat("Sensitivity", &cameraSensitivity, 0.01f, 0.5)){}
+		if (ImGui::SliderFloat("Speed mov", &cameraSpeed, 1, 100)) {}
+		if (ImGui::SliderFloat("Sensitivity", &cameraSensitivity, 0.01f, 0.5)) {}
 
 		ImGui::PopItemWidth();
 		ImGui::NewLine();
@@ -87,7 +86,7 @@ void Camera3D::OnGUI()
 
 void Camera3D::CheckInputs()
 {
-	float3 newPos(0, 0, 0);
+	float3 newPos = float3::zero;
 	float speed = cameraSpeed * app->GetDt();
 	if (App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT)
 		speed *= 2;
@@ -111,10 +110,13 @@ void Camera3D::CheckInputs()
 
 	// Mouse motion ----------------
 	if (App->input->GetMouseButton(SDL_BUTTON_RIGHT) == KEY_REPEAT) OrbitRotation();
+
+	// Recalculate matrix -------------
+	if (!newPos.Equals(float3::zero)) CalculateViewMatrix();
 }
 
 void Camera3D::OrbitRotation()
-{	
+{
 	if (App->input->GetMouseButton(SDL_BUTTON_RIGHT) == KEY_REPEAT)
 	{
 		GameObject* gameObject = App->editor->GetGameObjectSelected();
@@ -162,7 +164,7 @@ void Camera3D::OrbitRotation()
 				front = rotateX * front;
 				CalculateViewMatrix();
 			}
-		}		
+		}
 	}
 }
 
@@ -179,7 +181,7 @@ void Camera3D::Focus()
 			LookAt(meshCenter);
 			const float meshRadius = mesh->GetSphereRadius();
 			const float currentDistance = meshCenter.Distance(position);
-			position = meshCenter + ((position - meshCenter).Normalized() * meshRadius *2);
+			position = meshCenter + ((position - meshCenter).Normalized() * meshRadius * 2);
 		}
 		else
 		{
@@ -209,7 +211,7 @@ void Camera3D::FrontView()
 }
 
 // -----------------------------------------------------------------
-void Camera3D::LookAt( const float3&Spot)
+void Camera3D::LookAt(const float3& Spot)
 {
 	reference = Spot;
 
@@ -221,7 +223,7 @@ void Camera3D::LookAt( const float3&Spot)
 }
 
 // -----------------------------------------------------------------
-void Camera3D::Move(const float3&Movement)
+void Camera3D::Move(const float3& Movement)
 {
 	position += Movement;
 	reference += Movement;
@@ -235,23 +237,22 @@ void Camera3D::CalculateViewMatrix()
 	if (projectionIsDirty)
 		RecalculateProjection();
 
-	cameraFrustum.pos = position;
-	cameraFrustum.front = front.Normalized();
-	cameraFrustum.up = up.Normalized();
-	float3::Orthonormalize(cameraFrustum.front, cameraFrustum.up);
+	cameraScene.frustrum.pos = position;
+	cameraScene.frustrum.front = front.Normalized();
+	cameraScene.frustrum.up = up.Normalized();
 	right = up.Cross(front);
 
-	viewMatrix = cameraFrustum.ViewMatrix();
+	cameraScene.viewMatrix = cameraScene.frustrum.ViewMatrix();
 }
 
 void Camera3D::RecalculateProjection()
 {
-	cameraFrustum.type = FrustumType::PerspectiveFrustum;
+	cameraScene.frustrum.type = FrustumType::PerspectiveFrustum;
 
-	cameraFrustum.nearPlaneDistance = nearPlaneDistance;
-	cameraFrustum.farPlaneDistance = farPlaneDistance;
-	cameraFrustum.verticalFov = (verticalFOV * PI / 2) / 180.f;
-	cameraFrustum.horizontalFov = 2.f * atanf(tanf(cameraFrustum.verticalFov * 0.5f) * aspectRatio);
+	cameraScene.frustrum.nearPlaneDistance = nearPlaneDistance;
+	cameraScene.frustrum.farPlaneDistance = farPlaneDistance;
+	cameraScene.frustrum.verticalFov = (verticalFOV * PI / 2) / 180.f;
+	cameraScene.frustrum.horizontalFov = 2.f * atanf(tanf(cameraScene.frustrum.verticalFov * 0.5f) * aspectRatio);
 }
 
 bool Camera3D::SaveConfig(JsonParser& node) const
@@ -286,15 +287,15 @@ bool Camera3D::LoadConfig(JsonParser& node)
 	right.x = (float)node.JsonValToNumber("X.x");
 	right.y = (float)node.JsonValToNumber("X.y");
 	right.z = (float)node.JsonValToNumber("X.z");
-	
+
 	up.x = (float)node.JsonValToNumber("Y.x");
 	up.y = (float)node.JsonValToNumber("Y.y");
 	up.z = (float)node.JsonValToNumber("Y.z");
-	
+
 	front.x = (float)node.JsonValToNumber("Z.x");
 	front.y = (float)node.JsonValToNumber("Z.y");
 	front.z = (float)node.JsonValToNumber("Z.z");
-	
+
 	position.x = (float)node.JsonValToNumber("Position.x");
 	position.y = (float)node.JsonValToNumber("Position.y");
 	position.z = (float)node.JsonValToNumber("Position.z");

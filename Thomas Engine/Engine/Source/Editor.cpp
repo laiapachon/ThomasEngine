@@ -27,8 +27,7 @@ Editor::Editor(Application* app, bool start_enabled): Module(app, start_enabled)
 	// Define size of the vector
 	tabs = std::vector<Tab*>(static_cast<unsigned int>(TabType::MAX), nullptr);
 
-	// Fill the array with the types of tabs 
-	// The first must be AboutTab
+	
 	tabs[static_cast<unsigned int>(TabType::ABOUT)] = new AboutTab();
 	tabs[static_cast<unsigned int>(TabType::CONSOLE)] = new ConsoleTab();
 	tabs[static_cast<unsigned int>(TabType::CONFIGURATION)] = new Configuration();
@@ -48,7 +47,7 @@ bool Editor::Init()
 {
 	LOG(LogType::L_NORMAL, "Init editor gui with imgui lib version %s", ImGui::GetVersion());
 
-	// Setup Dear ImGui context
+	
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 
@@ -67,11 +66,11 @@ bool Editor::Init()
 	ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;       // Enable Multi-Viewport / Platform Windows
 
 	
-	// Setup Dear ImGui style
+	
 	/*ImGui::StyleColorsDark();*/
 	ImGui::StyleColorsClassic();
 
-	// When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular ones.
+	
 	ImGuiStyle& style = ImGui::GetStyle();
 	if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
 	{

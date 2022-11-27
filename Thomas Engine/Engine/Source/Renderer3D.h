@@ -48,8 +48,6 @@ public:
 	void OnResize(int width, int height);
 	void OnGUI() override;
 
-	void ReGenerateFrameBuffer(int w, int h);
-
 	bool SaveConfig(JsonParser& node) const override;
 
 	bool LoadConfig(JsonParser& node)override;
@@ -60,8 +58,7 @@ public:
 
 	Light lights[MAX_LIGHTS];
 	SDL_GLContext context;
-	mat3x3 NormalMatrix;
-	mat4x4 ModelMatrix, ViewMatrix, ProjectionMatrix;
+
 	bool vsync;
 	bool wireframe = false;
 
@@ -71,12 +68,6 @@ public:
 
 	std::vector<MeshRenderer*> renderQueue;
 
-	// FrameBuffer
-	unsigned int framebuffer = 0;
-	unsigned int texColorBuffer = 0;
-	unsigned int rbo = 0;
-
-	PrimitiveCube cube;
 private:
 	Hardware hardware;
 	bool depthTest = true;
@@ -92,9 +83,4 @@ private:
 	float fogStart = 10.0f;
 	float fogEnd = 40.0f;
 	float fogDensity = 1.0f;
-
-
-	PrimitiveSphere sphere;
-	PrimitiveCylinder cylinder;
-	PrimitivePyramid pyramid;	
 };

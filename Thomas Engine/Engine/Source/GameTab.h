@@ -1,11 +1,11 @@
 #pragma once
 #include "Tab.h"
 
-class Game : public Tab
+class GameTab : public Tab
 {
 public:
-	Game();
-	virtual ~Game() {};
+	GameTab();
+	virtual ~GameTab() {};
 
 	void Draw() override;
 	ImVec2 lastViewportSize;
