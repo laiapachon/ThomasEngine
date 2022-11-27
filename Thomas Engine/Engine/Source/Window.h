@@ -62,7 +62,6 @@ private:
 	SDL_DisplayMode current;
 
 	int width;
-	int tmpW=SCREEN_WIDTH;
 	int height;
 	float brightness = 1;
 

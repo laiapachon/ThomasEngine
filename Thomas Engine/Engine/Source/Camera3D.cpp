@@ -59,29 +59,27 @@ void Camera3D::OnGUI()
 	if (ImGui::CollapsingHeader("Camera"))
 	{
 		ImGui::Text("Camera Position:");
-		if (ImGui::DragFloat3("##Position", &position[0], 0.1f, true)) {}
+		if (ImGui::DragFloat3("##Position", &position[0], 0.1f, true))
+			CalculateViewMatrix();
 
 		ImGui::NewLine();
 		ImGui::PushItemWidth(150);
 
-		if (ImGui::SliderFloat("Vert FOV", &verticalFOV, 10, 270))
-		{
+		if (ImGui::SliderFloat("FOV", &cameraScene.FOV, 10, 270))
 			projectionIsDirty = true;
-		}
-		if (ImGui::SliderFloat("Near plane", &nearPlaneDistance, 0.1f, 10))
-		{
-			projectionIsDirty = true;
-		}
-		if (ImGui::SliderFloat("Far plane", &farPlaneDistance, 11, 5000))
-		{
-			projectionIsDirty = true;
-		}
-		if (ImGui::SliderFloat("Speed mov", &cameraSpeed, 1, 100)) {}
-		if (ImGui::SliderFloat("Sensitivity", &cameraSensitivity, 0.01f, 0.5)) {}
+
+		ImGui::SliderFloat("Near plane", &cameraScene.frustrum.nearPlaneDistance, 0.1f, 10);
+		ImGui::SliderFloat("Far plane", &cameraScene.frustrum.farPlaneDistance, 11, 500);
+
+		ImGui::SliderFloat("Speed mov", &cameraSpeed, 1, 100);
+		ImGui::SliderFloat("Speed zoom", &zoomSpeed, 1, 50);
+		ImGui::SliderFloat("Sensitivity", &cameraSensitivity, 0.01f, 0.5);
 
 		ImGui::PopItemWidth();
 		ImGui::NewLine();
 	}
+
+	if (projectionIsDirty) CalculateViewMatrix();
 }
 
 void Camera3D::CheckInputs()
@@ -103,7 +101,7 @@ void Camera3D::CheckInputs()
 	if (App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT) newPos += right * speed;
 	if (App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) newPos -= right * speed;
 
-	newPos += front * App->input->GetWheel();
+	newPos += zoomSpeed * front * app->input->GetWheel();
 
 	position += newPos;
 	reference += newPos;
@@ -136,7 +134,7 @@ void Camera3D::OrbitRotation()
 			reference = posGO;
 			Quat pivot = Quat::RotateY(up.y >= 0.f ? newDeltaX * .1f : -newDeltaX * .1f);
 
-			pivot = pivot * math::Quat::RotateAxisAngle(right, newDeltaY * .1f);
+			pivot = pivot * math::Quat::RotateAxisAngle(right, -newDeltaY * .1f);
 
 			position = pivot * (position - reference) + reference;
 
@@ -164,6 +162,7 @@ void Camera3D::OrbitRotation()
 				front = rotateX * front;
 				CalculateViewMatrix();
 			}
+			reference = position + cameraScene.frustrum.front * 10;
 		}
 	}
 }
@@ -235,7 +234,10 @@ void Camera3D::Move(const float3& Movement)
 void Camera3D::CalculateViewMatrix()
 {
 	if (projectionIsDirty)
-		RecalculateProjection();
+	{
+		cameraScene.RecalculateProjection(cameraScene.aspectRatio);
+		projectionIsDirty = false;
+	}
 
 	cameraScene.frustrum.pos = position;
 	cameraScene.frustrum.front = front.Normalized();
@@ -243,16 +245,6 @@ void Camera3D::CalculateViewMatrix()
 	right = up.Cross(front);
 
 	cameraScene.viewMatrix = cameraScene.frustrum.ViewMatrix();
-}
-
-void Camera3D::RecalculateProjection()
-{
-	cameraScene.frustrum.type = FrustumType::PerspectiveFrustum;
-
-	cameraScene.frustrum.nearPlaneDistance = nearPlaneDistance;
-	cameraScene.frustrum.farPlaneDistance = farPlaneDistance;
-	cameraScene.frustrum.verticalFov = (verticalFOV * PI / 2) / 180.f;
-	cameraScene.frustrum.horizontalFov = 2.f * atanf(tanf(cameraScene.frustrum.verticalFov * 0.5f) * aspectRatio);
 }
 
 bool Camera3D::SaveConfig(JsonParser& node) const
@@ -305,7 +297,7 @@ bool Camera3D::LoadConfig(JsonParser& node)
 	reference.z = (float)node.JsonValToNumber("Reference.z");
 
 	LookAt(reference);
-	RecalculateProjection();
+	cameraScene.RecalculateProjection(cameraScene.aspectRatio);
 
 	return true;
 }

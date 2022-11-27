@@ -8,5 +8,4 @@ public:
 	virtual ~GameTab() {};
 
 	void Draw() override;
-	ImVec2 lastViewportSize;
 };

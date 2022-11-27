@@ -62,6 +62,7 @@ Mesh* MeshLoader::LoadMesh(aiMesh* importedMesh)
 			mesh->texCoords.push_back(importedMesh->mTextureCoords[0][i].x);
 			mesh->texCoords.push_back(importedMesh->mTextureCoords[0][i].y);
 		}
+		else mesh->numTexCoords = 0;
 	}
 
 	importedMesh->HasVertexColors(0);

@@ -78,10 +78,9 @@ void ComponentCamera::OnEditor()
 
 		ImGui::PushItemWidth(150);
 
-		if (ImGui::SliderFloat("Vert FOV", &frustrum.verticalFov, 10, 270))
-		{
-			projectionIsDirty = true;
-		}
+		ImGui::DragFloat("Verti FOV: ", &frustrum.verticalFov, 0.1f, 0.0f, 300.f);
+		ImGui::DragFloat("Horiz FOV: ", &frustrum.horizontalFov, 0.1f, 0.0f, 300.f);
+
 		if (ImGui::DragFloat("Near plane", &frustrum.nearPlaneDistance, 0.1f))
 		{
 			if (frustrum.nearPlaneDistance < 0.1f) frustrum.nearPlaneDistance = 0.1f;
@@ -113,6 +112,8 @@ void ComponentCamera::PreUpdate()
 
 void ComponentCamera::ReGenerateFrameBuffer(int w, int h)
 {
+	RecalculateProjection(w / h);
+
 	if (framebuffer > 0)
 		glDeleteFramebuffers(1, &framebuffer);
 
@@ -133,7 +134,6 @@ void ComponentCamera::ReGenerateFrameBuffer(int w, int h)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glBindTexture(GL_TEXTURE_2D, 0);
 
-	// attach it to currently bound framebuffer object
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texColorBuffer, 0);
 
 	glGenRenderbuffers(1, &rbo);
@@ -151,4 +151,13 @@ void ComponentCamera::ReGenerateFrameBuffer(int w, int h)
 void ComponentCamera::PostUpdate()
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void ComponentCamera::RecalculateProjection(float aspectR)
+{
+	aspectRatio = aspectR;
+	frustrum.type = FrustumType::PerspectiveFrustum;
+
+	frustrum.verticalFov = (FOV * PI / 2) / 180.f;
+	frustrum.horizontalFov = 2.f * atanf(tanf(frustrum.verticalFov * 0.5f) * aspectRatio);
 }

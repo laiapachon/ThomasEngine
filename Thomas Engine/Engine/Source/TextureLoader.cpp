@@ -58,11 +58,11 @@ bool TextureLoader::SaveToDds(char* buffer, int size, const char* name)
 
 	ILuint newSize;
 	ILubyte* data;
-	ilSetInteger(IL_DXTC_FORMAT, IL_DXT5);// To pick a specific DXT compression use
-	newSize = ilSaveL(IL_DDS, nullptr, 0); // Get the size of the data buffer
+	ilSetInteger(IL_DXTC_FORMAT, IL_DXT5);
+	newSize = ilSaveL(IL_DDS, nullptr, 0); 
 	if (newSize > 0) {
-		data = new ILubyte[newSize]; // allocate data buffer
-		if (ilSaveL(IL_DDS, data, newSize) > 0) // Save to buffer with the ilSaveIL function
+		data = new ILubyte[newSize]; 
+		if (ilSaveL(IL_DDS, data, newSize) > 0) 
 			buffer = (char*)data;
 
 		FileSystem::Save(name, buffer, newSize);

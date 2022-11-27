@@ -4,6 +4,7 @@
 #include "Input.h"
 #include "Window.h"
 #include "Editor.h"
+#include "Camera3D.h"
 
 #include "Globals.h"
 
@@ -28,7 +29,7 @@ bool Input::Init()
 	bool ret = true;
 	SDL_Init(0);
 
-	if(SDL_InitSubSystem(SDL_INIT_EVENTS) < 0)
+	if (SDL_InitSubSystem(SDL_INIT_EVENTS) < 0)
 	{
 		LOG(LogType::L_ERROR, "SDL_EVENTS could not initialize! SDL_Error: %s\n", SDL_GetError());
 		ret = false;
@@ -42,16 +43,16 @@ update_status Input::PreUpdate(float dt)
 {
 	SDL_PumpEvents();
 	const Uint8* keys = SDL_GetKeyboardState(NULL);
-	
-	for(int i = 0; i < MAX_KEYS; ++i)
+
+	for (int i = 0; i < MAX_KEYS; ++i)
 	{
-		if(keys[i] == 1)
+		if (keys[i] == 1)
 		{
 			if (keyboard[i] == KEY_IDLE)
 			{
 				keyboard[i] = KEY_DOWN;
 				LogInputEvent(i, KEY_DOWN);
-			}				
+			}
 			else if (keyboard[i] != KEY_REPEAT)
 			{
 				keyboard[i] = KEY_REPEAT;
@@ -76,9 +77,9 @@ update_status Input::PreUpdate(float dt)
 	mouse_y /= SCREEN_SIZE;
 	wheel = 0;
 
-	for(int i = 0; i < MAX_MOUSE_BUTTONS; ++i)
+	for (int i = 0; i < MAX_MOUSE_BUTTONS; ++i)
 	{
-		if(buttons & SDL_BUTTON(i))
+		if (buttons & SDL_BUTTON(i))
 		{
 			if (mouse_buttons[i] == KEY_IDLE)
 			{
@@ -91,8 +92,8 @@ update_status Input::PreUpdate(float dt)
 		}
 		else
 		{
-			(mouse_buttons[i] == KEY_REPEAT || mouse_buttons[i] == KEY_DOWN) ? 
-				mouse_buttons[i] = KEY_UP,LogInputEvent(1000 + i, KEY_UP) : mouse_buttons[i] = KEY_IDLE;
+			(mouse_buttons[i] == KEY_REPEAT || mouse_buttons[i] == KEY_DOWN) ?
+				mouse_buttons[i] = KEY_UP, LogInputEvent(1000 + i, KEY_UP) : mouse_buttons[i] = KEY_IDLE;
 		}
 	}
 
@@ -100,16 +101,16 @@ update_status Input::PreUpdate(float dt)
 
 	update_status ret = UPDATE_CONTINUE;
 	SDL_Event e;
-	while(SDL_PollEvent(&e))
+	while (SDL_PollEvent(&e))
 	{
 		ImGui_ImplSDL2_ProcessEvent(&e);
-		switch(e.type)
+		switch (e.type)
 		{
-			case SDL_MOUSEWHEEL:
+		case SDL_MOUSEWHEEL:
 			wheel = e.wheel.y;
 			break;
 
-			case SDL_MOUSEMOTION:
+		case SDL_MOUSEMOTION:
 			mouse_x = e.motion.x / SCREEN_SIZE;
 			mouse_y = e.motion.y / SCREEN_SIZE;
 
@@ -117,23 +118,23 @@ update_status Input::PreUpdate(float dt)
 			mouse_y_motion = e.motion.yrel / SCREEN_SIZE;
 			break;
 
-			case (SDL_DROPFILE):
+		case (SDL_DROPFILE):
 			app->resourceManager->ImportFile(FileSystem::ExtractLocalDiskForward(e.drop.file).c_str());
-			SDL_free(e.drop.file);  
-			break;
-			
-			case SDL_QUIT:
-				quit = true;
+			SDL_free(e.drop.file);
 			break;
 
-			case SDL_WINDOWEVENT:
-				App->window->ManageEvent(&e);
-				break;
+		case SDL_QUIT:
+			quit = true;
+			break;
+
+		case SDL_WINDOWEVENT:
+			App->window->ManageEvent(&e);
+			break;
 			break;
 		}
 	}
 
-	if(keyboard[SDL_SCANCODE_ESCAPE] == KEY_UP)
+	if (keyboard[SDL_SCANCODE_ESCAPE] == KEY_UP)
 		ret = UPDATE_STOP;
 
 	return ret;
@@ -183,5 +184,5 @@ void Input::LogInputEvent(uint key, uint state)
 		sprintf_s(entry, 512, "Keybr: %02u - %s\n", key, states[state]);
 	else
 		sprintf_s(entry, 512, "Mouse: %02u - %s\n", key - 1000, states[state]);
-	AddInput(entry);	
+	AddInput(entry);
 }

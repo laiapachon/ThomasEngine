@@ -125,7 +125,6 @@ bool Renderer3D::Init()
 			ret = false;
 		}
 
-		// Blend for transparency
 		glEnable(GL_BLEND);
 		glBlendEquation(GL_FUNC_ADD);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -178,10 +177,6 @@ bool Renderer3D::Init()
 	App->camera->Move(float3(1.0f, 1.0f, 0.0f));
 	App->camera->LookAt(float3(0, 0, 0));
 
-	//Generate scene buffers
-	app->camera->cameraScene.ReGenerateFrameBuffer(app->window->GetWindowWidth(), app->window->GetWindowHeight());
-
-	// Projection matrix for
 	OnResize(app->window->GetWindowWidth(), app->window->GetWindowHeight());
 
 	return ret;
@@ -207,7 +202,6 @@ update_status Renderer3D::PostUpdate(float dt)
 	update_status ret = UPDATE_CONTINUE;
 	//glClearColor(0.f, 0.f, 0.f, 1.f);
 	//glClear(GL_COLOR_BUFFER_BIT);
-	// Axis and grid
 
 	PrimitivePlane p(0, 1, 0, 0);
 	p.axis = true;
@@ -279,16 +273,6 @@ void Renderer3D::GetCaps(std::string& caps)
 void Renderer3D::OnResize(int width, int height)
 {
 	glViewport(0, 0, width, height);
-
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	glLoadMatrixf(App->camera->cameraScene.frustrum.ProjectionMatrix().Transposed().ptr());
-
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-
-
-	App->window->SetSize(width, height);
 	app->camera->cameraScene.ReGenerateFrameBuffer(width, height);
 }
 
@@ -304,8 +288,6 @@ void Renderer3D::OnGUI()
 		IMGUI_PRINT("GLSL: ", "%s", glGetString(GL_SHADING_LANGUAGE_VERSION));
 		IMGUI_PRINT("Vendor: ", "%s", glGetString(GL_VENDOR));
 		IMGUI_PRINT("Renderer: ", "%s", glGetString(GL_RENDERER));
-
-		//ImGui::TextWrapped("All external library versions can be found in the 'About' window with links to their pages.");
 
 		ImGui::Separator();
 		IMGUI_PRINT("CPUs: ", "%d (Cache: %dkb)", hardware.CPUCount, hardware.CPUCache);
@@ -364,10 +346,10 @@ void Renderer3D::OnGUI()
 			if (fog)
 			{
 				glEnable(GL_FOG);
-				glFogfv(GL_FOG_COLOR, fogColor); // Set the fog color
+				glFogfv(GL_FOG_COLOR, fogColor); 
 				if (fogLinear)
 				{
-					glFogi(GL_FOG_MODE, GL_LINEAR); // GL_LINEAR constant is an integer.
+					glFogi(GL_FOG_MODE, GL_LINEAR); 
 					glFogf(GL_FOG_START, fogStart);
 					glFogf(GL_FOG_END, fogEnd);
 				}
@@ -427,11 +409,8 @@ void Renderer3D::OnGUI()
 				glFogf(GL_FOG_END, fogEnd);
 			}
 
-			else
-			{
-				if (ImGui::SliderFloat("Density", &fogDensity, 0.0f, 1.0f));
-				glFogf(GL_FOG_DENSITY, fogDensity);
-			}
+			else if (ImGui::SliderFloat("Density", &fogDensity, 0.0f, 1.0f));
+			glFogf(GL_FOG_DENSITY, fogDensity);
 		}
 	}
 }
