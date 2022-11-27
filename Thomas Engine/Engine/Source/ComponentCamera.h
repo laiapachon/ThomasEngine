@@ -17,7 +17,7 @@ public:
 	bool GetIsMainCamera() { return isMainCamera; };
 	void SetIsMainCamera(bool ret) { isMainCamera = ret; };
 
-	bool updateCamera = false;
+	bool updateCamera = true;
 
 private:
 	Frustum frustrum;

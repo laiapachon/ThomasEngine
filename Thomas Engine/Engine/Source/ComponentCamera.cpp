@@ -70,13 +70,12 @@ void ComponentCamera::OnEditor()
 
 void ComponentCamera::CalculateViewMatrix()
 {
-	if (projectionIsDirty)
-		RecalculateProjection();
+	updateCamera = false;
 
 	frustrum.pos = GetOwner()->transform->GetPosition();
 	frustrum.front = frustrum.front.Normalized();
 	frustrum.up = frustrum.up.Normalized();
-	float3::Orthonormalize(frustrum.front, frustrum.up);
+	
 
 	app->camera->viewMatrix = frustrum.ViewMatrix();
 }
