@@ -34,6 +34,7 @@ public:
 	void LogToConsole(const char* msg, LogType _type);
 	
 	void StartFrame();
+	void CheckShortCuts();
 	update_status Draw();
 	bool DrawWarningTab(std::string text);
 
@@ -48,6 +49,7 @@ public:
 
 	void CreateDockSpace();
 	void DockSpaceOverViewportCustom(ImGuiViewport* viewport, ImGuiDockNodeFlags dockspaceFlags, ImVec2 position, ImVec2 size, const ImGuiWindowClass* windowClass);
+
 
 private:
 	std::vector<Tab*> tabs;

@@ -31,7 +31,7 @@ bool Scene::Init()
 
 	root = new GameObject("Root");
 
-	GameObject* sceneCamera = CreateGameObject("MainCamera");
+	GameObject* sceneCamera = CreateEmptyGameObject("MainCamera");
 	sceneCamera->AddComponent(ComponentType::CAMERA);
 	mainCamera = static_cast<ComponentCamera*>(sceneCamera->GetComponent(ComponentType::CAMERA));
 	mainCamera->SetIsMainCamera(true);
@@ -91,7 +91,7 @@ bool Scene::CleanUp()
 	return true;
 }
 
-GameObject* Scene::CreateGameObject(const char* name, GameObject* parent)
+GameObject* Scene::CreateEmptyGameObject(const char* name, GameObject* parent)
 {
 	GameObject* obj = new GameObject(name);
 

@@ -6,7 +6,7 @@
 #include "Camera3D.h"
 
 #include "Transform.h"
-
+#include"Window.h"
 #include "ImGui/imgui.h"
 
 
@@ -70,8 +70,10 @@ void ComponentCamera::OnEditor()
 		{
 			if (app->scene->mainCamera != nullptr)
 				app->scene->mainCamera->isMainCamera = false;
-			if (isMainCamera)
+			if (isMainCamera) {
 				app->scene->mainCamera = this;
+				ReGenerateFrameBuffer(app->window->GetWindowWidth(), app->window->GetWindowHeight());
+			}
 			else
 				app->scene->mainCamera = nullptr;
 		}

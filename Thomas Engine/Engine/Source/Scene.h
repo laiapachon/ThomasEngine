@@ -21,7 +21,7 @@ public:
 
 	bool CleanUp() override;
 
-	GameObject* CreateGameObject(const char* name, GameObject* parent = nullptr);
+	GameObject* CreateEmptyGameObject(const char* name, GameObject* parent = nullptr);
 	GameObject* CreatePrimitive(const char* name, Mesh* mesh);
 
 	GameObject* root;
