@@ -78,7 +78,7 @@ void ComponentCamera::CalculateViewMatrix()
 	frustrum.up = frustrum.up.Normalized();
 	float3::Orthonormalize(frustrum.front, frustrum.up);
 
-	viewMatrix = frustrum.ViewMatrix();
+	app->camera->viewMatrix = frustrum.ViewMatrix();
 }
 
 void ComponentCamera::RecalculateProjection()
