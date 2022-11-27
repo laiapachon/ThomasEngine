@@ -27,3 +27,13 @@ void Resource::SetLibraryPath(const char* _lPath)
 {
 	libraryFile = _lPath;
 }
+
+const char* Resource::GetFormatExt()
+{
+	switch (type)
+	{
+	case ResourceType::TEXTURE: return "thtex";
+	case ResourceType::MESH: return "thmesh";
+	default: return "unknown";
+	}
+}

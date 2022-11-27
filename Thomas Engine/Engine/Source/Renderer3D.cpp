@@ -376,7 +376,7 @@ void Renderer3D::OnGUI()
 					glFogi(GL_FOG_MODE, GL_EXP);
 					glFogf(GL_FOG_DENSITY, fogDensity);
 				}
-				//gluPerspective(45.0f, 800.0f / 600.0f, 1.0f, 60.0f); // Con el fog podemos acercar el far clipping plane
+				gluPerspective(45.0f, 800.0f / 600.0f, 1.0f, 60.0f);
 			}
 			else glDisable(GL_FOG);
 		}

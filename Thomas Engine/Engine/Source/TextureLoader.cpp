@@ -42,3 +42,33 @@ GLuint TextureLoader::LoadToMemory(char* buffer, int size, int* w, int* h)
 
 	return glID;
 }
+
+bool TextureLoader::SaveToDds(char* buffer, int size, const char* name)
+{
+	ILuint imageID;
+	ilGenImages(1, &imageID);
+	ilBindImage(imageID);
+
+	if (!ilLoadL(IL_TYPE_UNKNOWN, buffer, size))
+	{
+		LOG(LogType::L_ERROR, "Image not loaded");
+		ilDeleteImages(1, &imageID);
+		return false;
+	}
+
+	ILuint newSize;
+	ILubyte* data;
+	ilSetInteger(IL_DXTC_FORMAT, IL_DXT5);// To pick a specific DXT compression use
+	newSize = ilSaveL(IL_DDS, nullptr, 0); // Get the size of the data buffer
+	if (newSize > 0) {
+		data = new ILubyte[newSize]; // allocate data buffer
+		if (ilSaveL(IL_DDS, data, newSize) > 0) // Save to buffer with the ilSaveIL function
+			buffer = (char*)data;
+
+		FileSystem::Save(name, buffer, newSize);
+		RELEASE_ARRAY(data);
+	}
+
+	ilDeleteImages(1, &imageID);
+	return true;
+}

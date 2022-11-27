@@ -38,6 +38,8 @@ public:
 	virtual bool LoadToMemory() { return false; }
 	virtual bool UnloadFromMemory() { return false; }
 
+	const char* GetFormatExt();
+
 private:
 	std::string assetsFile;
 	std::string libraryFile;

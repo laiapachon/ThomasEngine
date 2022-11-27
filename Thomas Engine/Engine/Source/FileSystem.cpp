@@ -26,7 +26,7 @@ void FileSystem::FSInit()
 	SDL_free(basePath);
 
 	//Setting the working directory as the writing directory
-	if (PHYSFS_setWriteDir(".") == 0)
+	if (PHYSFS_setWriteDir(basePath) == 0)
 		LOG(LogType::L_NORMAL, "File System error while creating write dir: %s\n", PHYSFS_getLastError());
 
 	// Adding a path to search archives (LocalDisk)
@@ -39,6 +39,12 @@ void FileSystem::FSInit()
 	assetPath = GetBasePath();
 	assetPath = NormalizePath(assetPath.c_str());
 	assetPath += ASSETS_FOLDER;
+	FileSystem::AddPath(assetPath.c_str());
+
+	// Adding Output folder (for library folder searches (maybe it's better to add Library path))
+	assetPath = GetBasePath();
+	assetPath = NormalizePath(assetPath.c_str());
+	//assetPath += LIBRARY_FOLDER;
 	FileSystem::AddPath(assetPath.c_str());
 
 	// Dump list of paths
@@ -62,8 +68,7 @@ std::string StringLogic::FileNameFromPath(const char* path)
 
 	return fileName;
 }
-// Convert global path to local path
-// to: Assests\BakerHouse.fbx
+
 std::string StringLogic::GlobalToLocalPath(const char* globalPath)
 {
 	std::string localPath = FileSystem::NormalizePath(globalPath);
@@ -183,16 +188,14 @@ std::string FileSystem::UnNormalizePath(const char* fullPath)
 	}
 	return newPath;
 }
-// Example: C:\Users\aleja\OneDrive\Escritorio\BakerHouse.fbx
-// return C:\ 
+
 std::string FileSystem::ExtractLocalDiskBackward(const char* fullPath)
 {
 	std::string path = NormalizePath(fullPath);
 	path = path.substr(0, path.find_first_of('/') + 1);
 	return path;
 }
-// Example: C:\Users\aleja\OneDrive\Escritorio\BakerHouse.fbx
-// return Users\aleja\OneDrive\Escritorio\BakerHouse.fbx
+
 std::string FileSystem::ExtractLocalDiskForward(const char* fullPath)
 {
 	std::string path = NormalizePath(fullPath);
@@ -200,7 +203,7 @@ std::string FileSystem::ExtractLocalDiskForward(const char* fullPath)
 	return path;
 }
 
-// Read a whole file and put it in a new buffer
+
 uint FileSystem::LoadToBuffer(const char* file, char** buffer)
 {
 	uint ret = 0;
@@ -233,6 +236,41 @@ uint FileSystem::LoadToBuffer(const char* file, char** buffer)
 	}
 	else
 		LOG(LogType::L_ERROR, "File System error while opening file %s: %s\n", file, PHYSFS_getLastError());
+
+	return ret;
+}
+
+uint FileSystem::Save(const char* file, const void* buffer, unsigned int size, bool append)
+{
+	unsigned int ret = 0;
+
+	bool overwrite = PHYSFS_exists(file) != 0;
+	PHYSFS_file* fs_file = (append) ? PHYSFS_openAppend(file) : PHYSFS_openWrite(file);
+
+	if (fs_file != nullptr)
+	{
+		uint written = (uint)PHYSFS_write(fs_file, (const void*)buffer, 1, size);
+		if (written != size) {
+			LOG(LogType::L_ERROR, "File System error while writing to file %s: %s", file, PHYSFS_getLastError());
+		}
+		else
+		{
+			if (append == true) {
+				LOG(LogType::L_NORMAL, "Added %u data to [%s%s]", size, PHYSFS_getWriteDir(), file);
+			}
+			
+			else if (overwrite == false)
+				LOG(LogType::L_NORMAL, "New file created [%s%s] of %u bytes", PHYSFS_getWriteDir(), file, size);
+
+			ret = written;
+		}
+
+		if (PHYSFS_close(fs_file) == 0)
+			LOG(LogType::L_ERROR, "File System error while closing file %s: %s", file, PHYSFS_getLastError());
+	}
+	else {
+		LOG(LogType::L_ERROR, "File System error while opening file %s: %s", file, PHYSFS_getLastError());
+	}
 
 	return ret;
 }
@@ -281,5 +319,5 @@ void FileSystem::OnGui()
 		IMGUI_PRINT("Base Path: ", GetBasePath());
 		IMGUI_PRINT("Read Paths: ", GetReadPaths());
 		IMGUI_PRINT("Write Path: ", GetWritePath());
-	}	
+	}
 }

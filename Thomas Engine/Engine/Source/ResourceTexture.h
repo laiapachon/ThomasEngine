@@ -12,6 +12,7 @@ public:
 
 	bool LoadToMemory() override;
 	bool UnloadFromMemory() override;
+	void Import(char* buffer, int size, const char* name);
 
 public:
 	int texWidth = 0;
