@@ -10,7 +10,6 @@
 
 #include "FileSystem.h"
 #include "ResourceManager.h"
-#include "Renderer3D.h"
 
 #define MAX_KEYS 300
 

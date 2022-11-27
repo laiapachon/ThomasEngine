@@ -20,9 +20,10 @@ public:
 	bool GetIsMainCamera() { return isMainCamera; };
 	void SetIsMainCamera(bool ret) { isMainCamera = ret; };
 
+	void CalculateViewMatrix();
 	void RecalculateProjection(float aspectRatio);
 
-	bool updateCamera = false;
+	bool updateCamera = true;
 	Frustum frustrum;
 	float4x4 viewMatrix;
 

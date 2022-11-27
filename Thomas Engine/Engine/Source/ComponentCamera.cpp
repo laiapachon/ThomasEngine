@@ -19,7 +19,7 @@ ComponentCamera::ComponentCamera() : Component(nullptr)
 	frustrum.up = float3::unitY;
 
 	frustrum.verticalFov = 60.0f * DEGTORAD;
-	frustrum.horizontalFov = 2.0f * atanf(tanf(frustrum.verticalFov / 2.0f) * 1.3f);
+	frustrum.horizontalFov = 2.0f * atanf(tanf(frustrum.verticalFov / 2.0f) * (16.f / 9.f));
 
 	frustrum.pos = float3::zero;
 }
@@ -33,7 +33,7 @@ ComponentCamera::ComponentCamera(GameObject* obj) : Component(obj)
 	frustrum.up = obj->transform->GetUp();
 
 	frustrum.verticalFov = 60.0f * DEGTORAD;
-	frustrum.horizontalFov = 2.0f * atanf(tanf(frustrum.verticalFov / 2.0f) * 1.3f);
+	frustrum.horizontalFov = 2.0f * atanf(tanf(frustrum.verticalFov / 2.0f) * (16.f / 9.f));
 
 	frustrum.pos = obj->transform->GetPosition();
 }
@@ -52,6 +52,7 @@ void ComponentCamera::Update()
 		frustrum.pos = GetOwner()->transform->GetPosition();
 		frustrum.front = GetOwner()->transform->GetForward();
 		frustrum.up = GetOwner()->transform->GetUp();
+		CalculateViewMatrix();
 	}
 
 	if (showFrustrum == true) {
@@ -151,6 +152,17 @@ void ComponentCamera::ReGenerateFrameBuffer(int w, int h)
 void ComponentCamera::PostUpdate()
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void ComponentCamera::CalculateViewMatrix()
+{
+	updateCamera = false;
+
+	frustrum.pos = GetOwner()->transform->GetPosition();
+	frustrum.front = GetOwner()->transform->GetForward();
+	frustrum.up = GetOwner()->transform->GetUp();
+
+	viewMatrix = frustrum.ViewMatrix();
 }
 
 void ComponentCamera::RecalculateProjection(float aspectR)

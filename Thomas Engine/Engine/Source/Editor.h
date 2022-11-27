@@ -18,7 +18,7 @@ enum class TabType
 	INSPECTOR,
 	HIERARCHY,
 	SCENE,
-	//GAME,
+	GAME,
 
 	MAX
 };

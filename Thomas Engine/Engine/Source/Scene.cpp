@@ -28,8 +28,13 @@ Scene::Scene(Application* app, bool start_enabled) : Module(app, start_enabled),
 bool Scene::Init()
 {
 	LOG(LogType::L_NORMAL, "Creating Scene");
-	//Change the name "Root" by the name of scene when it has
+
 	root = new GameObject("Root");
+
+	GameObject* sceneCamera = CreateGameObject("MainCamera");
+	sceneCamera->AddComponent(ComponentType::CAMERA);
+	mainCamera = static_cast<ComponentCamera*>(sceneCamera->GetComponent(ComponentType::CAMERA));
+	mainCamera->SetIsMainCamera(true);
 
 	return true;
 }
@@ -37,9 +42,9 @@ bool Scene::Init()
 bool Scene::Start()
 {
 	app->resourceManager->ImportFile("BakerHouse.fbx");
-	Transform* transformChimney = root->GetChildrens()[0]->GetChildrens()[0]->transform;
-	Transform* transformBakerhouse = root->GetChildrens()[0]->GetChildrens()[1]->transform;
-	Transform* parentTransform = root->GetChildrens()[0]->transform;
+	Transform* transformChimney = root->GetChildrens()[1]->GetChildrens()[0]->transform;
+	Transform* transformBakerhouse = root->GetChildrens()[1]->GetChildrens()[1]->transform;
+	Transform* parentTransform = root->GetChildrens()[1]->transform;
 
 	float3 size(1, 1, 1);
 	Quat rotationQuat(0, 0, 0, 1);
@@ -47,10 +52,10 @@ bool Scene::Start()
 	transformChimney->SetTransformMatrix(transformChimney->GetPosition(), rotationQuat, size, parentTransform);
 	transformBakerhouse->SetTransformMatrix(transformBakerhouse->GetPosition(), rotationQuat, size, parentTransform);
 
-	GameObject* sceneCamera = CreateGameObject("MainCamera");
-	sceneCamera->AddComponent(ComponentType::CAMERA);
-	mainCamera = static_cast<ComponentCamera*>(sceneCamera->GetComponent(ComponentType::CAMERA));
-	mainCamera->SetIsMainCamera(true);
+	root->EraseChildren(root->FindChildren(root->GetChildrens()[0]));
+	root->AttachChild(mainCamera->GetOwner());
+	Transform* transformCamera = static_cast<Transform*>(mainCamera->GetOwner()->GetComponent(ComponentType::TRANSFORM));
+	transformCamera->SetPosition(float3(0, 1, -12));
 
 	return true;
 }
