@@ -131,11 +131,11 @@ void Editor::StartFrame()
 void Editor::CheckShortCuts()
 {
 	if (App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT && App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT && App->input->GetKey(SDL_SCANCODE_N) == KEY_UP)
-		app->scene->CreateGameObjectEmpty("GameObject");
+		app->scene->CreateNewGameObject("GameObject");
 	else if (App->input->GetKey(SDL_SCANCODE_LALT) == KEY_REPEAT && App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT && App->input->GetKey(SDL_SCANCODE_N) == KEY_UP)
-		app->scene->CreateGameObjectChild("GameObjectChild", GetGameObjectSelected());
+		app->scene->CreateChildGameObject("ChildGameObject", GetGameObjectSelected());
 	else if (App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT && App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT && App->input->GetKey(SDL_SCANCODE_G) == KEY_UP)
-		app->scene->CreateGameObjectParent("GameObjectParent", GetGameObjectSelected());
+		app->scene->CreateParentGameObject("ParentGameObject", GetGameObjectSelected());
 	else if (App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT && App->input->GetKey(SDL_SCANCODE_N) == KEY_UP) warningTab = true;
 }
 
@@ -243,19 +243,19 @@ update_status Editor::ImGuiMenuBar()
 		{
 			if (ImGui::MenuItem("Camera"))
 			{
-				app->scene->CreateCamera();
+				app->scene->CreateNewCamera();
 			}
 			if (ImGui::MenuItem("Create Empty", "Ctrl+Shift+N"))
 			{
-				app->scene->CreateGameObjectEmpty("GameObject");
+				app->scene->CreateNewGameObject("GameObject");
 			}
 			if (ImGui::MenuItem("Create Child", "Alt+Shift+N"))
 			{
-				app->scene->CreateGameObjectChild("GameObjectChild", GetGameObjectSelected());
+				app->scene->CreateChildGameObject("GameObjectChild", GetGameObjectSelected());
 			}
 			if (ImGui::MenuItem("Create Parent", "Ctrl+Shift+G"))
 			{
-				app->scene->CreateGameObjectParent("GameObjectParent", GetGameObjectSelected());
+				app->scene->CreateParentGameObject("GameObjectParent", GetGameObjectSelected());
 			}
 			if (ImGui::BeginMenu("3D Object"))
 			{
