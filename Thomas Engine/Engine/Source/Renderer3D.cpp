@@ -243,7 +243,8 @@ update_status Renderer3D::PostUpdate(float dt)
 		{
 			for (size_t i = 0; i < renderQueue.size(); i++)
 			{
-				renderQueue[i]->RenderMesh();
+				if (app->scene->mainCamera->frustrum.Intersects(renderQueue[i]->globalOBB))
+					renderQueue[i]->RenderMesh();
 			}
 		}
 

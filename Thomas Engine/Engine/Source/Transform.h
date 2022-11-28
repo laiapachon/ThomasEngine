@@ -16,6 +16,7 @@ public:
 
 	float3 GetPosition() { return position; };
 	void SetPosition(float3 pos) { position = pos; };
+	void SetEulerRotaion(float3 rot) { eulerRotation = rot; };
 
 	void SetTransformMatrix(float3 position, Quat rotation, float3 localScale, Transform* parent);
 	float4x4 GetGlobalTransform() { return globalTransform; };

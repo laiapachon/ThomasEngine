@@ -31,7 +31,7 @@ bool Scene::Init()
 
 	root = new GameObject("Root");
 
-	GameObject* sceneCamera = CreateGameObject("MainCamera");
+	GameObject* sceneCamera = CreateGameObjectEmpty("MainCamera");
 	sceneCamera->AddComponent(ComponentType::CAMERA);
 	mainCamera = static_cast<ComponentCamera*>(sceneCamera->GetComponent(ComponentType::CAMERA));
 	mainCamera->SetIsMainCamera(true);
@@ -91,23 +91,44 @@ bool Scene::CleanUp()
 	return true;
 }
 
-GameObject* Scene::CreateGameObject(const char* name, GameObject* parent)
+GameObject* Scene::CreateGameObjectEmpty(const char* name)
+{
+	GameObject* obj = new GameObject(name);
+	root->AttachChild(obj);
+
+	return obj;
+}
+
+GameObject* Scene::CreateGameObjectChild(const char* name, GameObject* parent)
 {
 	GameObject* obj = new GameObject(name);
 
 	if (parent != nullptr)
-	{
-		parent->AddChildren(obj);
-		obj->SetParent(parent);
-	}
-	else
-	{
-		root->AddChildren(obj);
-		obj->SetParent(root);
-	}
+		parent->AttachChild(obj);
 
 	return obj;
 }
+
+GameObject* Scene::CreateGameObjectParent(const char* name, GameObject* child)
+{
+	GameObject* obj = new GameObject(name);
+
+	child->GetParent()->AttachChild(obj);
+	child->GetParent()->EraseChildren(child->GetParent()->FindChildren(child));
+	obj->AttachChild(child);
+
+	return obj;
+}
+
+void Scene::CreateCamera()
+{
+	GameObject* camera = CreateGameObjectEmpty("Camera");
+	camera->AddComponent(ComponentType::CAMERA);
+	Transform* transformCamera = static_cast<Transform*>(camera->GetComponent(ComponentType::TRANSFORM));
+	transformCamera->SetPosition(float3(0, 3.5f, -12));
+	transformCamera->SetEulerRotaion(float3(6, 0, 0));
+}
+
 
 GameObject* Scene::CreatePrimitive(const char* name, Mesh* mesh)
 {
