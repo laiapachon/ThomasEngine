@@ -44,7 +44,7 @@ public:
 
 	Tab* GetTab(TabType type);
 	GameObject* GetGameObjectSelected();
-
+	void SetGameObjectSelected(GameObject* obj);
 	bool CleanUp() override;
 
 	void CreateDockSpace();

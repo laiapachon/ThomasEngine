@@ -13,8 +13,11 @@
 
 #include "GPUDetected/DeviceId.h"
 
+#include <map>
+#include "Geometry/Triangle.h"
 #include "ResourceTexture.h"
 #include "MeshRenderer.h"
+#include "Transform.h"
 
 #include "AboutTab.h"
 
@@ -222,6 +225,8 @@ update_status Renderer3D::PostUpdate(float dt)
 		}
 	}
 
+	DrawRay();
+
 	app->camera->cameraScene.PostUpdate();
 
 	if (app->scene->mainCamera != nullptr)
@@ -283,6 +288,20 @@ bool Renderer3D::CleanUp()
 	return true;
 }
 
+void Renderer3D::DrawRay()
+{
+	if (viewRay)
+	{
+		glColor3f(1.f, 0.f, 0.f);
+		glLineWidth(2.f);
+		glBegin(GL_LINES);
+		glVertex3fv(&app->camera->ray.a.x);
+		glVertex3fv(&app->camera->ray.b.x);
+		glEnd();
+		glLineWidth(1.f);
+		glColor3f(1.f, 1.f, 1.f);
+	}
+}
 
 void Renderer3D::GetCaps(std::string& caps)
 {
@@ -374,6 +393,21 @@ void Renderer3D::OnGUI()
 		if (ImGui::IsItemHovered())
 			ImGui::SetTooltip("Enable/Disable GL_LIGHTING");
 
+		if (ImGui::Checkbox("RAY_CASTING  ", &viewRay))
+
+			if (ImGui::IsItemHovered())
+				ImGui::SetTooltip("Enable/Disable can view ray");
+
+		ImGui::SameLine();
+		if (ImGui::Checkbox("GL_COLOR_MATERIAL", &colorMaterial)) {
+			if (colorMaterial) glEnable(GL_COLOR_MATERIAL);
+			else glDisable(GL_COLOR_MATERIAL);
+		}
+
+		if (ImGui::IsItemHovered())
+			ImGui::SetTooltip("Enable/Disable GL_COLOR_MATERIAL");
+
+
 		if (ImGui::Checkbox("GL_FOG_WAR   ", &fog))
 		{
 			if (fog)
@@ -396,15 +430,6 @@ void Renderer3D::OnGUI()
 			else glDisable(GL_FOG);
 		}
 
-
-		ImGui::SameLine();
-		if (ImGui::Checkbox("GL_COLOR_MATERIAL", &colorMaterial)) {
-			if (colorMaterial) glEnable(GL_COLOR_MATERIAL);
-			else glDisable(GL_COLOR_MATERIAL);
-		}
-
-		if (ImGui::IsItemHovered())
-			ImGui::SetTooltip("Enable/Disable GL_COLOR_MATERIAL");
 
 		if (fog)
 		{
@@ -464,4 +489,63 @@ bool Renderer3D::LoadConfig(JsonParser& node)
 	wireframe = node.JsonValToBool("wireframe");
 
 	return true;
+}
+
+void Renderer3D::MousePicking(LineSegment ray)
+{
+	float dNear = 0;
+	float dFar = 0;
+	// Use maps because with the key can ordered by distance
+	std::map<float, MeshRenderer*> possibleHitList;
+
+	// First we test against all OBBs (is more accurate than using AABB)
+	for (std::vector<MeshRenderer*>::iterator it = renderQueue.begin(); it != renderQueue.end(); ++it)
+	{
+		// Add to the list all the OBBs that intersect with the ray (the entry distance is used as the map key) 
+		if (ray.Intersects((*it)->globalOBB, dNear, dFar))
+			possibleHitList[dNear] = (*it);
+	}
+
+	// Add to the list all the triangles (from mesh) that intersect with the ray
+	std::map<float, MeshRenderer*> hitList;
+
+	for (std::map<float, MeshRenderer*>::const_iterator it = possibleHitList.begin(); it != possibleHitList.end(); ++it)
+	{
+		const Mesh* mesh = (*it).second->GetMesh();
+		if (mesh != nullptr)
+		{
+			// Transform once the ray into Game Object space to test against all triangles
+			LineSegment localRay = ray;
+			localRay.Transform((*it).second->GetOwner()->transform->GetGlobalTransform().Inverted());
+
+			Triangle tri;
+			for (uint i = 0; i < mesh->numIndexs; i += 3)
+			{
+				// Create the triangle 
+				tri.a = float3(&mesh->vertex[mesh->indexs[i] * 3]);
+				tri.b = float3(&mesh->vertex[mesh->indexs[i + 1] * 3]);
+				tri.c = float3(&mesh->vertex[mesh->indexs[i + 2] * 3]);
+
+				// Test the ray against all mesh triangles
+				float dist = 0;
+				if (localRay.Intersects(tri, &dist, nullptr))
+				{
+					hitList[dist] = (*it).second;
+				}
+			}
+		}
+	}
+
+	bool selected = false;
+	if (hitList.begin() != hitList.end())
+	{
+		App->editor->SetGameObjectSelected((*hitList.begin()).second->GetOwner());
+		selected = true;
+	}
+	possibleHitList.clear();
+	hitList.clear();
+
+	//If nothing is selected, set selected gameObject to null
+	if (!selected)
+		App->editor->SetGameObjectSelected(nullptr);
 }

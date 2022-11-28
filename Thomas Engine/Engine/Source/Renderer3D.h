@@ -42,6 +42,7 @@ public:
 	bool Init()override;
 	update_status PreUpdate(float dt)override;
 	update_status PostUpdate(float dt)override;
+	void DrawRay();
 	bool CleanUp();
 
 	void GetCaps(std::string& caps);
@@ -53,6 +54,7 @@ public:
 	bool LoadConfig(JsonParser& node)override;
 
 	Hardware GetHardware() { return hardware; };
+	void MousePicking(LineSegment ray);
 
 public:
 
@@ -72,6 +74,7 @@ private:
 	Hardware hardware;
 	bool depthTest = true;
 	bool cullFace = true;
+	bool viewRay = true;
 	bool lighting = true;
 	bool colorMaterial = true;
 	bool texture2D = true;

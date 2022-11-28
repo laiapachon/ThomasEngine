@@ -88,13 +88,13 @@ void ResourceManager::ImportFile(const char* assetsFile)
 			material->Import(buffer, size, material->GetLibraryPath());
 			material->LoadToMemory();
 
-			Inspector* inspector = static_cast<Inspector*>(app->editor->GetTab(TabType::INSPECTOR));
-			if (inspector && inspector->gameObjectSelected) {
-				Material* mat = static_cast<Material*>(inspector->gameObjectSelected->GetComponent(ComponentType::MATERIAL));
+			GameObject* objSelected = app->editor->GetGameObjectSelected();
+			if (objSelected != nullptr) {
+				Material* mat = static_cast<Material*>(objSelected->GetComponent(ComponentType::MATERIAL));
 				if (mat) mat->texture = material;
-				else 
+				else
 				{
-					Material* mat = static_cast<Material*>(inspector->gameObjectSelected->AddComponent(ComponentType::MATERIAL));
+					Material* mat = static_cast<Material*>(objSelected->AddComponent(ComponentType::MATERIAL));
 					mat->texture = material;
 				}
 			}

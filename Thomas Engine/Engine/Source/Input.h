@@ -50,6 +50,12 @@ public:
 		return wheel;
 	}
 
+	void GetMousePosition(int& x, int& y) const
+	{
+		x = mouse_x;
+		y = mouse_y;
+	}
+
 	int GetMouseXMotion() const
 	{
 		return mouse_x_motion;
