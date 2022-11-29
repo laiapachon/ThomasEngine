@@ -68,7 +68,7 @@ Component* GameObject::AddComponent(ComponentType type)
 	case ComponentType::TRANSFORM:
 		newComponent = new Transform(this);
 		break;
-	case ComponentType::MESHRENDERER:
+	case ComponentType::MESH_RENDERER:
 		newComponent = new MeshRenderer(this);
 		break;
 	case ComponentType::MATERIAL:

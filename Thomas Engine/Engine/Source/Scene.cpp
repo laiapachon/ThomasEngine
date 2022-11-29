@@ -136,7 +136,7 @@ GameObject* Scene::CreatePrimitive(const char* name, Mesh* mesh)
 	primitive->SetParent(root);
 
 	MeshRenderer* meshRenderer;
-	meshRenderer = static_cast<MeshRenderer*>(primitive->AddComponent(ComponentType::MESHRENDERER));
+	meshRenderer = static_cast<MeshRenderer*>(primitive->AddComponent(ComponentType::MESH_RENDERER));
 	meshRenderer->SetMesh(mesh);
 
 	root->AddChildren(primitive);

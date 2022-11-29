@@ -152,7 +152,7 @@ void ModelImporter::FillGameObject(aiNode* node, std::vector<Mesh*>& sceneMeshes
 		gmEmpty->SetParent(objParent);
 
 		// Add mesh component to GameObject and fill it
-		MeshRenderer* gmMeshRenderer = static_cast<MeshRenderer*>(gmEmpty->AddComponent(ComponentType::MESHRENDERER));
+		MeshRenderer* gmMeshRenderer = static_cast<MeshRenderer*>(gmEmpty->AddComponent(ComponentType::MESH_RENDERER));
 		gmMeshRenderer->SetMesh(sceneMeshes[node->mMeshes[i]]);
 		gmMeshRenderer->SetBoundingBoxes(sceneMeshes[node->mMeshes[i]]);
 

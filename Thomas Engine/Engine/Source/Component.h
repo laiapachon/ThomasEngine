@@ -6,7 +6,7 @@
 enum class ComponentType
 {
 	TRANSFORM,
-	MESHRENDERER,
+	MESH_RENDERER,
 	MATERIAL,
 	CAMERA
 };

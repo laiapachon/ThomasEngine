@@ -188,7 +188,7 @@ void Transform::ResetTransform()
 void Transform::UpdateBoundingBoxes()
 {
 	MeshRenderer* mesh = nullptr;
-	mesh = static_cast<MeshRenderer*>(GetOwner()->GetComponent(ComponentType::MESHRENDERER));
+	mesh = static_cast<MeshRenderer*>(GetOwner()->GetComponent(ComponentType::MESH_RENDERER));
 	if (mesh != nullptr)
 	{
 		mesh->globalOBB = mesh->GetMesh()->localAABB;

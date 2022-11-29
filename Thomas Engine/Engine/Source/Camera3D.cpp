@@ -200,7 +200,7 @@ void Camera3D::Focus()
 
 	if (objSelected != nullptr)
 	{
-		if (MeshRenderer* mesh = static_cast<MeshRenderer*>(objSelected->GetComponent(ComponentType::MESHRENDERER)))
+		if (MeshRenderer* mesh = static_cast<MeshRenderer*>(objSelected->GetComponent(ComponentType::MESH_RENDERER)))
 		{
 			const float3 meshCenter = mesh->GetCenterPointInWorldCoords();
 			LookAt(meshCenter);

@@ -35,7 +35,7 @@ public:
 	
 	void StartFrame();
 	update_status Draw();
-	bool DrawWarningTab(std::string text);
+	bool DrawTabWarn(std::string text);
 	void CheckShortCuts();
 
 	update_status ImGuiMenuBar();

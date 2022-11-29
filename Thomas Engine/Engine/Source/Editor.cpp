@@ -1,14 +1,14 @@
 #include "Application.h"
 #include "Editor.h"
 
-// Modules
 #include "Scene.h"
 #include "GameObject.h"
 #include "Window.h"
 #include "Input.h"
+#include "ResourceManager.h"
 #include "Camera3D.h"
 
-// Tabs
+
 #include "Tab.h"
 #include "Configuration.h"
 #include "ConsoleTab.h"
@@ -23,8 +23,6 @@
 Editor::Editor(Application* app, bool start_enabled): Module(app, start_enabled)
 {	
 	name = "Editor";
-
-	// Define size of the vector
 	tabs = std::vector<Tab*>(static_cast<unsigned int>(TabType::MAX), nullptr);
 
 	
@@ -36,7 +34,6 @@ Editor::Editor(Application* app, bool start_enabled): Module(app, start_enabled)
 	tabs[static_cast<unsigned int>(TabType::SCENE)] = new SceneTab();
 	tabs[static_cast<unsigned int>(TabType::GAME)] = new GameTab();
 
-	// Assign a shortcut to each tab
 	for (int i = 0; i < tabs.size(); i++)
 	{
 		tabs[i]->shortcut = i + 1;
@@ -77,8 +74,6 @@ bool Editor::Init()
 		style.WindowRounding = 0.0f;
 		style.Colors[ImGuiCol_WindowBg].w = 1.0f;
 	}
-
-	// Setup Platform/Renderer backends
 	ImGui_ImplSDL2_InitForOpenGL(App->window->window, App->window->gl_context);
 	ImGui_ImplOpenGL3_Init();
 
@@ -112,12 +107,11 @@ void Editor::CreateDockSpace()
 
 void Editor::StartFrame()
 {
-	// Start the Dear ImGui frame
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplSDL2_NewFrame();
 	ImGui::NewFrame();
 
-	// Check if any key is pressed and disable/enable the tab
+	// Check pressed keys
 	for (int i = 0; i < tabs.size(); i++)
 	{
 		if (App->input->GetKey(29 + tabs[i]->shortcut) == KEY_UP)
@@ -156,9 +150,10 @@ update_status Editor::Draw()
 		}
 	}
 	if (warningTab)
-		if (DrawWarningTab("New Scene")) NewScene();
+		if (DrawTabWarn("New Scene")) NewScene();
 	if (app->input->GetQuit())
-		if (DrawWarningTab("Exit Engine")) ret = UPDATE_STOP;
+		if (DrawTabWarn("Exit Engine")) ret = UPDATE_STOP;
+	if (app->resourceManager->GetOverwritting()) app->resourceManager->DrawOverwriteTab();
 
 	ImGui::EndFrame();
 	ImGui::Render();
@@ -177,7 +172,7 @@ update_status Editor::Draw()
 	return ret;
 }
 
-bool Editor::DrawWarningTab(std::string text)
+bool Editor::DrawTabWarn(std::string text)
 {
 	bool ret = false;
 	if (ImGui::Begin("Warning"))
