@@ -21,8 +21,8 @@
 
 #include "AboutTab.h"
 
-#pragma comment (lib, "glu32.lib")    /* link OpenGL Utility lib     */
-#pragma comment (lib, "opengl32.lib") /* link Microsoft OpenGL lib   */
+#pragma comment (lib, "glu32.lib")    
+#pragma comment (lib, "opengl32.lib")
 
 Renderer3D::Renderer3D(Application* app, bool start_enabled) : Module(app, start_enabled), vsync(false)
 {
@@ -56,7 +56,6 @@ Renderer3D::Renderer3D(Application* app, bool start_enabled) : Module(app, start
 	}
 }
 
-// Called before render is available
 bool Renderer3D::Init()
 {
 	LOG(LogType::L_NORMAL, "Creating 3D Renderer context");
@@ -83,18 +82,14 @@ bool Renderer3D::Init()
 
 	if (ret == true)
 	{
-		// Print version info
 		static_cast<AboutTab*>(app->editor->GetTab(TabType::ABOUT))->LogVersionDependences();
 
-		//Use Vsync
 		if (VSYNC && SDL_GL_SetSwapInterval(static_cast<int>(vsync)) < 0)
 			LOG(LogType::L_ERROR, "Warning: Unable to set VSync! SDL Error: %s\n", SDL_GetError());
 
-		//Initialize Projection Matrix
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
 
-		//Check for error
 		GLenum error = glGetError();
 		if (error != GL_NO_ERROR)
 		{
@@ -102,11 +97,9 @@ bool Renderer3D::Init()
 			ret = false;
 		}
 
-		//Initialize Modelview Matrix
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
 
-		//Check for error
 		error = glGetError();
 		if (error != GL_NO_ERROR)
 		{
@@ -117,11 +110,9 @@ bool Renderer3D::Init()
 		glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 		glClearDepth(1.0f);
 
-		//Initialize clear color
 		glClearColor(0.f, 0.f, 0.f, 1.f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		//Check for error
 		error = glGetError();
 		if (error != GL_NO_ERROR)
 		{
@@ -157,7 +148,6 @@ bool Renderer3D::Init()
 		glEnable(GL_TEXTURE_2D);
 	}
 
-	//Generate texture
 	for (int i = 0; i < SQUARE_TEXTURE_W; i++) {
 		for (int j = 0; j < SQUARE_TEXTURE_H; j++) {
 			int c = ((((i & 0x8) == 0) ^ (((j & 0x8)) == 0))) * 255;
@@ -186,12 +176,10 @@ bool Renderer3D::Init()
 	return ret;
 }
 
-// PreUpdate: clear buffer
 update_status Renderer3D::PreUpdate(float dt)
 {
 	app->camera->cameraScene.PreUpdate();
 
-	// light 0 on cam pos
 	lights[0].SetPos(App->camera->position.x, App->camera->position.y, App->camera->position.z);
 
 	for (uint i = 0; i < MAX_LIGHTS; ++i)
@@ -200,7 +188,6 @@ update_status Renderer3D::PreUpdate(float dt)
 	return UPDATE_CONTINUE;
 }
 
-// PostUpdate present buffer to screen
 update_status Renderer3D::PostUpdate(float dt)
 {
 	update_status ret = UPDATE_CONTINUE;
@@ -211,12 +198,9 @@ update_status Renderer3D::PostUpdate(float dt)
 	p.axis = true;
 	p.Render();
 
-
-	// Comprobe wireframe mode
 	(wireframe) ? glPolygonMode(GL_FRONT_AND_BACK, GL_LINE) : glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	(wireframe) ? glColor3f(Yellow.r, Yellow.g, Yellow.b) : glColor3f(White.r, White.g, White.b);
 
-	// Draw all meshes
 	if (!renderQueue.empty())
 	{
 		for (size_t i = 0; i < renderQueue.size(); i++)
@@ -233,7 +217,6 @@ update_status Renderer3D::PostUpdate(float dt)
 	{
 		app->scene->mainCamera->PreUpdate();
 
-		// light 0 on cam pos
 		lights[0].SetPos(App->camera->position.x, App->camera->position.y, App->camera->position.z);
 
 		for (uint i = 0; i < MAX_LIGHTS; ++i)
@@ -243,7 +226,6 @@ update_status Renderer3D::PostUpdate(float dt)
 		p.axis = true;
 		p.Render();
 
-		// Draw all meshes
 		if (!renderQueue.empty())
 		{
 			for (size_t i = 0; i < renderQueue.size(); i++)
@@ -260,7 +242,6 @@ update_status Renderer3D::PostUpdate(float dt)
 	glClearColor(0.f, 0.f, 0.f, 1.f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	// Draw all tabs
 	ret = app->editor->Draw();
 
 	renderQueue.clear();
@@ -272,7 +253,6 @@ update_status Renderer3D::PostUpdate(float dt)
 	return ret;
 }
 
-// Called before quitting
 bool Renderer3D::CleanUp()
 {
 	LOG(LogType::L_NO_PRINTABLE, "Destroying 3D Renderer");

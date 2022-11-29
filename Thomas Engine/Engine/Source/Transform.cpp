@@ -2,18 +2,19 @@
 #include "Scene.h"
 #include "Globals.h"
 #include "ResourceMesh.h"
+#include "Camera3D.h"
 
-// Components
 #include "Transform.h"
 #include "MeshRenderer.h"
 #include "ComponentCamera.h"
 
 #include "ImGui/imgui.h"
 #include "MathGeoLib/include/Math/TransformOps.h"
+#include "Guizmo/ImGuizmo.h"
 
 Transform::Transform(GameObject* obj) : Component(obj)
 {
-	// Inicialize transforms
+
 	globalTransform.SetIdentity();
 	localTransform.SetIdentity();
 
@@ -30,17 +31,12 @@ void Transform::Update()
 
 void Transform::OnEditor()
 {
-	// New system more efficient:
-	// Instead of creating a 4x4 matrix every time a parameter is modified 
-	// which is very expensive to calculate because (float4x4 * float4x4 * float4x4) are a lot of GPU cycles,  
-	// We only modify the parameter that has been modified, only position or only rotation or only scale.
-	// There is more code but it is more efficient
+	
 	if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_DefaultOpen))
 	{
 		ImGui::Text("Position: ");
 		if (ImGui::DragFloat3("##Position", &position[0], 0.1f, true))
 		{
-			// Only overwrite position
 			localTransform.SetCol3(3, position);
 			updateTransform = true;
 		}
@@ -48,15 +44,12 @@ void Transform::OnEditor()
 		ImGui::Text("Rotation: ");
 		if (ImGui::DragFloat3("##Rotation", &eulerRotation[0], 0.1f, true))
 		{
-			// We need to do this because otherwise in the inspector the rotation "?" and "?" are "-0" instead of "0" 
 			if (eulerRotation[0] == 0) eulerRotation[0] = 0;
 			if (eulerRotation[2] == 0) eulerRotation[2] = 0;
 
-			// Calculate quaternion
 			rotation = Quat::FromEulerXYZ(eulerRotation.x * DEGTORAD, eulerRotation.y * DEGTORAD, eulerRotation.z * DEGTORAD);
 
-			// If the scale has not been modified (sum of the diagonal of matrix = 0) then only overwrite rotate
-			// But if the scale yes has been modified then float3x3(rotate) * float3x3::Scale(scale)
+			
 			if (localTransform.Trace() == 0)
 				localTransform.SetRotatePart(rotation);
 			else
@@ -68,8 +61,6 @@ void Transform::OnEditor()
 		ImGui::Text("Scale: ");
 		if (ImGui::DragFloat3("##Scale", &scale[0], 0.1f, true))
 		{
-			// If the rotation has not been modified (quaternion = identity) then only overwrite scale
-			// But if the rotation yes has been modified then float3x3(rotate) * float3x3::Scale(scale)
 			if (rotation.Equals(Quat::identity))
 			{
 				localTransform[0][0] = scale.x;
@@ -80,26 +71,27 @@ void Transform::OnEditor()
 			
 			updateTransform = true;
 		}
+		CheckStateMode();
+
 		ImGui::NewLine();
-		// Reset Transform
+		
 		if (ImGui::Button("Reset Transform"))
 			ResetTransform();
 
-		// If some transfomr has been modify update them
+		
 		if (updateTransform)
 			UpdateTransform();
 	}
 }
 
-// Update globalTransform of children from the component owner
-// Example: if the father moves the children too
+
 void Transform::UpdateTransform()
 {
-	// Store all children transforms which are pending to update
+	
 	std::vector<Transform*> transformsToUpdate;
 	GetRecursiveTransforms(this, transformsToUpdate);
 
-	// transformsToUpdate.size() = number of children from the component owner  
+	
 	for (size_t i = 0; i < transformsToUpdate.size(); i++)
 	{
 		if (transformsToUpdate[i]->GetOwner()->GetParent() != nullptr)
@@ -107,11 +99,11 @@ void Transform::UpdateTransform()
 			Transform* parentTra = transformsToUpdate[i]->GetOwner()->GetParent()->transform;
 
 			if (parentTra != nullptr) {
-				// global = global parent * local
+				
 				transformsToUpdate[i]->globalTransform = parentTra->globalTransform * transformsToUpdate[i]->localTransform;
 				transformsToUpdate[i]->globalTransformTransposed = transformsToUpdate[i]->globalTransform.Transposed();
 
-				//Update Bounding Boxes
+				
 				transformsToUpdate[i]->UpdateBoundingBoxes();
 				ComponentCamera* camera = static_cast<ComponentCamera*>(GetOwner()->GetComponent(ComponentType::CAMERA));
 				if (camera != nullptr) camera->updateCamera = true;
@@ -123,14 +115,14 @@ void Transform::UpdateTransform()
 	updateTransform = false;
 }
 
-//Populates an array of childs in descending order
+
 Transform* Transform::GetRecursiveTransforms(Transform* node, std::vector<Transform*>& transforms)
 {
-	// Store transforms
+	
 	transforms.push_back(node);
 	int numChildrens = node->GetOwner()->GetChildrens().size();
 
-	// If don't have childrens stop recursive
+	
 	if (numChildrens != 0)
 	{
 		for (int i = 0; i < numChildrens; i++)
@@ -151,7 +143,7 @@ void Transform::SetTransformMatrix(float3 position, Quat rotation, float3 localS
 
 	eulerRotation = this->rotation.ToEulerXYZ() * RADTODEG;
 
-	// This is more efficient than localTransform = float4x4::FromTRS()
+	
 	localTransform.SetRotatePart(float3x3::FromRS(rotation, scale));
 	localTransform.SetCol3(3, position);
 
@@ -172,7 +164,7 @@ void Transform::NewAttachment()
 
 void Transform::ResetTransform()
 {
-	// Inicialize transforms
+	
 	globalTransform.SetIdentity();
 	localTransform.SetIdentity();
 
@@ -215,4 +207,47 @@ float3 Transform::GetForward()
 float3 Transform::GetNormalizeAxis(int i)
 {
 	return globalTransform.RotatePart().Col(i).Normalized();
+}
+
+void Transform::CheckStateOperation()
+{
+	if (ImGui::IsKeyPressed(90))
+		app->camera->operation = ImGuizmo::TRANSLATE;
+	if (ImGui::IsKeyPressed(69))
+		app->camera->operation = ImGuizmo::ROTATE;
+	if (ImGui::IsKeyPressed(82))
+		app->camera->operation = ImGuizmo::SCALE;
+	if (ImGui::RadioButton("Translate", app->camera->operation == ImGuizmo::TRANSLATE))
+		app->camera->operation = ImGuizmo::TRANSLATE;
+	ImGui::SameLine();
+	if (ImGui::RadioButton("Rotate", app->camera->operation == ImGuizmo::ROTATE))
+		app->camera->operation = ImGuizmo::ROTATE;
+	ImGui::SameLine();
+	if (ImGui::RadioButton("Scale", app->camera->operation == ImGuizmo::SCALE))
+		app->camera->operation = ImGuizmo::SCALE;
+}
+
+void Transform::CheckStateMode()
+{
+	if (app->camera->operation != ImGuizmo::SCALE)
+	{
+		if (ImGui::RadioButton("Local", app->camera->mode == ImGuizmo::LOCAL))
+			app->camera->mode = ImGuizmo::LOCAL;
+		ImGui::SameLine();
+		if (ImGui::RadioButton("World", app->camera->mode == ImGuizmo::WORLD))
+			app->camera->mode = ImGuizmo::WORLD;
+	}
+}
+
+void Transform::SetTransformMFromGlobalM(float4x4 globalMatrix)
+{
+	globalTransform = globalMatrix;
+	localTransform = GetOwner()->GetParent()->transform->globalTransform.Inverted() * globalTransform;
+
+	localTransform.Decompose(position, rotation, scale);
+	eulerRotation = rotation.ToEulerXYZ() * RADTODEG;
+
+	globalTransformTransposed = globalTransform.Transposed();
+
+	updateTransform = true;
 }

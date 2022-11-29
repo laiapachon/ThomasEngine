@@ -1,7 +1,8 @@
 #include"Application.h"
 #include "SceneTab.h"
 
-// Module 
+// Module
+#include "Editor.h"
 #include "Camera3D.h"
 
 SceneTab::SceneTab() : Tab()
@@ -16,12 +17,17 @@ void SceneTab::Draw()
 		// Check if some key/mouseButton are pressed
 		if (ImGui::IsWindowHovered())
 		{
-			app->camera->CheckInputs();
+			app->camera->CheckInputsMouse();
 		}
+
+		app->camera->CheckInputsKeyBoard();
 
 		ImVec2 size = ImGui::GetContentRegionAvail();
 		app->camera->cameraScene.RecalculateProjection(size.x / size.y);
 		ImGui::Image((ImTextureID)app->camera->cameraScene.texColorBuffer, size, ImVec2(0, 1), ImVec2(1, 0));
+
+		if (app->editor->GetGameObjectSelected() != nullptr)
+			app->camera->DrawGuizmo(app->editor->GetGameObjectSelected());
 	}
 	ImGui::End();
 }
