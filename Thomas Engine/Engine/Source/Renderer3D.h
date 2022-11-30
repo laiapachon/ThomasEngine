@@ -79,6 +79,8 @@ private:
 	bool colorMaterial = true;
 	bool texture2D = true;
 
+	PrimitivePlane plane;
+
 	bool fog = false;
 	bool fogLinear = true;
 	bool fogExpo = false;
@@ -86,4 +88,6 @@ private:
 	float fogStart = 10.0f;
 	float fogEnd = 40.0f;
 	float fogDensity = 1.0f;
+	float oldFarPlane = 100.0f;
+	float fogFarPlane = 45.0f;
 };

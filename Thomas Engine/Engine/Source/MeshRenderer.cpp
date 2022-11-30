@@ -14,6 +14,11 @@ MeshRenderer::MeshRenderer(GameObject* obj) : Component(obj)
 {
 }
 
+MeshRenderer::~MeshRenderer()
+{
+	delete mesh; mesh = nullptr;
+}
+
 void MeshRenderer::Update()
 {
 	app->renderer3D->renderQueue.push_back(this);

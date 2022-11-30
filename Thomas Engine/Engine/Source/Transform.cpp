@@ -211,12 +211,13 @@ float3 Transform::GetNormalizeAxis(int i)
 
 void Transform::CheckStateOperation()
 {
-	if (ImGui::IsKeyPressed(90))
+	if (ImGui::IsKeyPressed(21))
 		app->camera->operation = ImGuizmo::TRANSLATE;
-	if (ImGui::IsKeyPressed(69))
+	if (ImGui::IsKeyPressed(23))
 		app->camera->operation = ImGuizmo::ROTATE;
-	if (ImGui::IsKeyPressed(82))
+	if (ImGui::IsKeyPressed(28))
 		app->camera->operation = ImGuizmo::SCALE;
+
 	if (ImGui::RadioButton("Translate", app->camera->operation == ImGuizmo::TRANSLATE))
 		app->camera->operation = ImGuizmo::TRANSLATE;
 	ImGui::SameLine();

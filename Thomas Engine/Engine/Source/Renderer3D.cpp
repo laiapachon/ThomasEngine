@@ -172,6 +172,9 @@ bool Renderer3D::Init()
 	App->camera->LookAt(float3(0, 0, 0));
 
 	OnResize(app->window->GetWindowWidth(), app->window->GetWindowHeight());
+	plane.SetPos(0, 0, 0);
+	plane.constant = 0;
+	plane.axis = true;
 
 	return ret;
 }
@@ -194,9 +197,7 @@ update_status Renderer3D::PostUpdate(float dt)
 	//glClearColor(0.f, 0.f, 0.f, 1.f);
 	//glClear(GL_COLOR_BUFFER_BIT);
 
-	PrimitivePlane p(0, 1, 0, 0);
-	p.axis = true;
-	p.Render();
+	plane.Render();
 
 	(wireframe) ? glPolygonMode(GL_FRONT_AND_BACK, GL_LINE) : glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	(wireframe) ? glColor3f(Yellow.r, Yellow.g, Yellow.b) : glColor3f(White.r, White.g, White.b);
@@ -222,9 +223,7 @@ update_status Renderer3D::PostUpdate(float dt)
 		for (uint i = 0; i < MAX_LIGHTS; ++i)
 			lights[i].Render();
 
-		PrimitivePlane p(0, 1, 0, 0);
-		p.axis = true;
-		p.Render();
+		plane.Render();
 
 		if (!renderQueue.empty())
 		{
@@ -262,8 +261,9 @@ bool Renderer3D::CleanUp()
 	glDisable(GL_LIGHTING);
 	glDisable(GL_COLOR_MATERIAL);
 	glDisable(GL_TEXTURE_2D);
-
+	renderQueue.clear();
 	SDL_GL_DeleteContext(context);
+	RELEASE(plane.mesh);
 
 	return true;
 }
@@ -405,14 +405,23 @@ void Renderer3D::OnGUI()
 					glFogi(GL_FOG_MODE, GL_EXP);
 					glFogf(GL_FOG_DENSITY, fogDensity);
 				}
-				gluPerspective(45.0f, 800.0f / 600.0f, 1.0f, 60.0f);
+				float* newFarPlane = &app->scene->mainCamera->frustrum.farPlaneDistance;
+				oldFarPlane = *newFarPlane;
+				*newFarPlane = fogFarPlane;
+				gluPerspective(45.0f, 800.0f / 600.0f, 1.0f, *newFarPlane);
+				newFarPlane = nullptr;
 			}
-			else glDisable(GL_FOG);
+			else
+			{
+				glDisable(GL_FOG);
+				app->scene->mainCamera->frustrum.farPlaneDistance = oldFarPlane;
+			}
 		}
 
 
 		if (fog)
 		{
+			if (app->scene->mainCamera->frustrum.farPlaneDistance != fogFarPlane) fogFarPlane = app->scene->mainCamera->frustrum.farPlaneDistance;
 			ImGui::Text("----FOG----");
 
 			if (ImGui::Checkbox("Linear", &fogLinear) && fogExpo)
@@ -430,7 +439,7 @@ void Renderer3D::OnGUI()
 			}
 
 			if (ImGui::SliderFloat("Red", &fogColor[0], 0.0f, 1.0f))
-				glFogfv(GL_FOG_COLOR, fogColor); // Set the fog color
+				glFogfv(GL_FOG_COLOR, fogColor);
 
 			if (ImGui::SliderFloat("Green", &fogColor[1], 0.0f, 1.0f));
 			glFogfv(GL_FOG_COLOR, fogColor);
@@ -475,18 +484,14 @@ void Renderer3D::MousePicking(LineSegment ray)
 {
 	float dNear = 0;
 	float dFar = 0;
-	// Use maps because with the key can ordered by distance
 	std::map<float, MeshRenderer*> possibleHitList;
 
-	// First we test against all OBBs (is more accurate than using AABB)
 	for (std::vector<MeshRenderer*>::iterator it = renderQueue.begin(); it != renderQueue.end(); ++it)
 	{
-		// Add to the list all the OBBs that intersect with the ray (the entry distance is used as the map key) 
 		if (ray.Intersects((*it)->globalOBB, dNear, dFar))
 			possibleHitList[dNear] = (*it);
 	}
 
-	// Add to the list all the triangles (from mesh) that intersect with the ray
 	std::map<float, MeshRenderer*> hitList;
 
 	for (std::map<float, MeshRenderer*>::const_iterator it = possibleHitList.begin(); it != possibleHitList.end(); ++it)
@@ -494,19 +499,16 @@ void Renderer3D::MousePicking(LineSegment ray)
 		const Mesh* mesh = (*it).second->GetMesh();
 		if (mesh != nullptr)
 		{
-			// Transform once the ray into Game Object space to test against all triangles
 			LineSegment localRay = ray;
 			localRay.Transform((*it).second->GetOwner()->transform->GetGlobalTransform().Inverted());
 
 			Triangle tri;
 			for (uint i = 0; i < mesh->numIndexs; i += 3)
 			{
-				// Create the triangle 
 				tri.a = float3(&mesh->vertex[mesh->indexs[i] * 3]);
 				tri.b = float3(&mesh->vertex[mesh->indexs[i + 1] * 3]);
 				tri.c = float3(&mesh->vertex[mesh->indexs[i + 2] * 3]);
 
-				// Test the ray against all mesh triangles
 				float dist = 0;
 				if (localRay.Intersects(tri, &dist, nullptr))
 				{
@@ -516,16 +518,15 @@ void Renderer3D::MousePicking(LineSegment ray)
 		}
 	}
 
-	bool selected = false;
+	bool objectHit = false;
 	if (hitList.begin() != hitList.end())
 	{
 		App->editor->SetGameObjectSelected((*hitList.begin()).second->GetOwner());
-		selected = true;
+		objectHit = true;
 	}
 	possibleHitList.clear();
 	hitList.clear();
 
-	//If nothing is selected, set selected gameObject to null
-	if (!selected)
+	if (!objectHit)
 		App->editor->SetGameObjectSelected(nullptr);
 }

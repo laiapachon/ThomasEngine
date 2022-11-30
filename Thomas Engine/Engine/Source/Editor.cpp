@@ -8,7 +8,6 @@
 #include "ResourceManager.h"
 #include "Camera3D.h"
 
-
 #include "Tab.h"
 #include "Configuration.h"
 #include "ConsoleTab.h"
@@ -344,6 +343,8 @@ bool Editor::CleanUp()
 
 	RELEASE_VECTOR(tabs, tabs.size());
 	tabs.clear();
+	fpsLog.clear();
+	msLog.clear();
 
 	return ret;
 }

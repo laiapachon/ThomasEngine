@@ -17,7 +17,8 @@ public:
 	vec3 B = vecABC[1];
 	vec3 C = vecABC[2];
 
-	void UpdateABC() {
+	void UpdateABC() 
+	{
 		A = vecABC[0];
 		B = vecABC[1];
 		C = vecABC[2];
@@ -48,6 +49,7 @@ public:
 	vec3 GetIndexVec(float* startValue);
 	void GenerateBounds();
 
+	void CleanUp();
 public:
 	// Buffers ID
 	uint indexBufferId = 0;

@@ -33,6 +33,7 @@ public:
 	void OrbitRotation();
 	void CalculateViewMatrix();
 
+	float* GetFarPlane() { return &cameraScene.frustrum.farPlaneDistance; };
 private:
 	void Focus();
 	void FrontView();

@@ -31,8 +31,7 @@ bool Texture::LoadToMemory()
 	// Generate new textureID
 	textureID = TextureLoader::LoadToMemory(buffer, bufferSize, &texWidth, &texHeight);
 
-	delete[] buffer;
-	buffer = nullptr;
+	RELEASE_ARRAY(buffer);
 
 	return true;
 }

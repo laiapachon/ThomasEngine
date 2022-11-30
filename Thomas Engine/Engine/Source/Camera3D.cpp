@@ -123,7 +123,6 @@ void Camera3D::CheckInputsKeyBoard()
 	position += newPos;
 	reference += newPos;
 
-	// Recalculate matrix -------------
 	if (!newPos.Equals(float3::zero)) CalculateViewMatrix();
 }
 
@@ -136,13 +135,10 @@ void Camera3D::CheckInputsMouse()
 	position += newPos;
 	reference += newPos;
 
-	// Mouse motion ----------------
 	if (App->input->GetMouseButton(SDL_BUTTON_RIGHT) == KEY_REPEAT) OrbitRotation();
 
-	// Create ray
 	if (App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_UP) GenerateRay();
 
-	// Recalculate matrix -------------
 	if (!newPos.Equals(float3::zero)) CalculateViewMatrix();
 }
 
@@ -187,9 +183,20 @@ void Camera3D::OrbitRotation()
 			const float newDeltaY = (float)dy * cameraSensitivity;
 
 			reference = posGO;
-			Quat pivot = Quat::RotateY(up.y >= 0.f ? newDeltaX * .1f : -newDeltaX * .1f);
+			Quat pivot = Quat::RotateY(newDeltaX * .1f);
 
-			pivot = pivot * math::Quat::RotateAxisAngle(right, -newDeltaY * .1f);
+			if (abs(up.y) < 0.3f)
+			{
+
+				if (position.y > reference.y && newDeltaY < 0.f)
+					pivot = pivot * math::Quat::RotateAxisAngle(right, newDeltaY * .1f);
+				if (position.y < reference.y && newDeltaY > 0.f)
+					pivot = pivot * math::Quat::RotateAxisAngle(right, newDeltaY * .1f);
+			}
+			else
+			{
+				pivot = pivot * math::Quat::RotateAxisAngle(right, newDeltaY * .1f);
+			}
 
 			position = pivot * (position - reference) + reference;
 
@@ -224,7 +231,6 @@ void Camera3D::OrbitRotation()
 
 void Camera3D::Focus()
 {
-	//Focus
 	GameObject* objSelected = app->editor->GetGameObjectSelected();
 
 	if (objSelected != nullptr)
@@ -257,8 +263,6 @@ void Camera3D::FrontView()
 		posGO = gameObject->transform->GetPosition();
 
 		nwPos = posGO;
-		// First param: Right(X), Second param: UP(Y), Third param: From(Z)		
-		// With the inverted of the axes the opposite position is obtained
 		position = nwPos + float3(0, 0, -10);
 		LookAt(nwPos);
 	}

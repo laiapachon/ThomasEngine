@@ -9,8 +9,14 @@ Mesh::Mesh() : Resource(ResourceType::MESH)
 }
 
 Mesh::~Mesh()
-{
-	//Clear buffers (Should not happen on Mesh components)
+
+
+	{
+		CleanUp();
+	}
+	void Mesh::CleanUp()
+	{
+
 	if (indexBufferId != -1)
 		glDeleteBuffers(1, &indexBufferId);
 
@@ -23,7 +29,7 @@ Mesh::~Mesh()
 	if (normalBufferId != -1)
 		glDeleteBuffers(1, &normalBufferId);
 
-	//Clear buffers
+
 	UnloadFromMemory();
 }
 
@@ -34,37 +40,30 @@ bool Mesh::LoadToMemory()
 	if (numIndexs != 0)
 	{
 		glGenBuffers(1, (GLuint*)&(indexBufferId));
-		//Bind buffer load index
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferId);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint) * numIndexs, &indexs[0], GL_STATIC_DRAW);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	}	
 
-	// Vertex Buffer GL_ARRAY_BUFFER
 	if (numVertex != 0)
 	{
 		glGenBuffers(1, (GLuint*)&(vertexBufferId));
-		//Bind buffer load Vetex
 		glBindBuffer(GL_ARRAY_BUFFER, vertexBufferId);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * numVertex * 3, &vertex[0], GL_STATIC_DRAW);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 	}
 
-	// TexCoords Buffer GL_ARRAY_BUFFER
 	if (numTexCoords != 0)
 	{
 		glGenBuffers(1, (GLuint*)&(textureBufferId));
-		//Bind buffer load texture
 		glBindBuffer(GL_ARRAY_BUFFER, textureBufferId);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * numTexCoords * 2, &texCoords[0], GL_STATIC_DRAW);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 	}	
 
-	// Normals Buffer GL_ARRAY_BUFFER
 	if (numNormals != 0)
 	{
 		glGenBuffers(1, (GLuint*)&(normalBufferId));
-		//Bind buffer load normals
 		glBindBuffer(GL_ARRAY_BUFFER, normalBufferId);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * numNormals * 3, &normals[0], GL_STATIC_DRAW);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -88,41 +87,33 @@ void Mesh::Render(GLuint textureID)
 {
 	if (textureID != -1) glBindTexture(GL_TEXTURE_2D, textureID);
 
-	//-- Enable States --//
 	EnableClientState();
 
-	//-- Draw --//
 	glDrawElements(GL_TRIANGLES, numIndexs, GL_UNSIGNED_INT, NULL);
 	
-	//-- UnBind Buffers--//
 	UnBindBuffers(textureID);
 	
-	//--Disables States--//
 	DisableClientState();
 }
 
 void Mesh::EnableClientState()
 {
-	// Enable for vertex
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexBufferId);
 	glVertexPointer(3, GL_FLOAT, 0, NULL);
 
 	if (numTexCoords != 0)
 	{
-		// Enable for texture coords
 		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 		glBindBuffer(GL_ARRAY_BUFFER, textureBufferId);
 		glTexCoordPointer(2, GL_FLOAT, 0, NULL);
 	}
 	if (numNormals != 0)
 	{
-		// Enable for normals
 		glEnableClientState(GL_NORMAL_ARRAY);
 		glBindBuffer(GL_ARRAY_BUFFER, normalBufferId);
 		glNormalPointer(GL_FLOAT, 0, NULL);
 	}
-	// For indices
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferId);
 }
 
@@ -154,7 +145,6 @@ void Mesh::DebugRender(bool* vertexNormals, bool* faceNormals)
 
 void Mesh::RenderFaceNormals(float normalLenght)
 {
-	//Face normals
 	glColor3f(1, 0, 0);
 	glBegin(GL_LINES);
 

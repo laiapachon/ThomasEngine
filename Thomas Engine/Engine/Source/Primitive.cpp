@@ -4,19 +4,23 @@
 #include "Primitive.h"
 #include <cmath>
 
-// ------------------------------------------------------------
 Primitive::Primitive() : transform(IdentityMatrix), color(White), wire(false), axis(false), type(PrimitiveTypes::Primitive_Point)
 {
 	mesh = new Mesh();
 }
 
-// ------------------------------------------------------------
+
+Primitive::~Primitive()
+{
+	delete mesh;
+	mesh = nullptr;
+}
+
 PrimitiveTypes Primitive::GetType() const
 {
 	return type;
 }
 
-// ------------------------------------------------------------
 void Primitive::Render() const
 {
 	glPushMatrix();
@@ -66,7 +70,6 @@ void Primitive::Render() const
 	glPopMatrix();
 }
 
-// ------------------------------------------------------------
 void Primitive::InnerRender() const
 {
 	glPointSize(5.0f);
@@ -80,25 +83,21 @@ void Primitive::InnerRender() const
 	glPointSize(1.0f);
 }
 
-// ------------------------------------------------------------
 void Primitive::SetPos(float x, float y, float z)
 {
 	transform.translate(x, y, z);
 }
 
-// ------------------------------------------------------------
 void Primitive::SetRotation(float angle, const vec3 &u)
 {
 	transform.rotate(angle, u);
 }
 
-// ------------------------------------------------------------
 void Primitive::Scale(float x, float y, float z)
 {
 	transform.scale(x, y, z);
 }
 
-// Set vertex, texCoords and index
 void Primitive::SetVertices(float vertices[], int size)
 {
 	for (int i = 0; i < size; i++)
@@ -198,7 +197,6 @@ void PrimitiveSphere::InnerMesh()
 
 void PrimitiveSphere::SetVerticesMesh()
 {
-	// clear memory of prev arrays
 	std::vector<float>().swap(mesh->vertex);
 	std::vector<float>().swap(mesh->normals);
 	std::vector<float>().swap(mesh->texCoords);
@@ -217,20 +215,16 @@ void PrimitiveSphere::SetVerticesMesh()
 		xz = radius * cosf(stackAngle);             // r * cos(u)
 		y = radius * sinf(stackAngle);              // r * sin(u)
 
-		// add (sectorCount+1) vertices per stack
-		// the first and last vertices have same position and normal, but different tex coords
 		for (int j = 0; j <= sectors; ++j)
 		{
 			sectorAngle = j * sectorStep;           // starting from 0 to 2pi
 
-			// vertex position (x, y, z)
 			x = xz * cosf(sectorAngle);             // r * cos(u) * cos(v)
 			z = xz * sinf(sectorAngle);             // r * cos(u) * sin(v)
 			mesh->vertex.push_back(x);
 			mesh->vertex.push_back(y);
 			mesh->vertex.push_back(z);
 
-			// normalized vertex normal (nx, ny, nz)
 			nx = x * lengthInv;
 			ny = y * lengthInv;
 			nz = z * lengthInv;
@@ -238,7 +232,6 @@ void PrimitiveSphere::SetVerticesMesh()
 			mesh->normals.push_back(ny);
 			mesh->normals.push_back(nz);
 
-			// vertex tex coord (s, t) range between [0, 1]
 			s = (float)j / sectors;
 			t = (float)i / stacks;
 			mesh->texCoords.push_back(s);
@@ -252,7 +245,6 @@ void PrimitiveSphere::SetVerticesMesh()
 
 void PrimitiveSphere::SetIndicesMesh()
 {
-	// generate CCW index list of sphere triangles
 	// k1--k1+1
 	// |  / |
 	// | /  |
@@ -260,12 +252,11 @@ void PrimitiveSphere::SetIndicesMesh()
 	int k1, k2;
 	for (int i = 0; i < stacks; ++i)
 	{
-		k1 = i * (sectors + 1);     // beginning of current stack
-		k2 = k1 + sectors + 1;      // beginning of next stack
+		k1 = i * (sectors + 1);     
+		k2 = k1 + sectors + 1;      
 
 		for (int j = 0; j < sectors; ++j, ++k1, ++k2)
 		{
-			// 2 triangles per sector excluding first and last stacks
 			// k1 => k2 => k1+1
 			if (i != 0)
 			{
@@ -323,15 +314,12 @@ std::vector<float> PrimitiveCylinder::GetUnitCircleVertices()
 
 void PrimitiveCylinder::SetVerticesMesh()
 {
-	// clear memory of prev arrays
 	std::vector<float>().swap(mesh->vertex);
 	std::vector<float>().swap(mesh->normals);
 	std::vector<float>().swap(mesh->texCoords);
 
-	// get unit circle vectors on XY-plane
 	std::vector<float> unitVertices = GetUnitCircleVertices();
 
-	// put side vertices to arrays
 	for (int i = 0; i < 2; ++i)
 	{
 		float h = -height / 2.0f + i * height;           // y value; -h/2 to h/2
@@ -342,24 +330,20 @@ void PrimitiveCylinder::SetVerticesMesh()
 			float ux = unitVertices[k];
 			float uy = unitVertices[k + 1];
 			float uz = unitVertices[k + 2];
-			// position vector
 			mesh->vertex.push_back(ux * radius);             // vx
 			mesh->vertex.push_back(h);                       // vy
 			mesh->vertex.push_back(uz * radius);             // vz
 
-			// normal vector
 			mesh->normals.push_back(ux);                       // nx
 			mesh->normals.push_back(uz);                       // ny
 			mesh->normals.push_back(uy);                       // nz
 
-			// texture coordinate
 			mesh->texCoords.push_back((float)j / sectorCount); // s
 			mesh->texCoords.push_back(t);
 		}
 	}
 
-	// the starting index for the base/top surface
-	//NOTE: it is used for generating indices later
+	
 	baseCenterIndex = (int)mesh->vertex.size() / 3;
 	topCenterIndex = baseCenterIndex + sectorCount + 1; // include center vertex
 
@@ -369,7 +353,6 @@ void PrimitiveCylinder::SetVerticesMesh()
 		float h = -height / 2.0f + i * height;           // y value; -h/2 to h/2
 		float nz = -1 + i * 2;                           // z value of normal; -1 to 1
 
-		// center point
 		mesh->vertex.push_back(0);			mesh->vertex.push_back(h);			mesh->vertex.push_back(0);
 		mesh->normals.push_back(0);			mesh->normals.push_back(nz);		mesh->normals.push_back(0);
 		mesh->texCoords.push_back(0.5f);	mesh->texCoords.push_back(0.5f);
@@ -378,12 +361,10 @@ void PrimitiveCylinder::SetVerticesMesh()
 		{
 			float ux = unitVertices[k];
 			float uz = unitVertices[k + 2];
-			// position vector
 			mesh->vertex.push_back(ux * radius);             // vx
 			mesh->vertex.push_back(h);                       // vy
 			mesh->vertex.push_back(uz * radius);             // vz
 
-			// normal vector
 			mesh->normals.push_back(0);                        // nx
 			mesh->normals.push_back(nz);                       // ny
 			mesh->normals.push_back(0);                        // n
@@ -400,14 +381,12 @@ void PrimitiveCylinder::SetVerticesMesh()
 
 void PrimitiveCylinder::SetIndicesMesh()
 {
-	// generate CCW index list of cylinder triangles
 	int k2 = 0;                         // 1st vertex index at base
 	int k1 = sectorCount + 1;           // 1st vertex index at top
 
 	// indices for the side surface
 	for (int i = 0; i < sectorCount; ++i, ++k1, ++k2)
 	{
-		// 2 triangles per sector
 		// k1 => k1+1 => k2
 		mesh->indexs.push_back(k1);
 		mesh->indexs.push_back(k1 + 1);
@@ -419,9 +398,7 @@ void PrimitiveCylinder::SetIndicesMesh()
 		mesh->indexs.push_back(k2 + 1);
 	}
 
-	// indices for the base surface
-	//NOTE: baseCenterIndex and topCenterIndices are pre-computed during vertex generation
-	//      please see the previous code snippet
+	
 	for (int i = 0, k = baseCenterIndex + 1; i < sectorCount; ++i, ++k)
 	{
 		if (i < sectorCount - 1)
@@ -430,7 +407,7 @@ void PrimitiveCylinder::SetIndicesMesh()
 			mesh->indexs.push_back(k + 1);
 			mesh->indexs.push_back(baseCenterIndex);
 		}
-		else // last triangle
+		else 
 		{
 			mesh->indexs.push_back(k);
 			mesh->indexs.push_back(baseCenterIndex + 1);
@@ -438,7 +415,7 @@ void PrimitiveCylinder::SetIndicesMesh()
 		}
 	}
 
-	// indices for the top surface
+	
 	for (int i = 0, k = topCenterIndex + 1; i < sectorCount; ++i, ++k)
 	{
 		if (i < sectorCount - 1)
@@ -447,7 +424,7 @@ void PrimitiveCylinder::SetIndicesMesh()
 			mesh->indexs.push_back(k);
 			mesh->indexs.push_back(topCenterIndex);
 		}
-		else // last triangle
+		else 
 		{
 			mesh->indexs.push_back(topCenterIndex + 1);
 			mesh->indexs.push_back(k);

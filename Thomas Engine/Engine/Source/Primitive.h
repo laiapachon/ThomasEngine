@@ -20,6 +20,7 @@ class Primitive
 public:
 
 	Primitive();
+	~Primitive();
 
 	virtual void	Render() const;
 	virtual void	InnerRender() const;

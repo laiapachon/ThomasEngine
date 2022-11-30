@@ -10,7 +10,7 @@ class MeshRenderer : public Component
 {
 public:
 	MeshRenderer(GameObject* obj);
-	virtual ~MeshRenderer() { delete mesh; mesh = nullptr; };
+	virtual ~MeshRenderer();
 
 	void Update() override;
 	void OnEditor() override;
