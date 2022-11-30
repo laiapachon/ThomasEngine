@@ -37,7 +37,7 @@ public:
 	update_status Draw();
 	bool DrawTabWarn(std::string text);
 	void CheckShortCuts();
-
+	
 	update_status ImGuiMenuBar();
 	void NewScene();
 	void PrimitiveMenuItem();

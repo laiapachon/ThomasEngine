@@ -37,6 +37,7 @@ public:
 	GameObject* GetParent() { return parent; };
 	void SetParent(GameObject* obj) { parent = obj; };
 	std::vector<Component*> GetCompomemts() { return components; };
+	
 
 	bool IsRoot() { return (parent == nullptr) ? true : false; };
 	void Destroy() { pendingToDelete = true;};
@@ -62,4 +63,6 @@ private:
 	bool pendingToDelete = false;
 
 	std::vector<GameObject*>::iterator indexList;
+
+	
 };
