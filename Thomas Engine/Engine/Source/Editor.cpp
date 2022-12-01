@@ -16,7 +16,6 @@
 #include "SceneTab.h"
 #include "Hierarchy.h"
 #include "GameTab.h"
-#include "TextureLoader.h"
 
 #include "Primitive.h"
 
@@ -131,7 +130,6 @@ void Editor::CheckShortCuts()
 	else if (App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT && App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT && App->input->GetKey(SDL_SCANCODE_G) == KEY_UP)
 		app->scene->CreateParentGameObject("ParentGameObject", GetGameObjectSelected());
 	else if (App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT && App->input->GetKey(SDL_SCANCODE_N) == KEY_UP) warningTab = true;
-	else if (App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT && App->input->GetKey(SDL_SCANCODE_S) == KEY_UP) App->scene->SaveSceneRequest();
 }
 
 update_status Editor::Draw()
@@ -141,10 +139,6 @@ update_status Editor::Draw()
 	StartFrame();
 	ret = ImGuiMenuBar();
 	CreateDockSpace();
-
-	//pause and play menu
-	
-	ImGui::PopStyleVar();
 
 	// Rendering the tabs
 	for (unsigned int i = 0; i < tabs.size(); i++)
@@ -223,8 +217,8 @@ update_status Editor::ImGuiMenuBar()
 			if (ImGui::MenuItem("Quit", "ESC"))
 				ret = UPDATE_STOP;
 
-			if (ImGui::MenuItem("Save Scene", "Ctrl+S"))
-				app->scene->SaveSceneRequest();
+			if (ImGui::MenuItem("New Scene","Ctrl+N"))
+				warningTab = true;
 
 			ImGui::EndMenu();
 		}

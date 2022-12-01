@@ -11,7 +11,6 @@
 #include "GameTab.h"
 
 
-
 using namespace std;
 
 extern Application* app = nullptr;

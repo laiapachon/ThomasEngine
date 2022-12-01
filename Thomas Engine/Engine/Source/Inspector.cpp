@@ -80,7 +80,6 @@ void Inspector::DrawDefaultInspector()
 	for (size_t i = 0; i < gameObjectSelected->GetCompomemts().size(); i++)
 	{
 		gameObjectSelected->GetCompomemts()[i]->OnEditor();
-		gameObjectSelected->GetCompomemts()[i]->OnEditor();
 		ImGui::Separator();
 	}
 
