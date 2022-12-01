@@ -9,6 +9,8 @@
 #define FILE_CONFIG	"../Output/Settings/config.json"
 //#define FILE_CONFIG	"Settings/config.json"
 
+#define SCENE_FILE "../Output/Settings/scene.json"
+
 #include "Algorithm/Random/LCG.h"
 
 class Window;

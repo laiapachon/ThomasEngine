@@ -25,10 +25,7 @@ Application::Application() : maxFPS(60)
 	scene = new Scene(this);
 	editor = new Editor(this);
 	//game = new Game();
-
-	// The order of calls is very important!
-	// Modules will Init() Start() and Update in this order
-	// They will CleanUp() in reverse order
+	
 
 	// Main Modules
 	AddModule(window);
@@ -80,15 +77,15 @@ bool Application::Init()
 
 
 
-	// Call Init() in all modules
+	
 	for (unsigned int i = 0; i < listModules.size() && ret == true; i++)
 	{
 		ret = listModules[i]->Init();
 	}
-	// After all Init calls we call Start() in all modules
+	
 	LOG(LogType::L_NORMAL, "-------------- Application Start --------------");
 
-	// Call Init() in all modules
+	
 	for (unsigned int i = 0; i < listModules.size() && ret == true; i++)
 	{
 		ret = listModules[i]->Start();
@@ -114,13 +111,13 @@ void Application::FinishUpdate()
 	{
 		Uint32 last_frame_ms = ms_timer.Read();
 		float wait_time = (1000.f / (float)screenRefresh) - (float)last_frame_ms;
-		SDL_Delay(static_cast<Uint32>(fabs(wait_time)));
+		if (wait_time > 0)SDL_Delay(static_cast<Uint32>(fabs(wait_time)));
 	}
 	else if (maxFPS > 0)
 	{
 		Uint32 last_frame_ms = ms_timer.Read();
 		float wait_time = (1000.f / (float)maxFPS) - (float)last_frame_ms;
-		SDL_Delay(static_cast<Uint32>(fabs(wait_time)));
+		if (wait_time > 0)SDL_Delay(static_cast<Uint32>(fabs(wait_time)));
 	}
 }
 

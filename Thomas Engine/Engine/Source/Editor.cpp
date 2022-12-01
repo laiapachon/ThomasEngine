@@ -220,6 +220,9 @@ update_status Editor::ImGuiMenuBar()
 			if (ImGui::MenuItem("New Scene","Ctrl+N"))
 				warningTab = true;
 
+			if (ImGui::MenuItem("Save Scene", "Ctrl+S"))
+				app->scene->SaveSceneRequest();
+
 			ImGui::EndMenu();
 		}
 		if (ImGui::BeginMenu("View"))

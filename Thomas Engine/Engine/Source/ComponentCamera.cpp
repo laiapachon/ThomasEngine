@@ -117,7 +117,7 @@ void ComponentCamera::PreUpdate()
 
 void ComponentCamera::ReGenerateFrameBuffer(int w, int h)
 {
-	RecalculateProjection(w / h);
+	ReMakeProjection(w / h);
 
 	if (framebuffer > 0)
 		glDeleteFramebuffers(1, &framebuffer);
@@ -169,7 +169,7 @@ void ComponentCamera::CalculateViewMatrix()
 	viewMatrix = frustrum.ViewMatrix();
 }
 
-void ComponentCamera::RecalculateProjection(float aspectR)
+void ComponentCamera::ReMakeProjection(float aspectR)
 {
 	aspectRatio = aspectR;
 	frustrum.type = FrustumType::PerspectiveFrustum;

@@ -26,6 +26,8 @@ public:
 	GameObject* CreateParentGameObject(const char* name, GameObject* child);
 	GameObject* CreatePrimitive(const char* name, Mesh* mesh);
 
+	void SaveSceneRequest() { saveSceneRequest = true; }
+
 	GameObject* root;
 	ComponentCamera* mainCamera = nullptr;
 
@@ -36,4 +38,13 @@ private:
 
 	void UpdateGameObjects();
 	void RecursiveUpdate(GameObject* parent);
+
+	bool SaveScene();
+	void SaveGameObjects(GameObject* parent, JsonParser& rootFile);
+	bool LoadScene();
+
+	JsonParser jsonFile;
+	JSON_Value* rootFile;
+
+	bool saveSceneRequest = false;
 };

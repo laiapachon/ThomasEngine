@@ -294,7 +294,7 @@ void Camera3D::CalculateViewMatrix()
 {
 	if (projectionIsDirty)
 	{
-		cameraScene.RecalculateProjection(cameraScene.aspectRatio);
+		cameraScene.ReMakeProjection(cameraScene.aspectRatio);
 		projectionIsDirty = false;
 	}
 
@@ -356,7 +356,7 @@ bool Camera3D::LoadConfig(JsonParser& node)
 	reference.z = (float)node.JsonValToNumber("Reference.z");
 
 	LookAt(reference);
-	cameraScene.RecalculateProjection(cameraScene.aspectRatio);
+	cameraScene.ReMakeProjection(cameraScene.aspectRatio);
 
 	return true;
 }

@@ -77,9 +77,9 @@ void Inspector::DrawDefaultInspector()
 	ImGui::Separator();
 
 	// Draw all OnEditors componets
-	for (size_t i = 0; i < gameObjectSelected->GetCompomemts().size(); i++)
+	for (size_t i = 0; i < gameObjectSelected->GetComponents().size(); i++)
 	{
-		gameObjectSelected->GetCompomemts()[i]->OnEditor();
+		gameObjectSelected->GetComponents()[i]->OnEditor();
 		ImGui::Separator();
 	}
 

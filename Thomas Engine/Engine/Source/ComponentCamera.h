@@ -21,7 +21,7 @@ public:
 	void SetIsMainCamera(bool ret) { isMainCamera = ret; };
 
 	void CalculateViewMatrix();
-	void RecalculateProjection(float aspectRatio);
+	void ReMakeProjection(float aspectRatio);
 
 	bool updateCamera = true;
 	Frustum frustrum;

@@ -36,7 +36,7 @@ public:
 
 	GameObject* GetParent() { return parent; };
 	void SetParent(GameObject* obj) { parent = obj; };
-	std::vector<Component*> GetCompomemts() { return components; };
+	std::vector<Component*> GetComponents() { return components; };
 
 	bool IsRoot() { return (parent == nullptr) ? true : false; };
 	void Destroy() { pendingToDelete = true;};

@@ -2,18 +2,18 @@
 #include "Scene.h"
 #include "Globals.h"
 
-//Components
+
 #include "Component.h"
 #include "Transform.h"
 #include "MeshRenderer.h"
 #include "ComponentCamera.h"
 
-//Modules
 #include "Input.h"
 #include "Editor.h"
 #include "ResourceManager.h"
 #include "Camera3D.h"
-
+#include "Material.h"
+#include "ResourceTexture.h"
 #include "GameObject.h"
 #include "Inspector.h"
 #include "ResourceMesh.h"
@@ -35,6 +35,8 @@ bool Scene::Init()
 	sceneCamera->AddComponent(ComponentType::CAMERA);
 	mainCamera = static_cast<ComponentCamera*>(sceneCamera->GetComponent(ComponentType::CAMERA));
 	mainCamera->SetIsMainCamera(true);
+
+	jsonFile.FileToValue(SCENE_FILE);
 
 	return true;
 }
@@ -164,6 +166,7 @@ void Scene::Destroy(GameObject* obj)
 void Scene::UpdateGameObjects()
 {
 	RecursiveUpdate(root);
+	if (saveSceneRequest)SaveScene();
 }
 
 void Scene::RecursiveUpdate(GameObject* parent)
@@ -183,4 +186,106 @@ void Scene::RecursiveUpdate(GameObject* parent)
 			RecursiveUpdate(parent->GetChildrens()[i]);
 		}
 	}
+}
+
+bool Scene::SaveScene()
+{
+	LOG(LogType::L_NORMAL, "Saving scene");
+
+	rootFile = jsonFile.GetRootValue();
+
+	JsonParser scene = jsonFile.SetChild(rootFile, "GameObjects");
+
+	SaveGameObjects(root, scene.SetChild(scene.GetRootValue(), root->name.c_str()));
+
+	jsonFile.FileSerialization(rootFile, SCENE_FILE);
+	saveSceneRequest = false;
+	return true;
+}
+
+void Scene::SaveGameObjects(GameObject* parentGO, JsonParser& node)
+{
+	std::string num, strTmp;
+	JsonParser& child = node;
+	Transform* transform;
+	float4x4 localTransform, globalTransform;
+
+	MeshRenderer* mesh;
+	Material* material;
+
+	node.SetJString(node.ValueToObject(node.GetRootValue()), "name", parentGO->name.c_str());
+	node.SetJBool(node.ValueToObject(node.GetRootValue()), "IsRoot", parentGO->IsRoot());
+
+	node.SetJString(node.ValueToObject(node.GetRootValue()), "tag", parentGO->tag.c_str());
+	node.SetJString(node.ValueToObject(node.GetRootValue()), "layer", parentGO->layer.c_str());
+
+
+	node.SetJBool(node.ValueToObject(node.GetRootValue()), "active", parentGO->active);
+	node.SetJBool(node.ValueToObject(node.GetRootValue()), "isStatic", parentGO->isStatic);
+	node.SetJBool(node.ValueToObject(node.GetRootValue()), "isSelected", parentGO->isSelected);
+
+
+	node.SetJBool(node.ValueToObject(node.GetRootValue()), "showChildrens", parentGO->GetShowChildrens());
+	node.SetJBool(node.ValueToObject(node.GetRootValue()), "pendingToDelete", parentGO->GetPendingToDelete());
+
+
+	JsonParser components = node.SetChild(node.GetRootValue(), "components");
+	JsonParser tmp = node;
+	for (size_t i = 0; i < parentGO->GetComponents().size(); i++)
+	{
+		num = "Component " + std::to_string(i);
+		tmp = components.SetChild(components.GetRootValue(), num.c_str());
+
+		tmp.SetJNumber(tmp.ValueToObject(tmp.GetRootValue()), "Type", (int)parentGO->GetComponents().at(i)->GetType());
+		tmp.SetJBool(tmp.ValueToObject(tmp.GetRootValue()), "active", parentGO->GetComponents().at(i)->active);
+
+		switch ((ComponentType)parentGO->GetComponents().at(i)->GetType())
+		{
+		case ComponentType::TRANSFORM:
+			num = "";
+			transform = static_cast<Transform*>(parentGO->GetComponent(ComponentType::TRANSFORM));
+			localTransform = transform->GetLocalTransform();
+			globalTransform = transform->GetGlobalTransform();
+			for (int i = 0; i < 4; i++)
+				for (int j = 0; j < 4; j++)
+				{
+					if (i == 0 && j == 0)num += std::to_string(localTransform.At(i, j)), strTmp += std::to_string(globalTransform.At(i, j));
+					else num += "," + std::to_string(localTransform.At(i, j)), strTmp += "," + std::to_string(globalTransform.At(i, j));
+				}
+			tmp.SetJString(tmp.ValueToObject(tmp.GetRootValue()), "LocalTransform", num.c_str());
+			tmp.SetJString(tmp.ValueToObject(tmp.GetRootValue()), "GlobalTransform", strTmp.c_str());
+			break;
+
+		case ComponentType::MESH_RENDERER:
+			mesh = static_cast<MeshRenderer*>(parentGO->GetComponent(ComponentType::MESH_RENDERER));
+			tmp.SetJString(tmp.ValueToObject(tmp.GetRootValue()), "Mesh", parentGO->name.c_str());
+			break;
+
+		case ComponentType::MATERIAL:
+			material = static_cast<Material*>(parentGO->GetComponent(ComponentType::MATERIAL));
+			tmp.SetJString(tmp.ValueToObject(tmp.GetRootValue()), "Material", material->texture->path.c_str());
+			break;
+
+		case ComponentType::CAMERA:
+			break;
+
+		default:
+			break;
+
+		}
+		parentGO->GetComponents().at(i)->GetType();
+	}
+
+	for (size_t i = 0; i <= parentGO->GetChildrens().size(); i++)
+	{
+		num = "Child " + std::to_string(i);
+		if (parentGO->GetChildrens().size() > i)
+			SaveGameObjects(parentGO->GetChildrens()[i], child.SetChild(child.GetRootValue(), num.c_str()));
+	}
+}
+
+bool Scene::LoadScene()
+{
+
+	return true;
 }

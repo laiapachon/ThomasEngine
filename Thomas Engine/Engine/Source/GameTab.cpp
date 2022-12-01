@@ -17,7 +17,7 @@ void GameTab::Draw()
 		if (app->scene->mainCamera != nullptr)
 		{
 			ImVec2 size = ImGui::GetContentRegionAvail();
-			app->scene->mainCamera->RecalculateProjection(size.x / size.y);
+			app->scene->mainCamera->ReMakeProjection(size.x / size.y);
 			ImGui::Image((ImTextureID)app->scene->mainCamera->texColorBuffer, size, ImVec2(0, 1), ImVec2(1, 0));
 		}
 	}

@@ -22,6 +22,7 @@ public:
 	void SetTransformMFromGlobalM(float4x4 globalMatrix);
 	float4x4 GetGlobalTransform() { return globalTransform; };
 	float4x4 GetGlobalTransformT() { return globalTransformTransposed; };
+	float4x4 GetLocalTransform() { return localTransform; };
 
 	void UpdateTransform();
 	void NewAttachment();

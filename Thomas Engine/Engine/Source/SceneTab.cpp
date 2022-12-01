@@ -23,7 +23,7 @@ void SceneTab::Draw()
 		app->camera->CheckInputsKeyBoard();
 
 		ImVec2 size = ImGui::GetContentRegionAvail();
-		app->camera->cameraScene.RecalculateProjection(size.x / size.y);
+		app->camera->cameraScene.ReMakeProjection(size.x / size.y);
 		ImGui::Image((ImTextureID)app->camera->cameraScene.texColorBuffer, size, ImVec2(0, 1), ImVec2(1, 0));
 
 		if (app->editor->GetGameObjectSelected() != nullptr)
