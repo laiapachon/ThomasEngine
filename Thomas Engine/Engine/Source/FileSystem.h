@@ -18,17 +18,16 @@ namespace StringLogic {
 
 namespace FileSystem 
 {
-	ImportType GetTypeFromPath(const char* path);
+	ImportType GetImportType(const char* path);
 
 	void FSInit();
 	void FSDeInit();
-	void CreateLibraryDirectories();
+	void LibraryMaker();
 
-	// Utility functions
 	bool AddPath(const char* path_or_zip);
-	bool Exists(const char* file);
+	bool FileExist(const char* file);
 	bool CreateDir(const char* dir);
-	bool IsDirectory(const char* file);
+	bool IsDirFound(const char* file);
 
 	std::string NormalizePath(const char* fullPath);
 	std::string UnNormalizePath(const char* fullPath);
@@ -36,11 +35,10 @@ namespace FileSystem
 	std::string ExtractLocalDiskBackward(const char* fullPath);
 	std::string ExtractLocalDiskForward(const char* fullPath);
 
-	// Open for Read/Write
-	unsigned int LoadToBuffer(const char* file, char** buffer);
-	unsigned int Save(const char* file, const void* buffer, unsigned int size, bool append = false);
+	unsigned int FileLoad(const char* file, char** buffer);
+	unsigned int FileSave(const char* file, const void* buffer, unsigned int size, bool append = false);
 
-	bool Remove(const char* file);
+	bool FileRemove(const char* file);
 	void GetFileName(const char* file, std::string& fileName, bool extension);
 
 	inline const char* GetBasePath() { return PHYSFS_getBaseDir(); }

@@ -1,34 +1,34 @@
 #include "Resource.h"
 #include"Globals.h"
 
-Resource::Resource(ResourceType type) : assetsFile(""), libraryFile(""), type(type), referenceCount(0)
+Resource::Resource(ResourceType type) : assetFile(""), libFile(""), type(type), referenceCount(0)
 {
 
 }
 
 Resource::~Resource()
 {
-	assetsFile.clear();
-	libraryFile.clear();
+	assetFile.clear();
+	libFile.clear();
 	type = ResourceType::UNKNOWN;
 
 	if (referenceCount != 0)
-		LOG(LogType::L_NORMAL, "DELETING RESOURCE WITH MULTIPLE REFERENCE COUNTS");
+		LOG(LogType::L_NORMAL, "Deleting Resource");
 
 	referenceCount = 0;
 }
 
 void Resource::SetAssetsPath(const char* _aPath)
 {
-	assetsFile = _aPath;
+	assetFile = _aPath;
 }
 
 void Resource::SetLibraryPath(const char* _lPath)
 {
-	libraryFile = _lPath;
+	libFile = _lPath;
 }
 
-const char* Resource::GetFormatExt()
+const char* Resource::GetNewFormat()
 {
 	switch (type)
 	{

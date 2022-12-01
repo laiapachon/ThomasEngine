@@ -17,9 +17,7 @@ public:
 public:
 	int texWidth = 0;
 	int texHeight = 0;
-
 	GLuint textureID = -1;
-
 	std::string path;
 	std::string name;
 };

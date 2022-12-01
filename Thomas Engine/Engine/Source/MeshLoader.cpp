@@ -29,8 +29,7 @@ void MeshLoader::EnableDebugMode()
 	aiAttachLogStream(&stream);
 }
 void MeshLoader::DisableDebugMode()
-{
-	// Detach log stream
+{	
 	aiDetachAllLogStreams();
 }
 
@@ -40,7 +39,7 @@ Mesh* MeshLoader::LoadMesh(aiMesh* importedMesh)
 
 	Mesh* mesh = new Mesh();
 
-	// copy vertices
+	
 	mesh->numVertex = importedMesh->mNumVertices;
 	mesh->numTexCoords = importedMesh->mNumVertices;
 	mesh->numNormals = importedMesh->mNumVertices;
@@ -67,7 +66,7 @@ Mesh* MeshLoader::LoadMesh(aiMesh* importedMesh)
 
 	importedMesh->HasVertexColors(0);
 
-	// Generate indices
+
 	if (importedMesh->HasFaces())
 	{
 		mesh->numIndexs = importedMesh->mNumFaces * 3;

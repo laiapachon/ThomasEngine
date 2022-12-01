@@ -26,10 +26,10 @@ bool Texture::LoadToMemory()
 
 	// Calculate buffer size
 	char* buffer = nullptr;
-	int bufferSize = FileSystem::LoadToBuffer(path.c_str(), &buffer);
+	int bufferSize = FileSystem::FileLoad(path.c_str(), &buffer);
 
 	// Generate new textureID
-	textureID = TextureLoader::LoadToMemory(buffer, bufferSize, &texWidth, &texHeight);
+	textureID = TextureLoader::LoadTexOnMemory(buffer, bufferSize, &texWidth, &texHeight);
 
 	RELEASE_ARRAY(buffer);
 

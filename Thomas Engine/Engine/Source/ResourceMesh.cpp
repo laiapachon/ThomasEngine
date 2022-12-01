@@ -9,8 +9,6 @@ Mesh::Mesh() : Resource(ResourceType::MESH)
 }
 
 Mesh::~Mesh()
-
-
 	{
 		CleanUp();
 	}
@@ -73,13 +71,11 @@ bool Mesh::LoadToMemory()
 }
 
 bool Mesh::UnloadFromMemory()
-{
-	//Clear buffers
+{	
 	indexs.clear();
 	vertex.clear();
 	normals.clear();
 	texCoords.clear();
-
 	return true;
 }
 
@@ -156,8 +152,7 @@ void Mesh::RenderFaceNormals(float normalLenght)
 			abc.vecABC[j] = GetIndexVec(&vertex[indexs[i + j] * 3]);
 
 		abc.UpdateABC();
-
-		//(A.x + B.x + C.x) / 3.f, (A.y + B.y + C.y) / 3.f, (A.z + B.z + C.z)
+		
 		vec3 central((abc.A.x + abc.B.x + abc.C.x) / 3.f, (abc.A.y + abc.B.y + abc.C.y) / 3.f, (abc.A.z + abc.B.z + abc.C.z) / 3.f);
 		vec3 vCross = cross((abc.B - abc.A), (abc.C - abc.A));
 		vec3 normalDirection = normalize(vCross);

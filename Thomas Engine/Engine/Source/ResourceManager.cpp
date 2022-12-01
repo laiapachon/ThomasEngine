@@ -58,11 +58,11 @@ void ResourceManager::ImportFile(const char* assetsFile)
 	std::string output = "";
 
 	char* buffer = nullptr;
-	uint size = FileSystem::LoadToBuffer(normalizedPath.c_str(), &buffer);
+	uint size = FileSystem::FileLoad(normalizedPath.c_str(), &buffer);
 
 	if (buffer != nullptr && size != 0)
 	{
-		switch (FileSystem::GetTypeFromPath(assetsFile))
+		switch (FileSystem::GetImportType(assetsFile))
 		{
 		case ImportType::NOTYPE:
 		{
@@ -77,7 +77,7 @@ void ResourceManager::ImportFile(const char* assetsFile)
 		case ImportType::TEXTURE:
 		{
 			Texture* material = new Texture(normalizedPath.c_str());
-			if (FileSystem::Exists(material->GetLibraryPath()))
+			if (FileSystem::FileExist(material->GetLibraryPath()))
 			{
 				overwritting = true;
 				ovResource = material;
@@ -194,7 +194,7 @@ void ResourceManager::NewCounterFile()
 	for (int i = 1; !num.compare("_"); i++)
 	{
 		path = path + "_" + std::to_string(i) + ext;
-		if (!FileSystem::Exists(path.c_str()))
+		if (!FileSystem::FileExist(path.c_str()))
 		{
 			ovPath = path.c_str();
 			break;

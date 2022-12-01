@@ -38,5 +38,5 @@ public:
 private:
 
 	bool isMainCamera = false;
-	bool showFrustrum = false;
+	bool showFrustrum = true;
 };

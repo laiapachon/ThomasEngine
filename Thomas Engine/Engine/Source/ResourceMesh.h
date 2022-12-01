@@ -11,7 +11,6 @@ typedef unsigned int GLuint;
 struct meshABC {
 
 public:
-
 	vec3 vecABC[3] = {  vec3(0, 0, 0), vec3(0, 0, 0), vec3(0, 0, 0) };
 	vec3 A = vecABC[0];
 	vec3 B = vecABC[1];
@@ -51,17 +50,16 @@ public:
 
 	void CleanUp();
 public:
-	// Buffers ID
 	uint indexBufferId = 0;
 	uint vertexBufferId = 0;
 	uint textureBufferId = 0;
 	uint normalBufferId = 0;
-	// Counts
+
 	uint numIndexs = 0;
 	uint numVertex = 0;
 	uint numTexCoords = 0;
 	uint numNormals = 0;
-	// Vectors
+
 	std::vector<uint> indexs;
 	std::vector<float> vertex;
 	std::vector<float> texCoords;
@@ -69,7 +67,5 @@ public:
 
 	float3 centerPoint = float3::zero;
 	float radius;
-
-	//Local coords AABB
 	AABB localAABB;
 };

@@ -7,6 +7,6 @@ class Resource;
 namespace TextureLoader
 {
 	bool SaveToDds(char* buffer, int size, const char* name);
-	GLuint LoadToMemory(char* buffer, int size, int* w = nullptr, int* h = nullptr);
+	GLuint LoadTexOnMemory(char* buffer, int size, int* w = nullptr, int* h = nullptr);
 };
 

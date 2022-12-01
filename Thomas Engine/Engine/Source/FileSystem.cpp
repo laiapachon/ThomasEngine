@@ -17,37 +17,34 @@ void FileSystem::FSInit()
 	ilutInit();
 	ilutRenderer(ILUT_OPENGL);
 	MeshLoader::EnableDebugMode();
-
-	// PHYSFS_init
-	// Needs to be created before Init so other modules can use it
+	
 	LOG(LogType::L_NORMAL, "PHYSFS Init");
 	char* basePath = SDL_GetBasePath();
 	PHYSFS_init(basePath);
 	SDL_free(basePath);
 
-	//Setting the working directory as the writing directory
+	
 	if (PHYSFS_setWriteDir(basePath) == 0)
 		LOG(LogType::L_NORMAL, "File System error while creating write dir: %s\n", PHYSFS_getLastError());
 
-	// Adding a path to search archives (LocalDisk)
-	// This way you can import files from any path
+	
 	std::string assetPath = GetBasePath();
 	assetPath = ExtractLocalDiskBackward(assetPath.c_str());
 	FileSystem::AddPath(assetPath.c_str());
 
-	// Adding ProjectFolder (working directory + AssestsFolder)
+	
 	assetPath = GetBasePath();
 	assetPath = NormalizePath(assetPath.c_str());
 	assetPath += ASSETS_FOLDER;
 	FileSystem::AddPath(assetPath.c_str());
 
-	// Adding Output folder (for library folder searches (maybe it's better to add Library path))
+	
 	assetPath = GetBasePath();
 	assetPath = NormalizePath(assetPath.c_str());
 	//assetPath += LIBRARY_FOLDER;
 	FileSystem::AddPath(assetPath.c_str());
 
-	// Dump list of paths
+	
 	LOG(LogType::L_NORMAL, "Get Base Path: ");
 	LOG(LogType::L_NORMAL, GetBasePath());
 	LOG(LogType::L_NORMAL, "Get Read Path: ");
@@ -55,10 +52,9 @@ void FileSystem::FSInit()
 	LOG(LogType::L_NORMAL, "Get Write Path: ");
 	LOG(LogType::L_NORMAL, GetWritePath());
 
-	FileSystem::CreateLibraryDirectories();
+	FileSystem::LibraryMaker();
 }
 
-// Extract file name, from last "/" until the "."
 std::string StringLogic::FileNameFromPath(const char* path)
 {
 	std::string fileName(path);
@@ -85,8 +81,8 @@ std::string StringLogic::GlobalToLocalPath(const char* globalPath)
 	localPath.clear();
 	return localPath;
 }
-// Get file type from path according to its extension 
-ImportType FileSystem::GetTypeFromPath(const char* path)
+
+ImportType FileSystem::GetImportType(const char* path)
 {
 	std::string ext(path);
 	ext = ext.substr(ext.find_last_of('.') + 1);
@@ -109,8 +105,8 @@ void FileSystem::FSDeInit()
 	PHYSFS_deinit();
 	MeshLoader::DisableDebugMode();
 }
-// If don't exist this paths, let's create 
-void FileSystem::CreateLibraryDirectories()
+
+void FileSystem::LibraryMaker()
 {
 	CreateDir(LIBRARY_FOLDER);
 	CreateDir(MESHES_FOLDER);
@@ -119,20 +115,20 @@ void FileSystem::CreateLibraryDirectories()
 }
 bool FileSystem::CreateDir(const char* dir)
 {
-	if (IsDirectory(dir) == false)
+	if (IsDirFound(dir) == false)
 	{
 		PHYSFS_mkdir(dir);
 		return true;
 	}
 	return true;
 }
-// Check if a file exists
-bool FileSystem::Exists(const char* file)
+
+bool FileSystem::FileExist(const char* file)
 {
 	return PHYSFS_exists(file) != 0;
 }
 
-// Add a new zip file or folder
+
 bool FileSystem::AddPath(const char* path_or_zip)
 {
 	bool ret = false;
@@ -146,7 +142,7 @@ bool FileSystem::AddPath(const char* path_or_zip)
 
 	return ret;
 }
-// Return all existing paths
+
 const char* FileSystem::GetReadPaths()
 {
 	static char paths[512];
@@ -162,12 +158,12 @@ const char* FileSystem::GetReadPaths()
 
 	return paths;
 }
-// Check if a file is a directory
-bool FileSystem::IsDirectory(const char* file)
+
+bool FileSystem::IsDirFound(const char* file)
 {
 	return PHYSFS_isDirectory(file) != 0;
 }
-// Substitute "\\" to "/"
+
 std::string FileSystem::NormalizePath(const char* fullPath)
 {
 	std::string newPath(fullPath);
@@ -204,7 +200,7 @@ std::string FileSystem::ExtractLocalDiskForward(const char* fullPath)
 }
 
 
-uint FileSystem::LoadToBuffer(const char* file, char** buffer)
+uint FileSystem::FileLoad(const char* file, char** buffer)
 {
 	uint ret = 0;
 
@@ -226,7 +222,6 @@ uint FileSystem::LoadToBuffer(const char* file, char** buffer)
 			else
 			{
 				ret = readed;
-				//Adding end of file at the end of the buffer. Loading a shader file does not add this for some reason
 				(*buffer)[size] = '\0';
 			}
 		}
@@ -240,7 +235,7 @@ uint FileSystem::LoadToBuffer(const char* file, char** buffer)
 	return ret;
 }
 
-uint FileSystem::Save(const char* file, const void* buffer, unsigned int size, bool append)
+uint FileSystem::FileSave(const char* file, const void* buffer, unsigned int size, bool append)
 {
 	unsigned int ret = 0;
 
@@ -275,7 +270,7 @@ uint FileSystem::Save(const char* file, const void* buffer, unsigned int size, b
 	return ret;
 }
 
-bool FileSystem::Remove(const char* file)
+bool FileSystem::FileRemove(const char* file)
 {
 	bool ret = false;
 

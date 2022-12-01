@@ -91,7 +91,7 @@ void ModelImporter::LoadMaterials(const aiScene* scene, const char* fullPath, st
 
 				// Get the buffer
 				char* buffer = nullptr;
-				FileSystem::LoadToBuffer(localPath.c_str(), &buffer);
+				FileSystem::FileLoad(localPath.c_str(), &buffer);
 
 				if (buffer != nullptr)
 				{

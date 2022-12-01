@@ -22,27 +22,23 @@ public:
 	virtual ~Resource();
 
 	inline ResourceType GetType() const { return type; }
-	inline const char* GetAssetPath() const { return assetsFile.c_str(); }
-	inline const char* GetLibraryPath() const { return libraryFile.c_str(); }
+	inline const char* GetAssetPath() const { return assetFile.c_str(); }
+	inline const char* GetLibraryPath() const { return libFile.c_str(); }
 
 	void SetAssetsPath(const char*);
-	void SetLibraryPath(const char*);
-
-	//inline bool IsLoadedToMemory() const { return (referenceCount >= 0) ? true : false; }
+	void SetLibraryPath(const char*);	
 
 	inline unsigned int GetReferenceCount() const { return referenceCount; }
 	inline void IncreaseReferenceCount() { referenceCount++; }
 	inline void DecreaseReferenceCount() { referenceCount--; }
 
-	//Can't be pure virtual "=0" until there is a resoruce model class
 	virtual bool LoadToMemory() { return false; }
 	virtual bool UnloadFromMemory() { return false; }
-
-	const char* GetFormatExt();
+	const char* GetNewFormat();
 
 private:
-	std::string assetsFile;
-	std::string libraryFile;
+	std::string assetFile;
+	std::string libFile;
 	ResourceType type = ResourceType::UNKNOWN;
 	unsigned int referenceCount;
 };

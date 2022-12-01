@@ -9,18 +9,44 @@
 
 #include"Resource.h"
 
-
-GLuint TextureLoader::LoadToMemory(char* buffer, int size, int* w, int* h)
+bool TextureLoader::SaveToDds(char* buffer, int size, const char* name)
 {
-	ILuint imageID;
-	ilGenImages(1, &imageID);
-	ilBindImage(imageID);
+	ILuint textureID;
+	ilGenImages(1, &textureID);
+	ilBindImage(textureID);
 
 	if (!ilLoadL(IL_TYPE_UNKNOWN, buffer, size))
 	{
-		LOG(LogType::L_ERROR, "Image not loaded");
+		LOG(LogType::L_ERROR, "Error loading texture");
+		ilDeleteImages(1, &textureID);
+		return false;
 	}
 
+	ILuint newSize;
+	ILubyte* data;
+	ilSetInteger(IL_DXTC_FORMAT, IL_DXT5);
+	newSize = ilSaveL(IL_DDS, nullptr, 0); 
+	if (newSize > 0) {
+		data = new ILubyte[newSize]; 
+		if (ilSaveL(IL_DDS, data, newSize) > 0) 
+			buffer = (char*)data;
+
+		FileSystem::FileSave(name, buffer, newSize);
+		RELEASE_ARRAY(data);
+	}
+	ilDeleteImages(1, &textureID);
+	return true;
+}
+GLuint TextureLoader::LoadTexOnMemory(char* buffer, int size, int* w, int* h)
+{
+	ILuint textureID;
+	ilGenImages(1, &textureID);
+	ilBindImage(textureID);
+
+	if (!ilLoadL(IL_TYPE_UNKNOWN, buffer, size))
+	{
+		LOG(LogType::L_ERROR, "Error loading texture on memory");
+	}
 	if (w)
 		*w = ilGetInteger(IL_IMAGE_WIDTH);
 	if (h)
@@ -37,38 +63,9 @@ GLuint TextureLoader::LoadToMemory(char* buffer, int size, int* w, int* h)
 	glGenerateMipmap(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, 0);
 
-	ilDeleteImages(1, &imageID);
+	ilDeleteImages(1, &textureID);
 	glBindTexture(GL_TEXTURE_2D, 0);
 
 	return glID;
 }
 
-bool TextureLoader::SaveToDds(char* buffer, int size, const char* name)
-{
-	ILuint imageID;
-	ilGenImages(1, &imageID);
-	ilBindImage(imageID);
-
-	if (!ilLoadL(IL_TYPE_UNKNOWN, buffer, size))
-	{
-		LOG(LogType::L_ERROR, "Image not loaded");
-		ilDeleteImages(1, &imageID);
-		return false;
-	}
-
-	ILuint newSize;
-	ILubyte* data;
-	ilSetInteger(IL_DXTC_FORMAT, IL_DXT5);
-	newSize = ilSaveL(IL_DDS, nullptr, 0); 
-	if (newSize > 0) {
-		data = new ILubyte[newSize]; 
-		if (ilSaveL(IL_DDS, data, newSize) > 0) 
-			buffer = (char*)data;
-
-		FileSystem::Save(name, buffer, newSize);
-		RELEASE_ARRAY(data);
-	}
-
-	ilDeleteImages(1, &imageID);
-	return true;
-}
