@@ -16,6 +16,9 @@
 #include "SceneTab.h"
 #include "Hierarchy.h"
 #include "GameTab.h"
+#include "Transform.h"
+#include "MeshRenderer.h"
+#include "Material.h"
 
 #include "Primitive.h"
 
@@ -123,13 +126,51 @@ void Editor::StartFrame()
 
 void Editor::CheckShortCuts()
 {
-	if (App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT && App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT && App->input->GetKey(SDL_SCANCODE_N) == KEY_UP)
-		app->scene->CreateNewGameObject("GameObject");
-	else if (App->input->GetKey(SDL_SCANCODE_LALT) == KEY_REPEAT && App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT && App->input->GetKey(SDL_SCANCODE_N) == KEY_UP)
-		app->scene->CreateChildGameObject("ChildGameObject", GetGameObjectSelected());
-	else if (App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT && App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT && App->input->GetKey(SDL_SCANCODE_G) == KEY_UP)
-		app->scene->CreateParentGameObject("ParentGameObject", GetGameObjectSelected());
-	else if (App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT && App->input->GetKey(SDL_SCANCODE_N) == KEY_UP) warningTab = true;
+	if (App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT)
+	{
+		if (App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT)
+		{
+			if (App->input->GetKey(SDL_SCANCODE_N) == KEY_UP)
+			{
+				app->scene->CreateNewGameObject("New GameObject");
+			}
+			else if (App->input->GetKey(SDL_SCANCODE_G) == KEY_UP)
+			{
+				app->scene->CreateParentGameObject("Parent Game Object", GetGameObjectSelected());
+			}
+			else if (App->input->GetKey(SDL_SCANCODE_F) == KEY_UP)
+			{
+				AlignWithView();
+			}
+		}
+		else if (App->input->GetKey(SDL_SCANCODE_N) == KEY_UP)
+		{
+			warningTab = true;
+		}
+		else if (App->input->GetKey(SDL_SCANCODE_S) == KEY_UP)
+		{
+			App->scene->SaveSceneRequest();
+		}
+		else if (App->input->GetKey(SDL_SCANCODE_D) == KEY_UP)
+		{
+			Duplicate(GetGameObjectSelected(), GetGameObjectSelected()->GetParent());
+		}
+	}
+	else if (App->input->GetKey(SDL_SCANCODE_LALT))
+	{
+		if (App->input->GetKey(SDL_SCANCODE_W) == KEY_UP)
+		{
+			App->camera->translateSnap = !App->camera->translateSnap;
+		}
+		else if (App->input->GetKey(SDL_SCANCODE_E) == KEY_UP)
+		{
+			App->camera->rotateSnap = !App->camera->rotateSnap;
+		}
+		else if (App->input->GetKey(SDL_SCANCODE_R) == KEY_UP)
+		{
+			App->camera->scaleSnap = !App->camera->scaleSnap;
+		}
+	}
 }
 
 update_status Editor::Draw()
@@ -222,6 +263,93 @@ update_status Editor::ImGuiMenuBar()
 
 			if (ImGui::MenuItem("Save Scene", "Ctrl+S"))
 				app->scene->SaveSceneRequest();
+
+			if (ImGui::MenuItem("Load Scene"))
+				app->scene->LoadSceneRequest();
+
+			ImGui::EndMenu();
+		}
+
+		if (ImGui::BeginMenu("Edit"))
+		{			
+			//Translate snap options
+			DrawShortcut("Snap Translate", "Alt+W", true);
+			ImGui::Checkbox("Snap Translate", &app->camera->translateSnap);
+			if (!app->camera->translateSnap)
+			{
+				ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(128, 128, 128, 255));
+				ImGui::PushStyleColor(ImGuiCol_HeaderHovered, IM_COL32(128, 128, 128, 100));
+			}
+			ImGui::PushID("Translate");
+			if (ImGui::BeginMenu("Snap Options"))
+			{
+				if (ImGui::SliderFloat("X", &app->camera->tSnap[0], 0.0f, 10.0f, "%.2f"));
+				if (ImGui::SliderFloat("Y", &app->camera->tSnap[1], 0.0f, 10.0f, "%.2f"));
+				if (ImGui::SliderFloat("Z", &app->camera->tSnap[2], 0.0f, 10.0f, "%.2f"));
+				if (ImGui::SliderFloat("All", &app->camera->allTsnap, 0.0f, 10.0f, "%.2f"))
+				{
+					app->camera->tSnap[0] = app->camera->allTsnap;
+					app->camera->tSnap[1] = app->camera->allTsnap;
+					app->camera->tSnap[2] = app->camera->allTsnap;
+				}
+				ImGui::EndMenu();
+			}
+			ImGui::PopID();
+			if (!app->camera->translateSnap)
+			{
+				ImGui::PopStyleColor();
+				ImGui::PopStyleColor();
+			}
+
+			//Rotation snap options
+			DrawShortcut("Snap Rotation", "Alt+E", true);
+			ImGui::Checkbox("Snap Rotation", &app->camera->rotateSnap);
+			if (!app->camera->rotateSnap)
+			{
+				ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(128, 128, 128, 255));
+				ImGui::PushStyleColor(ImGuiCol_HeaderHovered, IM_COL32(128, 128, 128, 100));
+			}
+			ImGui::PushID("Rotation");
+			if (ImGui::BeginMenu("Snap Options"))
+			{
+				ImGui::SliderInt("All", &app->camera->allRsnap, 0, 90);
+				ImGui::EndMenu();
+			}
+			ImGui::PopID();
+			if (!app->camera->rotateSnap)
+			{
+				ImGui::PopStyleColor();
+				ImGui::PopStyleColor();
+			}
+
+			//Sacle snap options
+			DrawShortcut("Snap Scale", "Ctrl+Alt+R", true);
+			ImGui::Checkbox("Snap Scale", &app->camera->scaleSnap);
+			if (!app->camera->scaleSnap)
+			{
+				ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(128, 128, 128, 255));
+				ImGui::PushStyleColor(ImGuiCol_HeaderHovered, IM_COL32(128, 128, 128, 100));
+			}
+			ImGui::PushID("Scale");
+			if (ImGui::BeginMenu("Snap Options"))
+			{
+				if (ImGui::SliderFloat("X", &app->camera->sSnap[0], 0.0f, 1.0f, "%.2f"));
+				if (ImGui::SliderFloat("Y", &app->camera->sSnap[1], 0.0f, 1.0f, "%.2f"));
+				if (ImGui::SliderFloat("Z", &app->camera->sSnap[2], 0.0f, 1.0f, "%.2f"));
+				if (ImGui::SliderFloat("All", &app->camera->allSsnap, 0.0f, 1.0f, "%.2f"))
+				{
+					app->camera->sSnap[0] = app->camera->allSsnap;
+					app->camera->sSnap[1] = app->camera->allSsnap;
+					app->camera->sSnap[2] = app->camera->allSsnap;
+				}
+				ImGui::EndMenu();
+			}
+			ImGui::PopID();
+			if (!app->camera->scaleSnap)
+			{
+				ImGui::PopStyleColor();
+				ImGui::PopStyleColor();
+			}
 
 			ImGui::EndMenu();
 		}
@@ -392,4 +520,74 @@ void Editor::DockSpaceOverViewportCustom(ImGuiViewport* viewport, ImGuiDockNodeF
 	ImGuiID dockspaceId = ImGui::GetID("DockSpace");
 	ImGui::DockSpace(dockspaceId, ImVec2(0.0f, 0.0f), dockspaceFlags, windowClass);
 	ImGui::End();
+
+
+}
+
+void Editor::DrawShortcut(const char* label, const char* shortcut, bool ckeckbox)
+{
+	ImGuiWindow* window = ImGui::GetCurrentWindow();
+	ImVec2 pos = window->DC.CursorPos;
+	if (ckeckbox)
+	{
+		pos.x += 25;
+		pos.y += 5;
+	}
+	const ImGuiMenuColumns* offsets = &window->DC.MenuColumns;
+	ImGuiContext& g = *GImGui;
+	ImGuiStyle& style = g.Style;
+	ImVec2 label_size = ImGui::CalcTextSize(label, NULL, true);
+	float shortcut_w = (shortcut && shortcut[0]) ? ImGui::CalcTextSize(shortcut, NULL).x : 0.0f;
+	float checkmark_w = IM_FLOOR(g.FontSize * 1.20f);
+	float min_w = window->DC.MenuColumns.DeclColumns(NULL, label_size.x, shortcut_w, checkmark_w); // Feedback for next frame
+	float stretch_w = ImMax(0.0f, ImGui::GetContentRegionAvail().x - min_w);
+	ImGui::PushStyleColor(ImGuiCol_Text, style.Colors[ImGuiCol_TextDisabled]);
+	ImGui::RenderText(pos + ImVec2(offsets->OffsetShortcut + stretch_w, 0.0f), shortcut, NULL, false);
+	ImGui::PopStyleColor();
+}
+
+void Editor::AlignWithView()
+{
+	GameObject* temp = GetGameObjectSelected();
+	if (temp != nullptr)
+	{
+		Transform* transform = static_cast<Transform*>(temp->GetComponent(ComponentType::TRANSFORM));
+		float4x4 matrix = transform->GetGlobalTransform();
+		matrix.SetTranslatePart(app->camera->position);
+		float3x3 rot{ app->camera->right, app->camera->up, app->camera->front };
+		matrix.SetRotatePart(rot.ToQuat());
+		transform->SetTransformMFromM(matrix);
+	}
+}
+
+void Editor::Duplicate(GameObject* obj, GameObject* parent)
+{
+	GameObject* duplicated = new GameObject(obj->name.c_str());
+	static_cast<Transform*>(duplicated->GetComponents().at(0))->operator=(static_cast<Transform*>(obj->GetComponents().at(0)));
+
+	for (int i = 1; i < obj->GetComponents().size(); i++)
+	{
+		duplicated->AddComponent(obj->GetComponents().at(i)->GetType());
+		switch (obj->GetComponents().at(i)->GetType())
+		{
+		case ComponentType::MESH_RENDERER:
+			static_cast<MeshRenderer*>(duplicated->GetComponents().at(i))->SetMesh(static_cast<MeshRenderer*>(obj->GetComponents().at(i))->GetMesh());
+			static_cast<MeshRenderer*>(duplicated->GetComponents().at(i))->globalAABB = static_cast<MeshRenderer*>(obj->GetComponents().at(i))->globalAABB;
+			static_cast<MeshRenderer*>(duplicated->GetComponents().at(i))->globalOBB = static_cast<MeshRenderer*>(obj->GetComponents().at(i))->globalOBB;
+
+		case ComponentType::MATERIAL:
+			static_cast<Material*>(duplicated->GetComponents().at(i))->texture = static_cast<Material*>(obj->GetComponents().at(i))->texture;
+		default:
+			break;
+		}
+		duplicated->GetComponents().at(i)->SetOwner(duplicated);
+	}
+	duplicated->SetParent(parent);
+	duplicated->GetParent()->AddChildren(duplicated);
+
+	for (int i = 0; i < obj->GetChildrens().size(); i++)
+	{
+		Duplicate(obj->GetChildrens().at(i), duplicated);
+	}
+	SetGameObjectSelected(duplicated);
 }

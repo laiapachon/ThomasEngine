@@ -10,12 +10,6 @@ Primitive::Primitive() : transform(IdentityMatrix), color(White), wire(false), a
 }
 
 
-Primitive::~Primitive()
-{
-	delete mesh;
-	mesh = nullptr;
-}
-
 PrimitiveTypes Primitive::GetType() const
 {
 	return type;

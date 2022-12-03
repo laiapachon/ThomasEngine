@@ -49,6 +49,11 @@ public:
 
 	void CreateDockSpace();
 	void DockSpaceOverViewportCustom(ImGuiViewport* viewport, ImGuiDockNodeFlags dockspaceFlags, ImVec2 position, ImVec2 size, const ImGuiWindowClass* windowClass);
+	void DrawShortcut(const char* label, const char* shortcut, bool checkBox = false);
+
+	void AlignWithView();
+
+	void Duplicate(GameObject* obj, GameObject* parent);
 
 private:
 	std::vector<Tab*> tabs;

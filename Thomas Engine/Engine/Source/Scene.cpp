@@ -2,7 +2,6 @@
 #include "Scene.h"
 #include "Globals.h"
 
-
 #include "Component.h"
 #include "Transform.h"
 #include "MeshRenderer.h"
@@ -13,6 +12,7 @@
 #include "ResourceManager.h"
 #include "Camera3D.h"
 #include "Material.h"
+#include "Texture.h"
 #include "ResourceTexture.h"
 #include "GameObject.h"
 #include "Inspector.h"
@@ -58,6 +58,7 @@ bool Scene::Start()
 	root->AttachChild(mainCamera->GetOwner());
 	Transform* transformCamera = static_cast<Transform*>(mainCamera->GetOwner()->GetComponent(ComponentType::TRANSFORM));
 	transformCamera->SetPosition(float3(0, 1, -12));
+	transformCamera->SetTransformMFromM(transformCamera->GetLocalTransform());
 
 	return true;
 }
@@ -150,12 +151,16 @@ GameObject* Scene::CreatePrimitive(const char* name, Mesh* mesh)
 void Scene::Destroy(GameObject* obj)
 {
 	app->editor->SetGameObjectSelected(nullptr);
-	for (std::vector<GameObject*>::iterator i = obj->GetParent()->GetBeginChildren(); i != obj->GetParent()->GetEndChildren(); ++i)
+
+	if (!obj->IsRoot())	
 	{
-		if (*i._Ptr == obj)
+		for (std::vector<GameObject*>::iterator i = obj->GetParent()->GetBeginChildren(); i != obj->GetParent()->GetEndChildren(); ++i)
 		{
-			obj->SetIndex(i);
-			break;
+			if (*i._Ptr == obj)
+			{
+				obj->SetIndex(i);
+				break;
+			}
 		}
 	}
 
@@ -167,6 +172,7 @@ void Scene::UpdateGameObjects()
 {
 	RecursiveUpdate(root);
 	if (saveSceneRequest)SaveScene();
+	if (loadSceneRequest)LoadScene();
 }
 
 void Scene::RecursiveUpdate(GameObject* parent)
@@ -203,7 +209,7 @@ bool Scene::SaveScene()
 	return true;
 }
 
-void Scene::SaveGameObjects(GameObject* parentGO, JsonParser& node)
+void Scene::SaveGameObjects(GameObject* parentGameObject, JsonParser& node)
 {
 	std::string num, strTmp;
 	JsonParser& child = node;
@@ -213,56 +219,57 @@ void Scene::SaveGameObjects(GameObject* parentGO, JsonParser& node)
 	MeshRenderer* mesh;
 	Material* material;
 
-	node.SetJString(node.ValueToObject(node.GetRootValue()), "name", parentGO->name.c_str());
-	node.SetJBool(node.ValueToObject(node.GetRootValue()), "IsRoot", parentGO->IsRoot());
+	node.SetJString(node.ValueToObject(node.GetRootValue()), "name", parentGameObject->name.c_str());
+	node.SetJBool(node.ValueToObject(node.GetRootValue()), "IsRoot", parentGameObject->IsRoot());
 
-	node.SetJString(node.ValueToObject(node.GetRootValue()), "tag", parentGO->tag.c_str());
-	node.SetJString(node.ValueToObject(node.GetRootValue()), "layer", parentGO->layer.c_str());
-
-
-	node.SetJBool(node.ValueToObject(node.GetRootValue()), "active", parentGO->active);
-	node.SetJBool(node.ValueToObject(node.GetRootValue()), "isStatic", parentGO->isStatic);
-	node.SetJBool(node.ValueToObject(node.GetRootValue()), "isSelected", parentGO->isSelected);
+	node.SetJString(node.ValueToObject(node.GetRootValue()), "tag", parentGameObject->tag.c_str());
+	node.SetJString(node.ValueToObject(node.GetRootValue()), "layer", parentGameObject->layer.c_str());
 
 
-	node.SetJBool(node.ValueToObject(node.GetRootValue()), "showChildrens", parentGO->GetShowChildrens());
-	node.SetJBool(node.ValueToObject(node.GetRootValue()), "pendingToDelete", parentGO->GetPendingToDelete());
+	node.SetJBool(node.ValueToObject(node.GetRootValue()), "active", parentGameObject->active);
+	node.SetJBool(node.ValueToObject(node.GetRootValue()), "isStatic", parentGameObject->isStatic);
+	node.SetJBool(node.ValueToObject(node.GetRootValue()), "isSelected", parentGameObject->isSelected);
+
+
+	node.SetJBool(node.ValueToObject(node.GetRootValue()), "showChildrens", parentGameObject->GetShowChildrens());
+	node.SetJBool(node.ValueToObject(node.GetRootValue()), "pendingToDelete", parentGameObject->GetPendingToDelete());
 
 
 	JsonParser components = node.SetChild(node.GetRootValue(), "components");
 	JsonParser tmp = node;
-	for (size_t i = 0; i < parentGO->GetComponents().size(); i++)
+	for (size_t i = 0; i < parentGameObject->GetComponents().size(); i++)
 	{
 		num = "Component " + std::to_string(i);
 		tmp = components.SetChild(components.GetRootValue(), num.c_str());
 
-		tmp.SetJNumber(tmp.ValueToObject(tmp.GetRootValue()), "Type", (int)parentGO->GetComponents().at(i)->GetType());
-		tmp.SetJBool(tmp.ValueToObject(tmp.GetRootValue()), "active", parentGO->GetComponents().at(i)->active);
+		tmp.SetJNumber(tmp.ValueToObject(tmp.GetRootValue()), "Type", (int)parentGameObject->GetComponents().at(i)->GetType());
+		tmp.SetJBool(tmp.ValueToObject(tmp.GetRootValue()), "active", parentGameObject->GetComponents().at(i)->active);
 
-		switch ((ComponentType)parentGO->GetComponents().at(i)->GetType())
+		switch ((ComponentType)parentGameObject->GetComponents().at(i)->GetType())
 		{
 		case ComponentType::TRANSFORM:
 			num = "";
-			transform = static_cast<Transform*>(parentGO->GetComponent(ComponentType::TRANSFORM));
+			transform = static_cast<Transform*>(parentGameObject->GetComponent(ComponentType::TRANSFORM));
 			localTransform = transform->GetLocalTransform();
 			globalTransform = transform->GetGlobalTransform();
 			for (int i = 0; i < 4; i++)
 				for (int j = 0; j < 4; j++)
 				{
-					if (i == 0 && j == 0)num += std::to_string(localTransform.At(i, j)), strTmp += std::to_string(globalTransform.At(i, j));
-					else num += "," + std::to_string(localTransform.At(i, j)), strTmp += "," + std::to_string(globalTransform.At(i, j));
+					num += std::to_string(localTransform.At(i, j)), strTmp += std::to_string(globalTransform.At(i, j));
+					strTmp += ",";
+					num += ",";
 				}
 			tmp.SetJString(tmp.ValueToObject(tmp.GetRootValue()), "LocalTransform", num.c_str());
 			tmp.SetJString(tmp.ValueToObject(tmp.GetRootValue()), "GlobalTransform", strTmp.c_str());
 			break;
 
 		case ComponentType::MESH_RENDERER:
-			mesh = static_cast<MeshRenderer*>(parentGO->GetComponent(ComponentType::MESH_RENDERER));
-			tmp.SetJString(tmp.ValueToObject(tmp.GetRootValue()), "Mesh", parentGO->name.c_str());
+			mesh = static_cast<MeshRenderer*>(parentGameObject->GetComponent(ComponentType::MESH_RENDERER));
+			tmp.SetJString(tmp.ValueToObject(tmp.GetRootValue()), "Mesh", mesh->GetMesh()->GetAssetPath());
 			break;
 
 		case ComponentType::MATERIAL:
-			material = static_cast<Material*>(parentGO->GetComponent(ComponentType::MATERIAL));
+			material = static_cast<Material*>(parentGameObject->GetComponent(ComponentType::MATERIAL));
 			tmp.SetJString(tmp.ValueToObject(tmp.GetRootValue()), "Material", material->texture->path.c_str());
 			break;
 
@@ -273,19 +280,120 @@ void Scene::SaveGameObjects(GameObject* parentGO, JsonParser& node)
 			break;
 
 		}
-		parentGO->GetComponents().at(i)->GetType();
+		parentGameObject->GetComponents().at(i)->GetType();
 	}
 
-	for (size_t i = 0; i <= parentGO->GetChildrens().size(); i++)
+	for (size_t i = 0; i <= parentGameObject->GetChildrens().size(); i++)
 	{
 		num = "Child " + std::to_string(i);
-		if (parentGO->GetChildrens().size() > i)
-			SaveGameObjects(parentGO->GetChildrens()[i], child.SetChild(child.GetRootValue(), num.c_str()));
+		if (parentGameObject->GetChildrens().size() > i)
+			SaveGameObjects(parentGameObject->GetChildrens()[i], child.SetChild(child.GetRootValue(), num.c_str()));
 	}
 }
 
 bool Scene::LoadScene()
 {
+	LOG(LogType::L_NORMAL, "Loading scene configuration");
+
+	Destroy(root);
+	rootFile = jsonFile.GetRootValue();
+
+	rootGameObject = jsonFile.GetChild(rootFile, "GameObjects");
+	root = LoadGameObject(rootGameObject.GetChild(rootGameObject.GetRootValue(), "Root"));
+
+	loadSceneRequest = false;
 
 	return true;
+}
+
+GameObject* Scene::LoadGameObject(JsonParser parent, GameObject* father)
+{
+std::string num;
+Transform* transform;
+std::string convert;
+
+std::string name = parent.JsonValToStr("name");
+GameObject* gamObj = new GameObject(name.c_str());
+gamObj->tag = parent.JsonValToStr("tag");
+gamObj->layer = parent.JsonValToStr("layer");
+gamObj->active = parent.JsonValToBool("active");
+gamObj->isStatic = parent.JsonValToBool("isStatic");
+gamObj->isSelected = parent.JsonValToBool("isSelected");
+gamObj->SetShowChildrens(parent.JsonValToBool("showChildrens"));
+gamObj->SetPendingToDelete(parent.JsonValToBool("pendingToDelete"));
+
+LoadComponents(parent, num, gamObj);
+return gamObj;
+}
+
+void Scene::LoadComponents(JsonParser& parent, std::string& num, GameObject*& gamObj)
+{
+	Transform* transform;
+	MeshRenderer* meshRender;
+	Material* material;
+	LOG(LogType::L_NORMAL, "Loading Components \n");
+
+	JsonParser components = parent.GetChild(parent.GetRootValue(), "components");
+	JsonParser tmp = components;
+
+	for (int i = 0; i < 4; i++)
+	{
+		num = "Component " + std::to_string(i);
+		LOG(LogType::L_NORMAL, (std::string("Loading ") + num).c_str());
+
+		if (components.ExistingChild(components.GetRootValue(), num.c_str()))
+		{
+			tmp = components.GetChild(components.GetRootValue(), num.c_str());
+			switch ((ComponentType)(int)tmp.JsonValToNumber("Type"))
+			{
+			case ComponentType::TRANSFORM:			
+				gamObj->transform->SetGlobalTransform(strMatrixToF4x4(tmp.JsonValToStr("GlobalTransform")));
+				if (!gamObj->IsRoot()) gamObj->transform->SetTransformMFromM(gamObj->transform->GetGlobalTransform());
+				gamObj->transform->SetLocalTransform(strMatrixToF4x4(tmp.JsonValToStr("LocalTransform")));
+				break;
+			case ComponentType::MESH_RENDERER:				
+				meshRender = static_cast<MeshRenderer*>(gamObj->GetComponent(ComponentType::MESH_RENDERER));
+				break;
+			case ComponentType::MATERIAL:
+				gamObj->AddComponent(ComponentType::MATERIAL);
+				material = static_cast<Material*>(gamObj->GetComponent(ComponentType::MATERIAL));
+				material->active = tmp.JsonValToBool("active");
+				material->texture = new Texture(tmp.JsonValToStr("Material"), gamObj->name);
+				material->SetOwner(gamObj);
+				break;
+			default:
+				break;
+			}
+
+
+		}
+		else break;
+	}
+}
+
+
+float4x4 Scene::strMatrixToF4x4(const char* convert)
+{
+	std::string text = convert;
+	std::string delimiter = ",";
+	std::vector<float> floatArray{};
+
+	size_t pos = 0;
+	while ((pos = text.find(delimiter)) != std::string::npos) {
+		floatArray.push_back(stof(text.substr(0, pos)));
+		text.erase(0, pos + delimiter.length());
+	}
+
+	float4x4 matrix;
+	int count = 0;
+
+	for (int i = 0; i < 4; i++)
+		for (int j = 0; j < 4; j++)
+		{
+
+			matrix.At(i, j) = floatArray.at(count);
+			++count;
+		}
+
+	return matrix;
 }

@@ -41,6 +41,7 @@ public:
 	bool IsRoot() { return (parent == nullptr) ? true : false; };
 	void Destroy() { pendingToDelete = true;};
 	bool GetPendingToDelete() { return pendingToDelete; };
+	void SetPendingToDelete(bool isPendingToDelete) { pendingToDelete = isPendingToDelete; };
 
 	Transform* transform = nullptr;
 

@@ -34,9 +34,6 @@ GameObject::~GameObject()
 void GameObject::Enable()
 {
 	active = true;
-
-	// Recursive function, call all fathers
-	// Because for the children to be active the father must also be 
 	if (parent != nullptr)
 		parent->Enable();
 }
@@ -52,13 +49,12 @@ void GameObject::AttachChild(GameObject* child)
 
 void GameObject::Update()
 {
-	// Call all components Updates
 	for (size_t i = 0; i < components.size(); i++)
 	{
 		components[i]->Update();
 	}
 }
-// Add component by Type
+
 Component* GameObject::AddComponent(ComponentType type)
 {
 	Component* newComponent = nullptr;
@@ -78,13 +74,12 @@ Component* GameObject::AddComponent(ComponentType type)
 		newComponent = new ComponentCamera(this);
 		break;
 	}
-
 	newComponent->SetType(type);
 	components.push_back(newComponent);
 
 	return newComponent;
 }
-// Get component by Type, because an object can only have 1 component of 1 type
+
 Component* GameObject::GetComponent(ComponentType type)
 {
 	for (size_t i = 0; i < components.size(); i++)

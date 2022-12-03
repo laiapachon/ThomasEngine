@@ -1,6 +1,6 @@
 #pragma once
 #include "Module.h"
-
+#include "Transform.h"
 #include<vector>
 
 class GameObject;
@@ -27,6 +27,7 @@ public:
 	GameObject* CreatePrimitive(const char* name, Mesh* mesh);
 
 	void SaveSceneRequest() { saveSceneRequest = true; }
+	void LoadSceneRequest() { loadSceneRequest = true; }
 
 	GameObject* root;
 	ComponentCamera* mainCamera = nullptr;
@@ -42,9 +43,14 @@ private:
 	bool SaveScene();
 	void SaveGameObjects(GameObject* parent, JsonParser& rootFile);
 	bool LoadScene();
+	GameObject* LoadGameObject(JsonParser root, GameObject* father = nullptr);
+	void LoadComponents(JsonParser& parent, std::string& num, GameObject*& gamObj);
+	float4x4 strMatrixToF4x4(const char* convert);
 
 	JsonParser jsonFile;
 	JSON_Value* rootFile;
+	JsonParser rootGameObject;
 
 	bool saveSceneRequest = false;
+	bool loadSceneRequest = false;
 };

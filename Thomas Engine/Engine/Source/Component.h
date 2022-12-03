@@ -24,6 +24,7 @@ public:
 	void SetType(ComponentType type) { this->type = type; };
 
 	GameObject* GetOwner() { return owner; };
+	void SetOwner(GameObject* object) { owner = object; };
 
 	void DrawBoundingBoxes(float3* points, float3 color = float3::one)
 	{

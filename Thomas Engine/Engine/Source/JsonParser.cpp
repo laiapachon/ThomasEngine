@@ -43,7 +43,7 @@ JSON_Object* JsonParser::ValueToObject(JSON_Value* value) const
 		return object;
 }
 
-const char* JsonParser::ValueToString(const char* name) const
+const char* JsonParser::JsonValToStr(const char* name) const
 {
 	return json_object_get_string(ValueToObject(rootValue), name);
 }
@@ -62,9 +62,18 @@ JsonParser JsonParser::GetChild(JSON_Value* parent, const char* name)
 {
 	JsonParser child;
 
-	child.rootValue = json_object_get_value(ValueToObject(rootValue), name);
+	child.rootValue = json_object_get_value(ValueToObject(parent), name);
 
 	return child;
+}
+
+bool JsonParser::ExistingChild(JSON_Value* parent, const char* name)
+{
+	bool ret = true;
+
+	ret = json_object_get_value(ValueToObject(parent), name);
+
+	return ret;
 }
 JSON_Status JsonParser::FileSerialization(JSON_Value* value, const char* fileName) const
 {

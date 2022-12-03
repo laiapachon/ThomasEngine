@@ -91,28 +91,33 @@ void Camera3D::DrawGuizmo(GameObject* obj)
 	ImGuizmo::Enable(true);
 
 	Transform* transform = static_cast<Transform*>(obj->GetComponent(ComponentType::TRANSFORM));
-	float4x4 matrix = transform->GetGlobalTransformT();
+	MeshRenderer* mesh = static_cast<MeshRenderer*>(obj->GetComponent(ComponentType::MESH_RENDERER));
 	ImVec2 cornerPos = ImGui::GetWindowPos();
 	ImVec2 size = ImGui::GetContentRegionMax();
-
 	ImGuizmo::SetRect(cornerPos.x, cornerPos.y, size.x, size.y);
 	ImGuizmo::SetDrawlist();
-	if (ImGuizmo::Manipulate(cameraScene.viewMatrix.Transposed().ptr(), cameraScene.frustrum.ProjectionMatrix().Transposed().ptr(), operation, mode, matrix.ptr())
+
+	float4x4 matrix = transform->GetGlobalTransform().Transposed();
+
+	float snap[3];
+	if (translateSnap && operation == ImGuizmo::OPERATION::TRANSLATE) { snap[0] = tSnap[0]; snap[1] = tSnap[1]; snap[2] = tSnap[2]; }
+	else if (rotateSnap && operation == ImGuizmo::OPERATION::ROTATE) snap[0] = snap[1] = snap[2] = allRsnap;
+	else if (scaleSnap && operation == ImGuizmo::OPERATION::SCALE) { snap[0] = sSnap[0]; snap[1] = sSnap[1]; snap[2] = sSnap[2]; }
+
+	if (ImGuizmo::Manipulate(cameraScene.viewMatrix.Transposed().ptr(), cameraScene.frustrum.ProjectionMatrix().Transposed().ptr(), operation, mode, matrix.ptr(), 0, (float*)snap)
 		&& app->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_REPEAT)
-		transform->SetTransformMFromGlobalM(matrix.Transposed());
+		transform->SetTransformMFromM(matrix.Transposed());
 }
 
 void Camera3D::CheckInputsKeyBoard()
 {
 	float3 newPos = float3::zero;
 	float speed = cameraSpeed * app->GetDt();
+	if (App->input->GetKey(SDL_SCANCODE_F) == KEY_DOWN) Focus();
 	if (App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT)
 		speed *= 2;
-
 	if (App->input->GetKey(SDL_SCANCODE_Q) == KEY_REPEAT) newPos.y += speed;
 	if (App->input->GetKey(SDL_SCANCODE_E) == KEY_REPEAT) newPos.y -= speed;
-
-	if (App->input->GetKey(SDL_SCANCODE_F) == KEY_DOWN) Focus();
 
 	if (App->input->GetKey(SDL_SCANCODE_W) == KEY_REPEAT) newPos += front * speed;
 	if (App->input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT) newPos -= front * speed;

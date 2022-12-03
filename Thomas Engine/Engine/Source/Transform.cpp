@@ -211,11 +211,11 @@ float3 Transform::GetNormalizeAxis(int i)
 
 void Transform::CheckStateOperation()
 {
-	if (ImGui::IsKeyPressed(21))
+	if (ImGui::IsKeyPressed(26))
 		app->camera->operation = ImGuizmo::TRANSLATE;
-	if (ImGui::IsKeyPressed(23))
+	if (ImGui::IsKeyPressed(8))
 		app->camera->operation = ImGuizmo::ROTATE;
-	if (ImGui::IsKeyPressed(28))
+	if (ImGui::IsKeyPressed(21))
 		app->camera->operation = ImGuizmo::SCALE;
 
 	if (ImGui::RadioButton("Translate", app->camera->operation == ImGuizmo::TRANSLATE))
@@ -240,7 +240,7 @@ void Transform::CheckStateMode()
 	}
 }
 
-void Transform::SetTransformMFromGlobalM(float4x4 globalMatrix)
+void Transform::SetTransformMFromM(float4x4 globalMatrix)
 {
 	globalTransform = globalMatrix;
 	localTransform = GetOwner()->GetParent()->transform->globalTransform.Inverted() * globalTransform;
@@ -251,4 +251,19 @@ void Transform::SetTransformMFromGlobalM(float4x4 globalMatrix)
 	globalTransformTransposed = globalTransform.Transposed();
 
 	updateTransform = true;
+}
+
+void Transform::operator=(Transform* transform)
+{
+	this->eulerRotation = transform->eulerRotation;
+	this->globalTransform = transform->globalTransform;
+	this->globalTransformTransposed = transform->globalTransformTransposed;
+	this->localTransform = transform->localTransform;
+	this->position = transform->position;
+	this->rotation = transform->rotation;
+	this->scale = transform->scale;
+	this->worldEulerRotation = transform->worldEulerRotation;
+	this->worldPosition = transform->worldPosition;
+	this->worldRotation = transform->worldRotation;
+	this->worldScale = transform->worldScale;
 }
