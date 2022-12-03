@@ -55,6 +55,7 @@ bool Scene::Start()
 
 	transformChimney->SetTransformMatrix(transformChimney->GetPosition(), rotationQuat, size, parentTransform);
 	transformBakerhouse->SetTransformMatrix(transformBakerhouse->GetPosition(), rotationQuat, size, parentTransform);
+	app->resourceManager->ImportFile("street/street2.fbx");
 
 	root->EraseChildren(root->FindChildren(root->GetChildrens()[0]));
 	root->AttachChild(mainCamera->GetOwner());
@@ -62,7 +63,7 @@ bool Scene::Start()
 	transformCamera->SetPosition(float3(0, 1, -12));
 	transformCamera->SetTransformMFromM(transformCamera->GetLocalTransform());
 
-	app->resourceManager->ImportFile("street2.fbx");
+	
 
 	return true;
 }
