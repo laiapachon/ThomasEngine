@@ -19,6 +19,8 @@ public:
 
 	bool GetIsMainCamera() { return isMainCamera; };
 	void SetIsMainCamera(bool ret) { isMainCamera = ret; };
+	bool GetShowFrustrum() { return showFrustrum; };
+	void SetShowFrustrum(bool ret) { showFrustrum = ret; };
 
 	void CalculateViewMatrix();
 	void ReMakeProjection(float aspectRatio);

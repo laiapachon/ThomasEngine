@@ -20,7 +20,7 @@ public:
 	update_status Update(float dt) override;
 
 	bool CleanUp() override;
-	void CreateNewCamera();
+	GameObject* CreateNewCamera();
 	GameObject* CreateNewGameObject(const char* name);
 	GameObject* CreateChildGameObject(const char* name, GameObject* parent);
 	GameObject* CreateParentGameObject(const char* name, GameObject* child);

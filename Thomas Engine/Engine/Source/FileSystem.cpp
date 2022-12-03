@@ -94,7 +94,7 @@ ImportType FileSystem::GetImportType(const char* path)
 
 	if (ext == "fbx" || ext == "obj" || ext == "stl" || ext == "skp" || ext == "gltf" || ext == "glb" || ext == "usd")
 		return ImportType::MESH;
-	if (ext == "png" || ext == "jpg" || ext == "jpeg" || ext == "dds" || ext == "bmp")
+	if (ext == "png" || ext == "jpg" || ext == "jpeg" || ext == "dds" || ext == "bmp" || ext == "tga")
 		return ImportType::TEXTURE;
 
 	return ImportType::NOTYPE;

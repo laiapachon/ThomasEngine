@@ -99,7 +99,7 @@ void Camera3D::DrawGuizmo(GameObject* obj)
 
 	float4x4 matrix = transform->GetGlobalTransform().Transposed();
 
-	float snap[3];
+	float snap[3] = { 0,0,0 };
 	if (translateSnap && operation == ImGuizmo::OPERATION::TRANSLATE) { snap[0] = tSnap[0]; snap[1] = tSnap[1]; snap[2] = tSnap[2]; }
 	else if (rotateSnap && operation == ImGuizmo::OPERATION::ROTATE) snap[0] = snap[1] = snap[2] = allRsnap;
 	else if (scaleSnap && operation == ImGuizmo::OPERATION::SCALE) { snap[0] = sSnap[0]; snap[1] = sSnap[1]; snap[2] = sSnap[2]; }
