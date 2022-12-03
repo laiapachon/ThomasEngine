@@ -1,6 +1,4 @@
 #include "Application.h"
-
-//Modules
 #include "Input.h"
 #include "Window.h"
 #include "Editor.h"
@@ -21,7 +19,6 @@ Input::Input(Application* app, bool start_enabled) : Module(app, start_enabled)
 	memset(keyboard, KEY_IDLE, sizeof(KEY_STATE) * MAX_KEYS);
 }
 
-// Called before render is available
 bool Input::Init()
 {
 	LOG(LogType::L_NORMAL, "Init SDL input event system");
@@ -37,7 +34,6 @@ bool Input::Init()
 	return ret;
 }
 
-// Called every draw update
 update_status Input::PreUpdate(float dt)
 {
 	SDL_PumpEvents();
@@ -139,7 +135,6 @@ update_status Input::PreUpdate(float dt)
 	return ret;
 }
 
-// Called before quitting
 bool Input::CleanUp()
 {
 	LOG(LogType::L_NO_PRINTABLE, "Quitting SDL input event subsystem");

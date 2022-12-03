@@ -93,7 +93,7 @@ update_status Scene::Update(float dt)
 bool Scene::CleanUp()
 {
 	LOG(LogType::L_NO_PRINTABLE, "Freeing Level Manager");
-	//Delete all gameObjects
+
 	delete root;
 
 	return true;
@@ -217,7 +217,7 @@ bool Scene::SaveScene()
 
 void Scene::SaveGameObjects(GameObject* parentGO, JsonParser& node)
 {
-	//node.SetChild(node.GetRootValue(), "Child");
+	
 	std::string num, strTmp;
 	JsonParser& child = node;
 	Transform* transform;
@@ -242,12 +242,12 @@ void Scene::SaveGameObjects(GameObject* parentGO, JsonParser& node)
 	node.SetJBool(node.ValueToObject(node.GetRootValue()), "showChildrens", parentGO->GetShowChildrens());
 	node.SetJBool(node.ValueToObject(node.GetRootValue()), "pendingToDelete", parentGO->GetPendingToDelete());
 
-	//Create father Components
+	
 	JsonParser components = node.SetChild(node.GetRootValue(), "components");
 	JsonParser tmp = node;
 	for (size_t i = 0; i < parentGO->GetComponents().size(); i++)
 	{
-		// Create Child of component
+		
 		num = "Component " + std::to_string(i);
 		tmp = components.SetChild(components.GetRootValue(), num.c_str());
 
@@ -385,7 +385,7 @@ void Scene::LoadComponents(JsonParser& parent, std::string& num, GameObject*& ga
 				if (!gamObj->IsRoot()) gamObj->transform->SetTransformMFromM(gamObj->transform->GetGlobalTransform());
 				gamObj->transform->SetLocalTransform(strMatrixToF4x4(tmp.JsonValToStr("LocalTransform")));
 
-				//gamObj->transform = transform;
+				
 
 				break;
 			case ComponentType::MESH_RENDERER:
@@ -407,7 +407,7 @@ void Scene::LoadComponents(JsonParser& parent, std::string& num, GameObject*& ga
 				material->texture = new Texture(tmp.JsonValToStr("Material"), gamObj->name);
 				material->texture->SetLibraryPath(tmp.JsonValToStr("LibraryPath"));
 				material->texture->path = material->texture->GetLibraryPath();
-				//material->texture->SetAssetsPath();
+				
 				material->SetOwner(gamObj);
 				material->texture->LoadToMemory();
 
@@ -419,14 +419,14 @@ void Scene::LoadComponents(JsonParser& parent, std::string& num, GameObject*& ga
 				camera = static_cast<ComponentCamera*>(gamObj->GetComponent(ComponentType::CAMERA));
 				mainCamera = camera;
 				camera->ReGenerateFrameBuffer(app->window->GetWindowWidth(), app->window->GetWindowHeight());
-				//camera->SetOwner(gamObj);
+			
 				camera->SetIsMainCamera(tmp.JsonValToBool("isMainCamera"));
 				camera->SetShowFrustrum(tmp.JsonValToBool("showFrustrum"));
 
 				break;
 			}
 
-			//gamObj->AddComponent();
+			
 
 		}
 		else break;

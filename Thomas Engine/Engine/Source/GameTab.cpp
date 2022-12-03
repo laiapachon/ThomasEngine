@@ -2,7 +2,7 @@
 #include "GameTab.h"
 #include "Scene.h"
 
-// Module 
+
 #include "Camera3D.h"
 
 GameTab::GameTab() : Tab()

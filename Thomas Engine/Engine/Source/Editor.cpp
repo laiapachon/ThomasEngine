@@ -1,13 +1,11 @@
 #include "Application.h"
 #include "Editor.h"
-
 #include "Scene.h"
 #include "GameObject.h"
 #include "Window.h"
 #include "Input.h"
 #include "ResourceManager.h"
 #include "Camera3D.h"
-
 #include "Tab.h"
 #include "Configuration.h"
 #include "ConsoleTab.h"
@@ -19,7 +17,6 @@
 #include "Transform.h"
 #include "MeshRenderer.h"
 #include "Material.h"
-
 #include "Primitive.h"
 
 Editor::Editor(Application* app, bool start_enabled): Module(app, start_enabled)
@@ -58,15 +55,15 @@ bool Editor::Init()
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
 
-	ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
-	ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;    // Enable Gamepad Controls
+	ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;   
+	ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;   
 
-	ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_DockingEnable;         // Enable Docking
-	ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;       // Enable Multi-Viewport / Platform Windows
+	ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_DockingEnable;        
+	ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;      
 
 	
 	
-	/*ImGui::StyleColorsDark();*/
+	
 	ImGui::StyleColorsClassic();
 
 	
@@ -113,7 +110,7 @@ void Editor::StartFrame()
 	ImGui_ImplSDL2_NewFrame();
 	ImGui::NewFrame();
 
-	// Check pressed keys
+
 	for (int i = 0; i < tabs.size(); i++)
 	{
 		if (App->input->GetKey(29 + tabs[i]->shortcut) == KEY_UP)
@@ -181,7 +178,6 @@ update_status Editor::Draw()
 	ret = ImGuiMenuBar();
 	CreateDockSpace();
 
-	// Rendering the tabs
 	for (unsigned int i = 0; i < tabs.size(); i++)
 	{
 		if (tabs[i]->active)
@@ -248,7 +244,6 @@ bool Editor::DrawTabWarn(std::string text)
 
 update_status Editor::ImGuiMenuBar()
 {
-	// Create a MenuBar
 	update_status ret = update_status::UPDATE_CONTINUE;
 
 	if (ImGui::BeginMainMenuBar())
@@ -272,7 +267,6 @@ update_status Editor::ImGuiMenuBar()
 
 		if (ImGui::BeginMenu("Edit"))
 		{			
-			//Translate snap options
 			DrawShortcut("Snap Translate", "Alt+W", true);
 			ImGui::Checkbox("Snap Translate", &app->camera->translateSnap);
 			if (!app->camera->translateSnap)
@@ -300,8 +294,6 @@ update_status Editor::ImGuiMenuBar()
 				ImGui::PopStyleColor();
 				ImGui::PopStyleColor();
 			}
-
-			//Rotation snap options
 			DrawShortcut("Snap Rotation", "Alt+E", true);
 			ImGui::Checkbox("Snap Rotation", &app->camera->rotateSnap);
 			if (!app->camera->rotateSnap)
@@ -321,8 +313,6 @@ update_status Editor::ImGuiMenuBar()
 				ImGui::PopStyleColor();
 				ImGui::PopStyleColor();
 			}
-
-			//Sacle snap options
 			DrawShortcut("Snap Scale", "Ctrl+Alt+R", true);
 			ImGui::Checkbox("Snap Scale", &app->camera->scaleSnap);
 			if (!app->camera->scaleSnap)
@@ -357,13 +347,11 @@ update_status Editor::ImGuiMenuBar()
 		{
 			for (int i = 0; i < tabs.size(); i++)
 			{
-				// Name  ShortCut  State
 				if (ImGui::MenuItem(tabs[i]->name.c_str(), std::to_string(tabs[i]->shortcut).c_str(), tabs[i]->active, &tabs[i]->active))
 					tabs[i]->active = !tabs[i]->active;
 			}			
 			ImGui::EndMenu();
 		}
-		// Menu of game objects
 		if (ImGui::BeginMenu("Game Objects"))
 		{
 			if (ImGui::MenuItem("Camera"))
@@ -417,7 +405,7 @@ update_status Editor::ImGuiMenuBar()
 void Editor::NewScene()
 {
 	SetGameObjectSelected(nullptr);
-	app->scene->CleanUp(); //Clean GameObjects 
+	app->scene->CleanUp();
 	app->scene->Init();
 	app->camera->ReStartCamera();
 }
@@ -466,8 +454,6 @@ bool Editor::CleanUp()
 {
 	bool ret= true;
 	LOG(LogType::L_NORMAL, "Editor CleanUp");
-
-	// CleanUp all tabs
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplSDL2_Shutdown();
 	ImGui::DestroyContext();
@@ -502,7 +488,7 @@ void Editor::DockSpaceOverViewportCustom(ImGuiViewport* viewport, ImGuiDockNodeF
 {
 	ImGuiWindowFlags host_window_flags = 0;
 	host_window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoDocking;
-	host_window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;// | ImGuiWindowFlags_MenuBar;
+	host_window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
 
 	if (dockspaceFlags & ImGuiDockNodeFlags_PassthruCentralNode)
 		host_window_flags |= ImGuiWindowFlags_NoBackground;
@@ -539,7 +525,7 @@ void Editor::DrawShortcut(const char* label, const char* shortcut, bool ckeckbox
 	ImVec2 label_size = ImGui::CalcTextSize(label, NULL, true);
 	float shortcut_w = (shortcut && shortcut[0]) ? ImGui::CalcTextSize(shortcut, NULL).x : 0.0f;
 	float checkmark_w = IM_FLOOR(g.FontSize * 1.20f);
-	float min_w = window->DC.MenuColumns.DeclColumns(NULL, label_size.x, shortcut_w, checkmark_w); // Feedback for next frame
+	float min_w = window->DC.MenuColumns.DeclColumns(NULL, label_size.x, shortcut_w, checkmark_w); 
 	float stretch_w = ImMax(0.0f, ImGui::GetContentRegionAvail().x - min_w);
 	ImGui::PushStyleColor(ImGuiCol_Text, style.Colors[ImGuiCol_TextDisabled]);
 	ImGui::RenderText(pos + ImVec2(offsets->OffsetShortcut + stretch_w, 0.0f), shortcut, NULL, false);

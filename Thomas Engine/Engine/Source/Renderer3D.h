@@ -64,7 +64,7 @@ public:
 	bool vsync;
 	bool wireframe = false;
 
-	// Textures
+	
 	GLuint checkersTexture;
 	GLubyte checkerImage[SQUARE_TEXTURE_W][SQUARE_TEXTURE_H][4];
 

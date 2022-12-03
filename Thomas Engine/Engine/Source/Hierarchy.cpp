@@ -19,7 +19,6 @@ void Hierarchy::Draw()
 {
 	if (ImGui::Begin(name.c_str(), &active))
 	{
-		// If exist some scene and this have root draw all game object tree
 		if (sceneReference != nullptr && sceneReference->root != nullptr)
 		{
 			DrawGameObjectsTree(sceneReference->root, false);
@@ -34,8 +33,6 @@ void Hierarchy::DrawGameObjectsTree(GameObject* node, bool drawAsDisabled)
 	std::stack<uint> indents;
 	S.push(app->scene->root);
 	indents.push(0);
-
-	// No recursive :)
 	while (!S.empty())
 	{
 		GameObject* go = S.top();
@@ -76,7 +73,6 @@ void Hierarchy::DrawGameObjectsTree(GameObject* node, bool drawAsDisabled)
 
 void Hierarchy::DragHierarchyObj(GameObject*& go)
 {
-	// Root can't be draged
 	if (!go->IsRoot())
 	{
 		if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
@@ -93,7 +89,6 @@ void Hierarchy::DragHierarchyObj(GameObject*& go)
 		{
 			IM_ASSERT(payload->DataSize == sizeof(GameObject*));
 			GameObject* droppedGo = (GameObject*)*(const int*)payload->Data;
-			// droppedGo != go->GetParent() ---> Don't can DragDrop father into his child
 			if (droppedGo && droppedGo != go->GetParent())
 			{
 				bool ret = true;
@@ -104,9 +99,7 @@ void Hierarchy::DragHierarchyObj(GameObject*& go)
 
 				if(ret)
 				{
-					// Erase of child list of his father
 					droppedGo->GetParent()->EraseChildren(droppedGo->GetParent()->FindChildren(droppedGo));
-					// Attach as new child 
 					go->AttachChild(droppedGo);
 				}				
 			}
@@ -127,14 +120,9 @@ bool Hierarchy::AreYouMyDescendent(GameObject* child, GameObject* droppedGo)
 
 ImGuiTreeNodeFlags Hierarchy::SetFlags(GameObject* node)
 {
-	// This flags allow to open the tree if you click on arrow or doubleClick on object, by default the tree is open  
 	ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_DefaultOpen;
-
-	// If GameObject doesn't childrens = no collapsing and no arrow
 	if (node->GetChildrens().size() == 0)
 		flags |= ImGuiTreeNodeFlags_Leaf;
-
-	// If GameObject is selected = activeModeSelected
 	if (node == app->editor->GetGameObjectSelected())
 		flags |= ImGuiTreeNodeFlags_Selected;
 

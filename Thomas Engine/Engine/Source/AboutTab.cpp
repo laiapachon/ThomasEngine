@@ -21,12 +21,10 @@ void AboutTab::Draw()
 {
 	if (ImGui::Begin(name.c_str(), &active))
 	{
-		// Name and description of Engine
 		ImGui::Text("Thomas Engine");
 		ImGui::Text("This is a university project focused");
 		ImGui::Text("on the development of a video game engine");
 
-		// GitHub of developers
 		ImGui::NewLine();
 		ImGui::Text("Developed by: ");
 		if (ImGui::MenuItem("Enric Morales"))
@@ -40,7 +38,7 @@ void AboutTab::Draw()
 
 		ImGui::NewLine();
 		ImGui::Separator();
-		// Print all 3rd Party Libraries versions
+	
 		ImGui::Text("3rd Party Libraries used:");
 		IMGUI_PRINT("SDL Version: ", "%s", SDLVersion.c_str());
 		IMGUI_PRINT("OpenGL Version: ", "%s", OGLVersion);
@@ -55,7 +53,6 @@ void AboutTab::Draw()
 
 		ImGui::NewLine();
 		ImGui::Separator();
-		// Print License
 		PrintLicense();
 	}
 	ImGui::End();	
@@ -89,7 +86,6 @@ void AboutTab::LogVersionDependences()
 {
 	InitVersions();
 
-	// Print all 3rd Party Libraries versions
 	LOG(LogType::L_NORMAL, "-------------- 3rd Party Libraries used --------------");
 	LOG(LogType::L_NORMAL, "SDL Version: %s", SDLVersion.c_str());
 	LOG(LogType::L_NORMAL, "OpenGL Version: %s", OGLVersion);
@@ -107,13 +103,10 @@ void AboutTab::LogVersionDependences()
 
 void AboutTab::InitVersions()
 {
-	// Get version of 3rd Paries Dependences
 	PHYSFS_Version physVersionStc;
 	PHYSFS_getLinkedVersion(&physVersionStc);
 	SDL_version version;
 	SDL_GetVersion(&version);
-
-	// On real time 
 	SDLVersion = std::to_string(version.major) + '.' + std::to_string(version.minor) + '.' + std::to_string(version.patch);
 	assimpVersion = std::to_string(aiGetVersionMajor()) + '.' + std::to_string(aiGetVersionMinor()) + '.' + std::to_string(aiGetVersionRevision());
 	physVersion = std::to_string(physVersionStc.major) + '.' + std::to_string(physVersionStc.minor) + '.' + std::to_string(physVersionStc.patch);
@@ -122,7 +115,6 @@ void AboutTab::InitVersions()
 	GlewVersion = glewGetString(GLEW_VERSION);
 	GLSLVersion = glGetString(GL_SHADING_LANGUAGE_VERSION);
 
-	// Not real time
 	mathGeoLib = "1.5";
 	parsonVersion = "1.2.1";
 	deviLVersion = "1.8";

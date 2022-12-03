@@ -30,7 +30,7 @@ public:
 	Texture* addButton;
 
 private:
-	// Overriding file variables
+	
 	Resource* ovResource;
 	bool overwritting = false;
 	const char* ovPath;

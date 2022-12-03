@@ -38,7 +38,7 @@ private:
 	std::vector<std::string> tags;
 	std::vector<std::string> layers;
 
-	// This values isn't hardcoded!, this values have been extracted from the "CalculateMaxWidth" function
+	
 	int maxWidthTag = 125;
 	int maxWidthLayers = 125;
 

@@ -1,9 +1,6 @@
-// Not necesarry because #include "Component.h" already includes #include "GameObject.h"
-//#include "GameObject.h" 
 #include "Component.h"
 #include "Globals.h"
 
-// Components
 #include "Transform.h"
 #include "MeshRenderer.h"
 #include "Material.h"
@@ -11,17 +8,16 @@
 
 GameObject::GameObject(const char* name) : name(name), tag("Untagged"), layer("0: Default")
 {
-	// Each GameObject must have a transform component, that's why we add it when creating it
+	
 	transform = static_cast<Transform*>(AddComponent(ComponentType::TRANSFORM));
 }
 
 GameObject::~GameObject()
 {
-	// Delete all childrens
+	
 	RELEASE_VECTOR(childrens, childrens.size());
 	childrens.clear();
 
-	// Delete all components
 	RELEASE_VECTOR(components, components.size());
 	components.clear();
 

@@ -24,7 +24,7 @@ Application::Application() : maxFPS(60)
 	camera = new Camera3D(this);
 	scene = new Scene(this);
 	editor = new Editor(this);
-	//game = new Game();
+	
 	
 
 	// Main Modules
@@ -33,7 +33,7 @@ Application::Application() : maxFPS(60)
 	AddModule(camera);
 	AddModule(input);	
 	AddModule(scene);	
-	//AddModule(game);
+	
 	
 	// Renderer last!
 	AddModule(editor);
@@ -149,8 +149,7 @@ bool Application::CleanUp()
 {
 	bool ret = true;
 
-	// Cleanup
-
+	
 	for (int i = listModules.size() - 1; i >= 0 && ret == true; --i)
 	{
 		ret = listModules[i]->CleanUp();
@@ -161,7 +160,7 @@ bool Application::CleanUp()
 
 void Application::AddModule(Module* mod)
 {
-	//listModules.add(mod);
+
 	listModules.push_back(mod);
 }
 void Application::SaveConfig()
@@ -174,8 +173,6 @@ void Application::SaveConfig()
 
 	application.SetJNumber(application.ValueToObject(application.GetRootValue()), "FPS", maxFPS);
 
-
-	// Call SaveConfig() in all modules
 	std::vector<Module*>::iterator item;
 
 	for (item = listModules.begin(); item != listModules.end(); ++item)

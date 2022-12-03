@@ -1,6 +1,6 @@
 #include "Application.h"
 
-// Module
+
 #include "Renderer3D.h"
 #include "Window.h"
 #include "Globals.h"
@@ -61,7 +61,7 @@ bool Renderer3D::Init()
 	LOG(LogType::L_NORMAL, "Creating 3D Renderer context");
 	bool ret = true;
 
-	//Create context
+
 	context = SDL_GL_CreateContext(App->window->window);
 	if (context == NULL)
 	{
@@ -194,8 +194,7 @@ update_status Renderer3D::PreUpdate(float dt)
 update_status Renderer3D::PostUpdate(float dt)
 {
 	update_status ret = UPDATE_CONTINUE;
-	//glClearColor(0.f, 0.f, 0.f, 1.f);
-	//glClear(GL_COLOR_BUFFER_BIT);
+	
 
 	plane.Render();
 

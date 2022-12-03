@@ -1,7 +1,5 @@
 #include"Application.h"
 #include "SceneTab.h"
-
-// Module
 #include "Editor.h"
 #include "Camera3D.h"
 
@@ -14,7 +12,7 @@ void SceneTab::Draw()
 {
 	if (ImGui::Begin(name.c_str(), &active, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse))
 	{
-		// Check if some key/mouseButton are pressed
+		
 		if (ImGui::IsWindowHovered())
 		{
 			app->camera->CheckInputsMouse();
