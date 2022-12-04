@@ -33,8 +33,6 @@ Mesh::~Mesh()
 
 bool Mesh::LoadToMemory()
 {
-
-	//Index Buffer GL_ELEMENT_ARRAY_BUFFER
 	if (numIndexs != 0)
 	{
 		glGenBuffers(1, (GLuint*)&(indexBufferId));

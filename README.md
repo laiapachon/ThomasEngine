@@ -47,30 +47,62 @@ Week 6:
 - Inspector
 - Hierarchy
 
+New Features:
+
+- New Camera controls and frustrum culling
+- Scene and Game tabs work as they should on editor
+- Functional Mouse Picking with visible RayCast
+- Game Object duplication
+- New Scene Loaded by default
+- Mesh active state
+- Scene serialization
+- Bounding Boxes can be toggled on inspector
+- Guizmo for Game Object translation
+- Parent,child and empty Game Object creation
+- Camera component with its own configuration on inspector
+- Hierarchy able to parent, reparent, and unparent
+- Working Drag & Drop from Assets Folder directory
+- Several Memory leaks solved
+
 
 CONTROLS:
 
-- camera controls:
+- Camera controls:
 	- LSHIFT: Use controls faster
 	- F: Front view
-	- T:Moving camera Up
-	- G:Moving camera Down
+	- E: Moving camera Up
+	- Q: Moving camera Down
 	- W: Moving camera to Front
 	- S: Moving camera Back
 	- A: Moving camera Left
 	- D: Moving camera Right
 	- MOUSE WHEEL: Zoom In and Out
 	- Alt+Left click: orbit around the camera position
+	
+	
+- Short Cuts:
+- Numbers from 1-9 open and close the tabs
+- Ctrl+N: New Scene
+- Ctrl+S: Save Scene
+- Ctrl+D: Duplicate Object
+- Ctrl+Shift+N: New GameObject Empty
+- Ctrl+Shift+G: New GameObject Parent
+- Alt+Shift+N: New GameObject Child
+- Ctrl+Shift+F: Align with view
+- Ctrl+Alt+W: Use TranslateSnap
+- Ctrl+Alt+E: Use RotateSnap
+- Ctrl+Alt+R: Use ScaleSnap
+- Alt+Shift+F: Align with selected
+- Alt+Shift+A: Toggle active state
+- Alt+F: ResetViewRotation
 
 
-Important issues found:
+Important Issues found:
+- Deleting duplicated game objects may cause a crash
+- Deleting game objects in general, can cause a random crash
+- Resource manager does not create a custom file format
+- Scene Serialization Load does not render any Game Object, but "works"
+- Unable to make a functional Play/Pause/Stop System
+- Guizmo only works for translation of Game Objects purpose, Rotation and Scale only work using the inspector
+- Asset import can fail
 
-Constant memory leak found still unsolved
-
-In case that on release mode the scene is in black, press F button, disable the wireframe button and enable the texture button and it will work.
-
-Wireframe also gets activated by default
-
-The default camera position does not point to any gameObject of the scene
-so the user has to select the object from hierarchy and push F with the cursor over the scene tab
-in order to make the camera look at the gameObject. Disabling wireframe will show the object's textures.

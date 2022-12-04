@@ -26,7 +26,6 @@ public:
 	void GenerateRay();
 	ImVec2 NormalizeOnWindow(float x, float y, float w, float h, ImVec2 point);
 
-
 	void LookAt(const float3& Spot);
 	void Move(const float3& Movement);
 

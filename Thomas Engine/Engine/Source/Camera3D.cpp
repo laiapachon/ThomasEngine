@@ -273,7 +273,7 @@ void Camera3D::FrontView()
 	}
 }
 
-// -----------------------------------------------------------------
+
 void Camera3D::LookAt(const float3& Spot)
 {
 	reference = Spot;
@@ -285,7 +285,7 @@ void Camera3D::LookAt(const float3& Spot)
 	CalculateViewMatrix();
 }
 
-// -----------------------------------------------------------------
+
 void Camera3D::Move(const float3& Movement)
 {
 	position += Movement;
@@ -294,7 +294,6 @@ void Camera3D::Move(const float3& Movement)
 	CalculateViewMatrix();
 }
 
-// -----------------------------------------------------------------
 void Camera3D::CalculateViewMatrix()
 {
 	if (projectionIsDirty)

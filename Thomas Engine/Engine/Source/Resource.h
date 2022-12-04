@@ -28,9 +28,9 @@ public:
 	void SetAssetsPath(const char*);
 	void SetLibraryPath(const char*);	
 
-	inline unsigned int GetReferenceCount() const { return referenceCount; }
-	inline void IncreaseReferenceCount() { referenceCount++; }
-	inline void DecreaseReferenceCount() { referenceCount--; }
+	inline unsigned int GetRefCount() const { return refCount; }
+	inline void IncreaseRefCount() { refCount++; }
+	inline void DecreaseRefCount() { refCount--; }
 
 	virtual bool LoadToMemory() { return false; }
 	virtual bool UnloadFromMemory() { return false; }
@@ -40,5 +40,5 @@ private:
 	std::string assetFile;
 	std::string libFile;
 	ResourceType type = ResourceType::UNKNOWN;
-	unsigned int referenceCount;
+	unsigned int refCount;
 };
