@@ -663,6 +663,9 @@
     <ClInclude Include="Source\GameTab.h">
       <Filter>Sources\Modules</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Shader.h">
+      <Filter>Sources\Resources</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Main.cpp">
@@ -913,6 +916,9 @@
     </ClCompile>
     <ClCompile Include="Source\GameTab.cpp">
       <Filter>Sources\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Shader.cpp">
+      <Filter>Sources\Resources</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
