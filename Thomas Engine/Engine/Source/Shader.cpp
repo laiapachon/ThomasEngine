@@ -12,9 +12,6 @@
 #include <sys/stat.h>
 
 
-
-
-
 GLenum GetShaderTypeFromString(const std::string& type)
 {
 	if (type == "vertex")

@@ -364,3 +364,13 @@ bool Camera3D::LoadConfig(JsonParser& node)
 
 	return true;
 }
+
+float4x4 Camera3D::GetViewMatrix() 
+{
+	return cameraScene.frustrum.ViewMatrix();
+}
+
+float4x4 Camera3D::GetProjectionMatrix()
+{
+	return cameraScene.frustrum.ProjectionMatrix();
+}

@@ -45,7 +45,7 @@ bool Mesh::LoadToMemory()
 	{
 		glGenBuffers(1, (GLuint*)&(vertexBufferId));
 		glBindBuffer(GL_ARRAY_BUFFER, vertexBufferId);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * numVertex * 3, &vertex[0], GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(meshVertex) * vertices.size(), vertices.data(), GL_STATIC_DRAW);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 	}
 
@@ -53,7 +53,7 @@ bool Mesh::LoadToMemory()
 	{
 		glGenBuffers(1, (GLuint*)&(textureBufferId));
 		glBindBuffer(GL_ARRAY_BUFFER, textureBufferId);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * numTexCoords * 2, &texCoords[0], GL_STATIC_DRAW);
+		/*glBufferData(GL_ARRAY_BUFFER, sizeof(float) * numTexCoords * 2, &texCoords[0], GL_STATIC_DRAW);*/
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 	}	
 
@@ -61,8 +61,22 @@ bool Mesh::LoadToMemory()
 	{
 		glGenBuffers(1, (GLuint*)&(normalBufferId));
 		glBindBuffer(GL_ARRAY_BUFFER, normalBufferId);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * numNormals * 3, &normals[0], GL_STATIC_DRAW);
+		/*glBufferData(GL_ARRAY_BUFFER, sizeof(float) * numNormals * 3, &normals[0], GL_STATIC_DRAW);*/
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
+	}
+
+	if (vertexArrayId != 0) 
+	{
+		glGenVertexArrays(1, &vertexArrayId);
+		glBindVertexArray(vertexArrayId);
+		glBindBuffer(GL_ARRAY_BUFFER, vertexBufferId);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferId);
+		glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,0,(void*) 0);
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE,12,(void*) 12);
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(2,2,GL_FLOAT,GL_FALSE,20,(void*) 20);
+		glEnableVertexAttribArray(2);
 	}
 
 	return true;
@@ -71,9 +85,10 @@ bool Mesh::LoadToMemory()
 bool Mesh::UnloadFromMemory()
 {	
 	indexs.clear();
-	vertex.clear();
+	/*vertex.clear();
 	normals.clear();
-	texCoords.clear();
+	texCoords.clear();*/
+	vertices.clear();
 	return true;
 }
 
@@ -147,7 +162,7 @@ void Mesh::RenderFaceNormals(float normalLenght)
 	for (int i = 0; i < numIndexs; i += 3)
 	{
 		for (int j = 0; j < 3; j++)
-			abc.vecABC[j] = GetIndexVec(&vertex[indexs[i + j] * 3]);
+			abc.vecABC[j] = GetIndexVec(vertices[indexs[i + j] * 3].position.ptr());
 
 		abc.UpdateABC();
 		
@@ -173,14 +188,14 @@ void Mesh::RenderVertexNormals(float normalLenght)
 		if(type==0)
 		for (unsigned int i = 0; i < numVertex * 3; i += 3)
 		{
-			glVertex3f(vertex[i], vertex[i + 1], vertex[i + 2]);
+			glVertex3f(vertices[i].position.x, vertices[i].position.y, vertices[i].position.z);
 
 		}
 		if(type==1)
 		for (unsigned int i = 0; i < numNormals * 3; i += 3)
 		{
-			glVertex3f(vertex[i], vertex[i + 1], vertex[i + 2]);
-			glVertex3f(vertex[i] + normals[i] * normalLenght, vertex[i + 1] + normals[i + 1] * normalLenght, vertex[i + 2] + normals[i + 2] * normalLenght);
+			glVertex3f(vertices[i].position.x, vertices[i].position.y, vertices[i].position.z);
+			glVertex3f(vertices[i].position.x + vertices[i].normals.x * normalLenght, vertices[i].position.y + vertices[i].normals.y * normalLenght, vertices[i].position.z + vertices[i].normals.z * normalLenght);
 		}
 
 		glColor3f(0+type, 1, 0+type);
@@ -202,15 +217,14 @@ void Mesh::GenerateBounds()
 {
 	localAABB.SetNegativeInfinity();
 
-	std::vector<float3> vertices;
+	std::vector<float3> vert;
 	float3 pointArray;
-	for (int i = 0; i < vertex.size(); i+=3)
+	for (int i = 0; i < vertices.size(); i+=3)
 	{
-		pointArray = float3(vertex[i], vertex[i+1], vertex[i+2]);
-		vertices.push_back(pointArray);
+		vert.push_back(vertices[i].position);
 	}
 	
-	localAABB.Enclose(&vertices[0], vertices.size());
+	localAABB.Enclose(&vert[0], vert.size());
 		
 	Sphere sphere;	
 	sphere.r = 0.f;
@@ -220,5 +234,5 @@ void Mesh::GenerateBounds()
 	radius = sphere.r;
 	centerPoint = sphere.pos;
 
-	vertices.clear();
+	vert.clear();
 }

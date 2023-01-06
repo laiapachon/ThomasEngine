@@ -4,11 +4,13 @@
 #include "Renderer3D.h"
 #include "ResourceTexture.h"
 #include "Editor.h"
+#include"Camera3D.h"
 
 #include "ImGui/imgui.h"
 
 Material::Material(GameObject* obj) : Component(obj)
 {
+	shader = new Shader("Assets/default.shader");
 }
 
 Material::~Material()
@@ -69,4 +71,17 @@ bool Material::CompareTextureId(GameObject* node, GameObject* owner, GLuint id)
 		}
 	}
 	return ret;
+}
+
+void Material::Bind() 
+{
+	shader->Bind();
+	shader->SetUniformMatrix4f("view", app->camera->GetViewMatrix());
+	Transform* model= (Transform*)owner->GetComponent(ComponentType::TRANSFORM);
+	shader->SetUniformMatrix4f("model", model->GetGlobalTransform());
+	shader->SetUniformMatrix4f("projection", app->camera->GetProjectionMatrix());
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, texture->textureID);
+
+	shader->SetUniform1i("tex",0);
 }

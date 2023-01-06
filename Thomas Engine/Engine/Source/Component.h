@@ -43,7 +43,7 @@ public:
 	}
 
 	bool active = true;
-private:
+protected:
 
 	int index[24] = { 0, 2, 2, 6, 6, 4, 4, 0,
 					0, 1, 1, 3, 3, 2, 4, 5,
@@ -51,4 +51,5 @@ private:
 
 	ComponentType type;
 	GameObject* owner = nullptr;
+
 };

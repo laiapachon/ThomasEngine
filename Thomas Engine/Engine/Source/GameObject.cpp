@@ -14,12 +14,13 @@ GameObject::GameObject(const char* name) : name(name), tag("Untagged"), layer("0
 
 GameObject::~GameObject()
 {
-	
+	RELEASE_VECTOR(components, components.size());
+	components.clear();
+
 	RELEASE_VECTOR(childrens, childrens.size());
 	childrens.clear();
 
-	RELEASE_VECTOR(components, components.size());
-	components.clear();
+	
 
 	if (pendingToDelete) this->GetParent()->EraseChildren(indexList);
 

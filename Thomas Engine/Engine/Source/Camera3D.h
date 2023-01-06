@@ -65,4 +65,8 @@ public:
 	float allTsnap = 1.0f;
 	float sSnap[3] = { 0.5f, 0.5f, 0.5f };
 	float allSsnap = 0.5f;
+
+	float4x4 GetViewMatrix();
+	float4x4 GetProjectionMatrix();
+
 };

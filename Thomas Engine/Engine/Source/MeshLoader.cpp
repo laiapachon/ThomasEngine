@@ -4,6 +4,8 @@
 
 #include "Editor.h"
 
+#include "MeshVertex.h"
+
 // Importers
 #include "FileSystem.h"
 #include "TextureLoader.h"
@@ -46,22 +48,26 @@ Mesh* MeshLoader::LoadMesh(aiMesh* importedMesh)
 
 	for (size_t i = 0; i < mesh->numVertex; i++)
 	{
-		mesh->vertex.push_back(importedMesh->mVertices[i].x);
-		mesh->vertex.push_back(importedMesh->mVertices[i].y);
-		mesh->vertex.push_back(importedMesh->mVertices[i].z);
+		meshVertex vertex;
+
+		vertex.position.x=(importedMesh->mVertices[i].x);
+		vertex.position.y=(importedMesh->mVertices[i].y);
+		vertex.position.z=(importedMesh->mVertices[i].z);
 
 		if (importedMesh->HasNormals())
 		{
-			mesh->normals.push_back(importedMesh->mNormals[i].x);
-			mesh->normals.push_back(importedMesh->mNormals[i].y);
-			mesh->normals.push_back(importedMesh->mNormals[i].z);
+			vertex.normals.x=(importedMesh->mNormals[i].x);
+			vertex.normals.y=(importedMesh->mNormals[i].y);
+			vertex.normals.z=(importedMesh->mNormals[i].z);
 		}
 		if (importedMesh->HasTextureCoords(0))
 		{
-			mesh->texCoords.push_back(importedMesh->mTextureCoords[0][i].x);
-			mesh->texCoords.push_back(importedMesh->mTextureCoords[0][i].y);
+			vertex.texCoords.x=(importedMesh->mTextureCoords[0][i].x);
+			vertex.texCoords.y=(importedMesh->mTextureCoords[0][i].y);
 		}
 		else mesh->numTexCoords = 0;
+
+		mesh->vertices.push_back(vertex);
 	}
 
 	importedMesh->HasVertexColors(0);

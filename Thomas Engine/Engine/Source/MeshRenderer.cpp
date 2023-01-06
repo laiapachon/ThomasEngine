@@ -45,15 +45,19 @@ void MeshRenderer::RenderMesh()
 {
 	if (active)
 	{
-		glPushMatrix();
-		glMultMatrixf(GetOwner()->transform->GetGlobalTransformT().ptr());
+		
 
 		Material* material = static_cast<Material*>(GetOwner()->GetComponent(ComponentType::MATERIAL));
 		GLuint id = -1;
 		if (material != nullptr)
 			id = material->GetTextureID();
 
+		material->Bind();
+
 		mesh->Render(id);
+
+		glPushMatrix();
+		glMultMatrixf(GetOwner()->transform->GetGlobalTransformT().ptr());
 
 		if (vertexNormals || faceNormals)
 			mesh->DebugRender(&vertexNormals, &faceNormals);

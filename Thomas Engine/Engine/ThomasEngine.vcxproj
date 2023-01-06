@@ -262,6 +262,7 @@
     <ClInclude Include="Source\glmath.h" />
     <ClInclude Include="Source\Globals.h" />
     <ClInclude Include="Source\MeshRenderer.h" />
+    <ClInclude Include="Source\MeshVertex.h" />
     <ClInclude Include="Source\ModelImporter.h" />
     <ClInclude Include="Source\ResourceManager.h" />
     <ClInclude Include="Source\Scene.h" />

@@ -4,9 +4,12 @@
 #include <vector>
 #include "glmath.h"
 #include "Geometry/AABB.h"
+#include "MeshVertex.h"
 
 typedef unsigned int uint;
 typedef unsigned int GLuint;
+
+
 
 struct meshABC {
 
@@ -55,15 +58,18 @@ public:
 	uint textureBufferId = 0;
 	uint normalBufferId = 0;
 
+	uint vertexArrayId = 0;
+
 	uint numIndexs = 0;
 	uint numVertex = 0;
 	uint numTexCoords = 0;
 	uint numNormals = 0;
 
 	std::vector<uint> indexs;
-	std::vector<float> vertex;
+	/*std::vector<float> vertex;
 	std::vector<float> texCoords;
-	std::vector<float> normals;
+	std::vector<float> normals;*/
+	std::vector<meshVertex> vertices;
 
 	float3 centerPoint = float3::zero;
 	float radius;
