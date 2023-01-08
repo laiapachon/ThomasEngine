@@ -58,7 +58,7 @@ public:
 	uint textureBufferId = 0;
 	uint normalBufferId = 0;
 
-	uint vertexArrayId = 0;
+	uint vertexArrayId = -1;
 
 	uint numIndexs = 0;
 	uint numVertex = 0;

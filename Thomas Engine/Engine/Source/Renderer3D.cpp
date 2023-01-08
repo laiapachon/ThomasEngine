@@ -504,9 +504,9 @@ void Renderer3D::MousePicking(LineSegment ray)
 			Triangle tri;
 			for (uint i = 0; i < mesh->numIndexs; i += 3)
 			{
-				tri.a = float3(&mesh->vertices[mesh->indexs[i] * 3].position.x);
-				tri.b = float3(&mesh->vertices[mesh->indexs[i + 1] * 3].position.y);
-				tri.c = float3(&mesh->vertices[mesh->indexs[i + 2] * 3].position.z);
+				tri.a = (mesh->vertices[mesh->indexs[i]].position);
+				tri.b = (mesh->vertices[mesh->indexs[i + 1]].position);
+				tri.c = (mesh->vertices[mesh->indexs[i + 2]].position);
 
 				float dist = 0;
 				if (localRay.Intersects(tri, &dist, nullptr))

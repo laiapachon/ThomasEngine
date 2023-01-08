@@ -33,7 +33,7 @@ Mesh::~Mesh()
 
 bool Mesh::LoadToMemory()
 {
-	if (numIndexs != 0)
+	//if (numIndexs != 0)
 	{
 		glGenBuffers(1, (GLuint*)&(indexBufferId));
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferId);
@@ -41,7 +41,7 @@ bool Mesh::LoadToMemory()
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	}	
 
-	if (numVertex != 0)
+	//if (numVertex != 0)
 	{
 		glGenBuffers(1, (GLuint*)&(vertexBufferId));
 		glBindBuffer(GL_ARRAY_BUFFER, vertexBufferId);
@@ -49,7 +49,7 @@ bool Mesh::LoadToMemory()
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 	}
 
-	if (numTexCoords != 0)
+	//if (numTexCoords != 0)
 	{
 		glGenBuffers(1, (GLuint*)&(textureBufferId));
 		glBindBuffer(GL_ARRAY_BUFFER, textureBufferId);
@@ -57,7 +57,7 @@ bool Mesh::LoadToMemory()
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 	}	
 
-	if (numNormals != 0)
+	//if (numNormals != 0)
 	{
 		glGenBuffers(1, (GLuint*)&(normalBufferId));
 		glBindBuffer(GL_ARRAY_BUFFER, normalBufferId);
@@ -65,17 +65,25 @@ bool Mesh::LoadToMemory()
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 	}
 
-	if (vertexArrayId != 0) 
+	//if (vertexArrayId != 0) 
 	{
 		glGenVertexArrays(1, &vertexArrayId);
 		glBindVertexArray(vertexArrayId);
 		glBindBuffer(GL_ARRAY_BUFFER, vertexBufferId);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferId);
-		glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,0,(void*) 0);
+
+		int offset = 0;
+
+		glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,32,(void*) 0);
 		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE,12,(void*) 12);
+
+		offset += 3;
+
+		glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE,32,(void*) (offset * sizeof(GL_FLOAT)));
 		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(2,2,GL_FLOAT,GL_FALSE,20,(void*) 20);
+
+		offset += 3;
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 32, (void*) (offset * sizeof(GL_FLOAT)));
 		glEnableVertexAttribArray(2);
 	}
 
@@ -94,15 +102,17 @@ bool Mesh::UnloadFromMemory()
 
 void Mesh::Render(GLuint textureID)
 {
-	if (textureID != -1) glBindTexture(GL_TEXTURE_2D, textureID);
+	/*if (textureID != -1) glBindTexture(GL_TEXTURE_2D, textureID);
 
-	EnableClientState();
-
+	EnableClientState();*/
+	glBindVertexArray(vertexArrayId);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferId);
 	glDrawElements(GL_TRIANGLES, numIndexs, GL_UNSIGNED_INT, NULL);
-	
-	UnBindBuffers(textureID);
-	
-	DisableClientState();
+
+	glBindVertexArray(0);
+	//UnBindBuffers(textureID);
+	//
+	//DisableClientState();
 }
 
 void Mesh::EnableClientState()
@@ -162,7 +172,7 @@ void Mesh::RenderFaceNormals(float normalLenght)
 	for (int i = 0; i < numIndexs; i += 3)
 	{
 		for (int j = 0; j < 3; j++)
-			abc.vecABC[j] = GetIndexVec(vertices[indexs[i + j] * 3].position.ptr());
+			abc.vecABC[j] = GetIndexVec(vertices[indexs[i + j]].position.ptr());
 
 		abc.UpdateABC();
 		
@@ -186,13 +196,13 @@ void Mesh::RenderVertexNormals(float normalLenght)
 		(type == 0) ? glPointSize(3.0f), glBegin(GL_POINTS) :glBegin(GL_LINES);
 		
 		if(type==0)
-		for (unsigned int i = 0; i < numVertex * 3; i += 3)
+		for (unsigned int i = 0; i < numVertex; i ++)
 		{
 			glVertex3f(vertices[i].position.x, vertices[i].position.y, vertices[i].position.z);
 
 		}
 		if(type==1)
-		for (unsigned int i = 0; i < numNormals * 3; i += 3)
+		for (unsigned int i = 0; i < numNormals; i ++)
 		{
 			glVertex3f(vertices[i].position.x, vertices[i].position.y, vertices[i].position.z);
 			glVertex3f(vertices[i].position.x + vertices[i].normals.x * normalLenght, vertices[i].position.y + vertices[i].normals.y * normalLenght, vertices[i].position.z + vertices[i].normals.z * normalLenght);

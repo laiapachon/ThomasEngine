@@ -75,11 +75,16 @@ bool Material::CompareTextureId(GameObject* node, GameObject* owner, GLuint id)
 
 void Material::Bind() 
 {
+	if (this == nullptr) 
+	{
+		return;
+	}
+
 	shader->Bind();
-	shader->SetUniformMatrix4f("view", app->camera->GetViewMatrix());
+	shader->SetUniformMatrix4f("view", app->camera->GetViewMatrix().Transposed());
 	Transform* model= (Transform*)owner->GetComponent(ComponentType::TRANSFORM);
-	shader->SetUniformMatrix4f("model", model->GetGlobalTransform());
-	shader->SetUniformMatrix4f("projection", app->camera->GetProjectionMatrix());
+	shader->SetUniformMatrix4f("model", model->GetLocalTransform().Transposed());
+	shader->SetUniformMatrix4f("projection", app->camera->GetProjectionMatrix().Transposed());
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texture->textureID);
 
