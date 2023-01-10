@@ -10,7 +10,8 @@
 
 Material::Material(GameObject* obj) : Component(obj)
 {
-	shader = new Shader("Assets/default.shader");
+	shader = new Shader("default.shader");
+	//shader = new Shader("water.shader");
 }
 
 Material::~Material()

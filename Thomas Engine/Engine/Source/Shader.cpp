@@ -288,24 +288,10 @@ unsigned int Shader::CreateShader(const std::string& vertexSource, const std::st
 
 std::string Shader::ReadFile()
 {
-	std::string ret;
-	std::ifstream in(path, std::ios::in, std::ios::binary);
-
-	if (in)
-	{
-		// We seek for the end of file so we can set the returning string size
-		in.seekg(0, std::ios::end);
-		ret.resize(in.tellg());
-
-		// We now seek for the file beginning to put it at the string (passing the string's first position and its size)
-		in.seekg(0, std::ios::beg);
-		in.read(&ret[0], ret.size());
-
-		// Finally close the file
-		in.close();
-	}
-
-	return ret;
+	std::string normalizedPath = FileSystem::NormalizePath(path.c_str());
+	char* buffer = nullptr;
+	uint size = FileSystem::FileLoad(normalizedPath.c_str(), &buffer);
+	return buffer;
 }
 
 std::unordered_map<GLenum, std::string> Shader::SplitShaders(const std::string& source)
