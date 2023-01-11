@@ -180,6 +180,7 @@
     <ClInclude Include="Source\External\Guizmo\ImGuizmo.h" />
     <ClInclude Include="Source\External\Guizmo\ImSequencer.h" />
     <ClInclude Include="Source\External\Guizmo\ImZoomSlider.h" />
+    <ClInclude Include="Source\External\ImGuiColorTextEdit\TextEditor.h" />
     <ClInclude Include="Source\External\imgui\imconfig.h" />
     <ClInclude Include="Source\External\imgui\imgui.h" />
     <ClInclude Include="Source\External\imgui\imgui_impl_opengl3.h" />
@@ -299,6 +300,7 @@
     <ClCompile Include="Source\External\Guizmo\ImGradient.cpp" />
     <ClCompile Include="Source\External\Guizmo\ImGuizmo.cpp" />
     <ClCompile Include="Source\External\Guizmo\ImSequencer.cpp" />
+    <ClCompile Include="Source\External\ImGuiColorTextEdit\TextEditor.cpp" />
     <ClCompile Include="Source\External\imgui\imgui.cpp" />
     <ClCompile Include="Source\External\imgui\imgui_demo.cpp" />
     <ClCompile Include="Source\External\imgui\imgui_draw.cpp" />

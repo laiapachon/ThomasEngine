@@ -73,6 +73,9 @@
     <Filter Include="Sources\3rd Party\Guizmo">
       <UniqueIdentifier>{ef71acce-4b06-47da-b639-cfec6d0f5e3b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\3rd Party\ColorTextEdit">
+      <UniqueIdentifier>{fbbbbf61-314e-4bb2-aab1-fed4ed24536f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Application.h">
@@ -669,6 +672,9 @@
     <ClInclude Include="Source\MeshVertex.h">
       <Filter>Sources\Helpers</Filter>
     </ClInclude>
+    <ClInclude Include="Source\External\ImGuiColorTextEdit\TextEditor.h">
+      <Filter>Sources\3rd Party\ColorTextEdit</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Main.cpp">
@@ -922,6 +928,9 @@
     </ClCompile>
     <ClCompile Include="Source\Shader.cpp">
       <Filter>Sources\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\External\ImGuiColorTextEdit\TextEditor.cpp">
+      <Filter>Sources\3rd Party\ColorTextEdit</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
