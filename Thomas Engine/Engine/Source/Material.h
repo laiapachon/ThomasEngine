@@ -4,6 +4,7 @@
 
 class Texture;
 class GameObject;
+class ShaderEditor;
 typedef unsigned int GLuint;
 
 class Material : public Component
@@ -24,4 +25,7 @@ public:
 	Shader* shader = nullptr;
 private:
 	bool viewWithCheckers = false;
+
+	ShaderEditor* textEditor;
+
 };

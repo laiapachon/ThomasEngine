@@ -269,6 +269,7 @@
     <ClInclude Include="Source\Scene.h" />
     <ClInclude Include="Source\SceneTab.h" />
     <ClInclude Include="Source\Shader.h" />
+    <ClInclude Include="Source\ShaderEditor.h" />
     <ClInclude Include="Source\TextureLoader.h" />
     <ClInclude Include="Source\JsonParser.h" />
     <ClInclude Include="Source\Light.h" />
@@ -356,6 +357,7 @@
     <ClCompile Include="Source\Scene.cpp" />
     <ClCompile Include="Source\SceneTab.cpp" />
     <ClCompile Include="Source\Shader.cpp" />
+    <ClCompile Include="Source\ShaderEditor.cpp" />
     <ClCompile Include="Source\TextureLoader.cpp" />
     <ClCompile Include="Source\JsonParser.cpp" />
     <ClCompile Include="Source\Light.cpp" />

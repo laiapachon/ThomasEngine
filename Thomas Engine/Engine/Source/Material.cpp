@@ -6,12 +6,16 @@
 #include "Editor.h"
 #include"Camera3D.h"
 
+#include "ShaderEditor.h"
+
 #include "ImGui/imgui.h"
 
 Material::Material(GameObject* obj) : Component(obj)
 {
 	shader = new Shader("default.shader");
 	//shader = new Shader("water.shader");
+	textEditor = new ShaderEditor();
+	textEditor->SetShader(shader);
 }
 
 Material::~Material()
@@ -36,6 +40,9 @@ void Material::OnEditor()
 		}
 		ImGui::Checkbox("View with checkers", &viewWithCheckers);
 	}
+
+	textEditor->Draw();
+
 }
 int Material::GetTextureID()
 {

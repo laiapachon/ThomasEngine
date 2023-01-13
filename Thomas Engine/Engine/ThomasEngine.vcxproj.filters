@@ -675,6 +675,9 @@
     <ClInclude Include="Source\External\ImGuiColorTextEdit\TextEditor.h">
       <Filter>Sources\3rd Party\ColorTextEdit</Filter>
     </ClInclude>
+    <ClInclude Include="Source\ShaderEditor.h">
+      <Filter>Sources\Modules\Editor\TabsEditor</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Main.cpp">
@@ -931,6 +934,9 @@
     </ClCompile>
     <ClCompile Include="Source\External\ImGuiColorTextEdit\TextEditor.cpp">
       <Filter>Sources\3rd Party\ColorTextEdit</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ShaderEditor.cpp">
+      <Filter>Sources\Modules\Editor\TabsEditor</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -56,8 +56,8 @@ public:
 	inline const std::string& GetPath() { return path; }
 
 	std::list<UniformData> GetUniforms();
-	void UpdateSourceCode(const std::string& newSource);
-
+	void SetNewSourceCode(const std::string& newSource);
+	const std::string& GetSourceCode();
 private:
 	unsigned int CreateShader(const std::string& vertexSource, const std::string& fragmentSource);
 	std::string ReadFile();

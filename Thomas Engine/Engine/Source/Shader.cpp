@@ -213,10 +213,16 @@ std::list<UniformData> Shader::GetUniforms()
 	return ret;
 }
 
-void Shader::UpdateSourceCode(const std::string& newSource)
+void Shader::SetNewSourceCode(const std::string& newSource)
 {
 	source = newSource;
 	ReCompile(false);
+	FileSystem::FileSave(path.c_str(), source.c_str(), source.size());
+}
+
+const std::string& Shader::GetSourceCode()
+{
+	return source;
 }
 
 unsigned int Shader::CreateShader(const std::string& vertexSource, const std::string& fragmentSource)
