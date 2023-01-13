@@ -8,6 +8,7 @@ enum class ImportType {
 	NOTYPE = -1,
 	MESH,
 	TEXTURE,
+	SHADER,
 };
 
 namespace StringLogic {

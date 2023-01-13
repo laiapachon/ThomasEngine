@@ -23,9 +23,11 @@ public:
 	Texture* texture = nullptr;
 
 	Shader* shader = nullptr;
+
+	float appTime = 0;
 private:
 	bool viewWithCheckers = false;
-
+	bool showShadersWindow = false;
 	ShaderEditor* textEditor;
 
 };

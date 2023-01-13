@@ -102,11 +102,28 @@ void ResourceManager::ImportFile(const char* assetsFile)
 			}
 			break;
 		}
+		case ImportType::SHADER:
+		{
+			Shader* shader = new Shader(normalizedPath);
+			shadersMap[shader->GetName()] = shader;
+			break;
+		}
+
 		default:
 			break;
 		}
 		if (!overwritting) RELEASE_ARRAY(buffer);
 	}
+}
+
+Shader* ResourceManager::GetShader(const std::string& name)
+{
+	return shadersMap[name];
+}
+
+std::map<std::string, Shader*> ResourceManager::GetShadersMap()
+{
+	return shadersMap;
 }
 
 void ResourceManager::Overwrite()

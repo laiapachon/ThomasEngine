@@ -8,6 +8,7 @@ ShaderEditor::ShaderEditor() : shader(nullptr)
 {
 	textEditor = TextEditor();
 	lang = TextEditor::LanguageDefinition::GLSL();
+	active = false;
 }
 
 ShaderEditor::~ShaderEditor()
@@ -16,9 +17,14 @@ ShaderEditor::~ShaderEditor()
 
 void ShaderEditor::Draw()
 {
+	if(active == false)
+	{
+		return;
+	}
 	auto cpos = textEditor.GetCursorPosition();
 	std::string title = "Shader Editor: " + shader->GetName();
-	ImGui::Begin(title.c_str(), nullptr, ImGuiWindowFlags_HorizontalScrollbar | ImGuiWindowFlags_MenuBar);
+
+	ImGui::Begin(title.c_str(), &active, ImGuiWindowFlags_HorizontalScrollbar | ImGuiWindowFlags_MenuBar);
 	ImGui::SetWindowSize(ImVec2(800, 600), ImGuiCond_FirstUseEver);
 	if (ImGui::BeginMenuBar())
 	{

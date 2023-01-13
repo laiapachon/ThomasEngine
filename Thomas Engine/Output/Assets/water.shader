@@ -1,53 +1,46 @@
 #type vertex
 #version 430 core
 
-layout(location = 0) in vec3 position;
-layout(location = 1) in vec3 normal;
-layout(location = 2) in vec2 texCoords;
+
+layout (location = 0) in vec3 position;
+layout (location = 2) in vec2 texCoords;
+
+out vec2 vUv;
 
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
 
-out vec3 vPosition;
-out vec2 vTexCoords;
-out vec3 vNormal;
+uniform float waveSpeed;
+uniform float waveSize;
+uniform float waterHeight;
+uniform float time;
 
-void main()
-{
-	gl_Position = projection * view * model * vec4(position, 1);
+out float vTime;
 
-	vTexCoords = texCoords;
-	vPosition = vec3(model * vec4(position, 1));
-	vNormal = normalize((model * vec4(normal, 0.0)).xyz);
+void main() {
+    vUv = texCoords;
+   // gl_Position = projection * view *  model * vec4(position, 1.0);
+
+	vec3 newPosition = position;
+    newPosition.y += sin((texCoords.x + time) * waveSpeed) * waveSize;
+    newPosition.y = max(newPosition.y, waterHeight);
+   gl_Position = projection * view *  model * vec4(newPosition, 1.0);
 }
 
 
 #type fragment
 #version 430 core
 
-in vec3 vPosition;
-in vec3 vNormal;
-in vec2 vTexCoords;
+in vec2 vUv;
 
-out vec4 fragColor;
+out vec4 color;
 
 uniform sampler2D tex;
-uniform vec3 camPos;
+in float vTime;
 
-vec3 CalcDirLight(vec3 normal, vec3 viewDir)
-{
-	vec3 lightDir = normalize(vec3(1));
-	float diff = max(dot(normal, lightDir), 0.0);
-	return vec3(diff);
-}
-
-void main()
-{
-	vec3 norm = normalize(vNormal);
-	vec3 viewDir = normalize(camPos - vPosition);
-
-	//vec3 result = CalcDirLight(norm, viewDir);
-
-	fragColor = texture(tex, vTexCoords);// * vec4(result, 1);
+void main() {
+    vec2 uv = vUv;
+    uv.y += sin(uv.x * 10.0 + vTime) * 0.1;
+    color = texture2D(tex, uv);
 }

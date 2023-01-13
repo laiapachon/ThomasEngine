@@ -5,6 +5,7 @@
 #include "ResourceTexture.h"
 #include "Editor.h"
 #include"Camera3D.h"
+#include "ResourceManager.h"
 
 #include "ShaderEditor.h"
 
@@ -41,7 +42,34 @@ void Material::OnEditor()
 		ImGui::Checkbox("View with checkers", &viewWithCheckers);
 	}
 
+	if (ImGui::Button("Show shader editor"))
+	{
+		textEditor->active = true;
+	}
 	textEditor->Draw();
+
+	if (ImGui::Button("Change shader"))
+	{
+		showShadersWindow = true;
+	}
+	if (showShadersWindow)
+	{
+		ImGui::Begin("Shaders", &showShadersWindow);
+		std::map<std::string, Shader*> map = app->resourceManager->GetShadersMap();
+
+		std::map<std::string, Shader*>::iterator it;
+		for (it = map.begin(); it != map.end(); it++)
+		{
+			if (ImGui::Button(it->first.c_str()))
+			{
+				shader = it->second;
+				break;
+			}
+		}
+
+		ImGui::End();
+
+	}
 
 }
 int Material::GetTextureID()
@@ -93,6 +121,13 @@ void Material::Bind()
 	Transform* model= (Transform*)owner->GetComponent(ComponentType::TRANSFORM);
 	shader->SetUniformMatrix4f("model", model->GetLocalTransform().Transposed());
 	shader->SetUniformMatrix4f("projection", app->camera->GetProjectionMatrix().Transposed());
+
+	shader->SetUniform1f("waveSpeed", 5);
+	shader->SetUniform1f("waveSize", 2);
+	shader->SetUniform1f("waterHeight", 3);
+
+	appTime += app->GetDt();
+	shader->SetUniform1f("time",appTime);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texture->textureID);
 

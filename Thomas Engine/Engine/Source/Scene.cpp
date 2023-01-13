@@ -50,6 +50,13 @@ bool Scene::Start()
 	Transform* transformBakerhouse = root->GetChildrens()[1]->GetChildrens()[1]->transform;
 	Transform* parentTransform = root->GetChildrens()[1]->transform;
 
+	app->resourceManager->ImportFile("Plane.fbx");
+
+
+	app->resourceManager->ImportFile("default.shader");	
+	app->resourceManager->ImportFile("basic.shader");	
+	app->resourceManager->ImportFile("water.shader");
+
 	float3 size(1, 1, 1);
 	Quat rotationQuat(0, 0, 0, 1);
 

@@ -7,6 +7,7 @@
 
 class Application;
 class Texture;
+class Shader;
 
 class ResourceManager :public Module
 {
@@ -29,8 +30,13 @@ public:
 	Texture* backButton;
 	Texture* addButton;
 
+	Shader* GetShader(const std::string& name);
+	std::map<std::string, Shader*> GetShadersMap();
+
 private:
 	
+	std::map<std::string, Shader*> shadersMap;
+
 	Resource* ovResource;
 	bool overwritting = false;
 	const char* ovPath;

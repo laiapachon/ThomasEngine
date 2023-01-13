@@ -96,6 +96,8 @@ ImportType FileSystem::GetImportType(const char* path)
 		return ImportType::MESH;
 	if (ext == "png" || ext == "jpg" || ext == "jpeg" || ext == "dds" || ext == "bmp" || ext == "tga")
 		return ImportType::TEXTURE;
+	else if (ext == "shader")
+		return ImportType::SHADER;
 
 	return ImportType::NOTYPE;
 }
