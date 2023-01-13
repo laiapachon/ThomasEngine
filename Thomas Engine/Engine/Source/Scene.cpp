@@ -50,7 +50,7 @@ bool Scene::Start()
 	Transform* transformBakerhouse = root->GetChildrens()[1]->GetChildrens()[1]->transform;
 	Transform* parentTransform = root->GetChildrens()[1]->transform;
 
-	app->resourceManager->ImportFile("Plane.fbx");
+	//app->resourceManager->ImportFile("Plane.fbx");
 
 
 	app->resourceManager->ImportFile("default.shader");	
