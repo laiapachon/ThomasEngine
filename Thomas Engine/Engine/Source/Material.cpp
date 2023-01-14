@@ -123,8 +123,8 @@ void Material::Bind()
 	shader->SetUniformMatrix4f("projection", app->camera->GetProjectionMatrix().Transposed());
 
 	shader->SetUniform1f("waveSpeed", 5);
-	shader->SetUniform1f("waveSize", 2);
-	shader->SetUniform1f("waterHeight", 3);
+	shader->SetUniform1f("waveSize", 3);
+	shader->SetUniform1f("waterHeight", 0);
 
 	appTime += app->GetDt();
 	shader->SetUniform1f("time",appTime);

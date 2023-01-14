@@ -109,49 +109,49 @@
                 "isSelected": false,
                 "showChildrens": false,
                 "pendingToDelete": false,
-              "components": {
-                "Component 0": {
-                  "Type": 0,
-                  "active": true,
-                  "LocalTransform": "1.000000,0.000000,0.000000,0.000000,0.000000,1.000000,0.000000,0.000000,0.000000,0.000000,1.000000,0.000000,0.000000,0.000000,0.000000,1.000000,",
-                  "GlobalTransform": "1.000000,0.000000,0.000000,0.000000,0.000000,1.000000,0.000000,0.000000,0.000000,0.000000,1.000000,0.000000,0.000000,0.000000,0.000000,1.000000,"
-                },
-                "Component 1": {
-                  "Type": 1,
-                  "active": true,
-                  "Mesh": "",
-                  "LibraryPath": ""
-                },
-                "Component 2": {
-                  "Type": 2,
-                  "active": true,
-                  "Material": "Baker_house.png",
-                  "LibraryPath": "Library\/Textures\/Baker_house.dds"
+                "components": {
+                    "Component 0": {
+                        "Type": 0,
+                        "active": true,
+                        "LocalTransform": "1.000000,0.000000,0.000000,0.000000,0.000000,1.000000,0.000000,0.000000,0.000000,0.000000,1.000000,0.000000,0.000000,0.000000,0.000000,1.000000,",
+                        "GlobalTransform": "1.000000,0.000000,0.000000,0.000000,0.000000,1.000000,0.000000,0.000000,0.000000,0.000000,1.000000,0.000000,0.000000,0.000000,0.000000,1.000000,"
+                    },
+                    "Component 1": {
+                        "Type": 1,
+                        "active": true,
+                        "Mesh": "",
+                        "LibraryPath": ""
+                    },
+                    "Component 2": {
+                        "Type": 2,
+                        "active": true,
+                        "Material": "water.png",
+                        "LibraryPath": "Library\/Textures\/water.dds"
+                    }
                 }
-              }
             },
             "Child 2": {
-                "name": "MainCamera",
+                "name": "Camera",
                 "IsRoot": false,
                 "tag": "Untagged",
                 "layer": "0: Default",
                 "active": true,
                 "isStatic": false,
-                "isSelected": false,
+                "isSelected": true,
                 "showChildrens": false,
                 "pendingToDelete": false,
                 "components": {
                     "Component 0": {
                         "Type": 0,
                         "active": true,
-                        "LocalTransform": "1.000000,0.000000,0.000000,0.000000,0.000000,1.000000,0.000000,1.000000,0.000000,0.000000,1.000000,-12.000000,0.000000,0.000000,0.000000,1.000000,",
-                        "GlobalTransform": "1.000000,0.000000,0.000000,0.000000,0.000000,1.000000,0.000000,1.000000,0.000000,0.000000,1.000000,-12.000000,0.000000,0.000000,0.000000,1.000000,"
+                        "LocalTransform": "1.000000,0.000000,0.000000,0.000000,0.000000,1.000000,0.000000,3.500000,0.000000,0.000000,1.000000,-12.000000,0.000000,0.000000,0.000000,1.000000,",
+                        "GlobalTransform": "1.000000,0.000000,0.000000,0.000000,0.000000,1.000000,0.000000,0.000000,0.000000,0.000000,1.000000,0.000000,0.000000,0.000000,0.000000,1.000000,"
                     },
                     "Component 1": {
                         "Type": 3,
                         "active": true,
                         "isMainCamera": true,
-                        "showFrustrum": true
+                        "showFrustrum": false
                     }
                 }
             }

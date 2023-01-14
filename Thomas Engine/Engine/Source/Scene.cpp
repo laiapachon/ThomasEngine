@@ -45,12 +45,13 @@ bool Scene::Init()
 
 bool Scene::Start()
 {
-	app->resourceManager->ImportFile("BakerHouse.fbx");	
+	
+	app->resourceManager->ImportFile("BakerHouse.fbx");
+	app->resourceManager->ImportFile("Plane.fbx");
 	Transform* transformChimney = root->GetChildrens()[1]->GetChildrens()[0]->transform;
 	Transform* transformBakerhouse = root->GetChildrens()[1]->GetChildrens()[1]->transform;
 	Transform* parentTransform = root->GetChildrens()[1]->transform;
 
-	//app->resourceManager->ImportFile("Plane.fbx");
 
 
 	app->resourceManager->ImportFile("default.shader");	
@@ -62,7 +63,9 @@ bool Scene::Start()
 
 	transformChimney->SetTransformMatrix(transformChimney->GetPosition(), rotationQuat, size, parentTransform);
 	transformBakerhouse->SetTransformMatrix(transformBakerhouse->GetPosition(), rotationQuat, size, parentTransform);
-	//app->resourceManager->ImportFile("street/street2.fbx");
+
+	
+	/*app->resourceManager->ImportFile("street/street2.fbx");*/
 
 	root->EraseChildren(root->FindChildren(root->GetChildrens()[0]));
 	root->AttachChild(mainCamera->GetOwner());
