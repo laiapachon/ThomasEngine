@@ -42,6 +42,8 @@ last asignament, includes Shaders which can be edited and also the user can add 
 - Shader editor
 - Shader render pipeline
 
+![Secuencia 01_1 (1)](https://user-images.githubusercontent.com/79161109/212570190-ca19095b-8950-4817-8710-52bcc7bf3cb1.gif)
+
 
 ## CONTROLS:
 
