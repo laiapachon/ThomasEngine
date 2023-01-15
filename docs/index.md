@@ -1,4 +1,4 @@
-DESCRIPTION:
+# DESCRIPTION:
 
 This engine has been created for a subject called Motors 3D. The intention of this engine is to be similar as Unity, 
 in which you can add FBX to the scene with its textures if they are in the Assets folder. This FBX are able to move 
@@ -6,14 +6,14 @@ and rotate. In the menu the user can see if there is any error, all the measures
 On the configuration menu, the user can see the FPS level, enable and disable different options, also change the 
 measures of the window, see all inputs and all the informations of the Engine. 
 
-TEAM MEMBERS:
+# TEAM MEMBERS:
 
 Enric Morales: (https://github.com/enricmc19)
 Laia Pachón: (https://github.com/laiapachon)
 
 
 
-New Features:
+# New Features:
 
 - New Camera controls and frustrum culling
 - Scene and Game tabs work as they should on editor
@@ -31,7 +31,7 @@ New Features:
 - Several Memory leaks solved
 
 
-CONTROLS:
+# CONTROLS:
 
 - Camera controls:
 	- LSHIFT: Use controls faster
