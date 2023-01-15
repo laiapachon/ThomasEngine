@@ -8,8 +8,8 @@ measures of the window, see all inputs and all the informations of the Engine.
 
 # TEAM MEMBERS:
 
-Enric Morales: (https://github.com/enricmc19)
-Laia Pachón: (https://github.com/laiapachon)
+Enric Morales: [enricmc19](https://github.com/enricmc19)
+Laia Pachón: [laiapachon](https://github.com/laiapachon)
 
 
 
