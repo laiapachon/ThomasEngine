@@ -9,8 +9,12 @@ measures of the window, see all inputs and all the informations of the Engine.
 ## Team Members:
 
 - Enric Morales: [enricmc19](https://github.com/enricmc19)
+
+	Shader rendering, gameobjects and components, filesystem and resource manager
+
 - Laia Pachón: [laiapachon](https://github.com/laiapachon)
 
+	UI design, 3D Renderer, Mouse Picking, Camera
 
 
 ## New Features:
