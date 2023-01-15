@@ -14,7 +14,7 @@ last asignament, includes Shaders which can be edited and also the user can add 
 ## Team Members:
 
 - Enric Morales: Link-> [enricmc19](https://github.com/enricmc19)
-<img width="700" height="394" src="https://cdn.discordapp.com/attachments/818140279147724820/1064291023464955954/IMG_20230115_220734.jpg">
+<img width="300" height="100" src="https://cdn.discordapp.com/attachments/818140279147724820/1064291023464955954/IMG_20230115_220734.jpg">
 
 	- Shader rendering
 	- Gameobjects and components
@@ -22,7 +22,7 @@ last asignament, includes Shaders which can be edited and also the user can add 
 	- Resource manager
 
 - Laia Pachón: Link-> [laiapachon](https://github.com/laiapachon)
-<img width="700" height="394" src="https://cdn.discordapp.com/attachments/818140279147724820/1064291008352895070/IMG_20230115_221059.jpg">
+<img width="500" height="100" src="https://cdn.discordapp.com/attachments/818140279147724820/1064291008352895070/IMG_20230115_221059.jpg">
 
 
 	- UI design
