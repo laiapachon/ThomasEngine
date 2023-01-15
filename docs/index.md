@@ -4,16 +4,17 @@ This engine has been created for a subject called Motors 3D. The intention of th
 in which you can add FBX to the scene with its textures if they are in the Assets folder. This FBX are able to move 
 and rotate. In the menu the user can see if there is any error, all the measures of the FBXs and also change them.
 On the configuration menu, the user can see the FPS level, enable and disable different options, also change the 
-measures of the window, see all inputs and all the informations of the Engine. 
+measures of the window, see all inputs and all the informations of the Engine. Finally, the implementation of the 
+last asignament, includes Shaders which can be edited and also the user can add a water texture.
 
 ## Team Members:
 
 - Enric Morales: Link-> [enricmc19](https://github.com/enricmc19)
 
 	- Shader rendering
-	- gameobjects and components
-	- filesystem  
-	- resource manager
+	- Gameobjects and components
+	- Filesystem  
+	- Resource manager
 
 - Laia Pachón: Link-> [laiapachon](https://github.com/laiapachon)
 
