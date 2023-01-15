@@ -28,20 +28,9 @@ last asignament, includes Shaders which can be edited and also the user can add 
 
 ## New Features:
 
-- New Camera controls and frustrum culling
-- Scene and Game tabs work as they should on editor
-- Functional Mouse Picking with visible RayCast
-- Game Object duplication
-- New Scene Loaded by default
-- Mesh active state
-- Scene serialization
-- Bounding Boxes can be toggled on inspector
-- Guizmo for Game Object translation
-- Parent,child and empty Game Object creation
-- Camera component with its own configuration on inspector
-- Hierarchy able to parent, reparent, and unparent
-- Working Drag & Drop from Assets Folder directory
-- Several Memory leaks solved
+- Shaders
+- Shader editor
+- Shader render pipeline
 
 
 ## CONTROLS:
